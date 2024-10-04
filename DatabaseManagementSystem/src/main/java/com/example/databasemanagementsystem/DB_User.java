@@ -1,16 +1,18 @@
 package com.example.databasemanagementsystem;
 
+import SharedDataTypes.User;
+
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class DB_User {
-    public static void get_User(String emailIn, String passwordIn){
+    public static User get_User(String emailIn, String passwordIn){
         Connection dbConnection = DB_Connection.connect();
         CallableStatement dbStatement = null;
         ResultSet dbResultSet = null;
-        //User result = null;
+        User result = null;
 
         try{
             System.out.println("Getting user");
@@ -22,7 +24,7 @@ public class DB_User {
                 String username = dbResultSet.getString("username");
                 String password = dbResultSet.getString("password");
                 String email = dbResultSet.getString("email");
-                //result = new User(username, password, email);
+                result = new User(username, password, email);
             }
             System.out.println("User retrieved");
         } catch (SQLException e) {
@@ -31,6 +33,6 @@ public class DB_User {
             DB_Connection.closeConnection(dbStatement, dbConnection);
             DB_Connection.closeResultSet(dbResultSet);
         }
-        //return result;
+        return result;
     }
 }
