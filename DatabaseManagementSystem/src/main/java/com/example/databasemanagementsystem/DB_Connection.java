@@ -58,7 +58,7 @@ public class DB_Connection {
         }
     }
 
-    private static void getSQLException(SQLException e) {
+    public static void getSQLException(SQLException e) {
         System.out.println("SQLException: " + e.getMessage());
         System.out.println("SQLState: " + e.getSQLState());
         System.out.println("VendorError: " + e.getErrorCode());
