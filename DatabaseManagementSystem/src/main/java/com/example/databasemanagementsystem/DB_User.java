@@ -1,6 +1,6 @@
 package com.example.databasemanagementsystem;
 
-import SharedDataTypes.User;
+import SharedDataTypes.*;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -10,12 +10,13 @@ import java.sql.SQLException;
 public class DB_User {
     static DB_Connection db = new DB_Connection();
     public static User get_User(String emailIn, String passwordIn){
-        Connection dbConnection = db.connect();
+        Connection dbConnection = null;
         CallableStatement dbStatement = null;
         ResultSet dbResultSet = null;
         User result = null;
 
         try{
+            dbConnection = db.connect();
             System.out.println("Getting user");
             dbStatement = dbConnection.prepareCall("{CALL get_user(?,?)}");
             dbStatement.setString("email", emailIn);
@@ -32,11 +33,19 @@ public class DB_User {
             }
             System.out.println("User retrieved");
         } catch (SQLException e) {
-            DB_Connection.getSQLException(e);
+            db.getSQLException(e);
         } finally {
-            DB_Connection.closeConnection(dbStatement, dbConnection);
-            DB_Connection.closeResultSet(dbResultSet);
+            db.closeConnection(dbStatement, dbConnection);
+            db.closeResultSet(dbResultSet);
         }
         return result;
+    }
+
+    public static boolean add_User(User user){
+        return false;
+    }
+
+    public static boolean update_user(User user){
+        return false;
     }
 }
