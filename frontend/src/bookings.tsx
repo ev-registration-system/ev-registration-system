@@ -1,4 +1,4 @@
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "./firebase";
 import { useRef } from "react";
 
@@ -11,9 +11,14 @@ export default function CreateBooking() {
         e.preventDefault();
 
         if (startTime.current && endTime.current) {
+
+            //convert input values to Date objects
+            const start = new Date(startTime.current.value);
+            const end = new Date(endTime.current.value);
+
             let data = {
-                startTime: startTime.current.value,
-                endTime: endTime.current.value
+                startTime: Timestamp.fromDate(start),
+                endTime: Timestamp.fromDate(end)
             };
 
             try {
