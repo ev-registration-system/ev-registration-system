@@ -24,8 +24,8 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /*display: flex;*/  /*I removed this because it was screwing up the styling everywhere else*/
+  /*place-items: center;*/
   min-width: 320px;
   min-height: 100vh;
 }

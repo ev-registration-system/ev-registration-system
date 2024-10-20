@@ -12,36 +12,22 @@ interface BookingEvent extends Event {
 }
 
 export default function Calendar() {
-  const [events, setEvents] = useState<BookingEvent[]>([]);
-
-  useEffect(() => {
-    const fetchEvents = async () => {
-      const bookingsCollection = collection(db, 'bookings');
-      const bookingsSnapshot = await getDocs(bookingsCollection);
-      const bookingsData = bookingsSnapshot.docs.map((doc) => {
-        const data = doc.data();
-        return {
-          id: doc.id,
-          title: 'Reserved',
-          start: data.startTime.toDate(),
-          end: data.endTime.toDate(),
-        } as BookingEvent;
-      });
-      setEvents(bookingsData);
-    };
-
-    fetchEvents();
-  }, []);
-
   return (
-    <div style={{ height: '600px', margin: '50px' }}>
+    <div
+      style={{
+        height: '600px',
+        margin: '50px auto', // fancy Centering logic
+        width: '80%', 
+        maxWidth: '1000px',  
+      }}
+    >
       <BigCalendar
         localizer={localizer}
-        events={events}
+        events={[]} // Replace with your events array when ready
         defaultView={Views.WEEK}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: '100%' }}
+        style={{ height: '100%', width: '100%' }} 
       />
     </div>
   );
