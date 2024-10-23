@@ -1,5 +1,5 @@
 import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { db } from "../../firebase";
+import { db } from "../../../firebase";
 import { useRef } from "react";
 
 export default function CreateBooking() {
@@ -28,8 +28,6 @@ export default function CreateBooking() {
                 console.error("Error adding booking: ", error);
             }
         }
-
-        
     };
     
     return (

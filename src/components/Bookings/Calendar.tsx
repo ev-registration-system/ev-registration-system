@@ -4,7 +4,7 @@ import { Calendar as BigCalendar, momentLocalizer, Event, Views } from 'react-bi
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { collection, getDocs, Timestamp, addDoc } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { db } from '../../../firebase';
 
 const localizer = momentLocalizer(moment);
 const ref = collection(db, "bookings");
