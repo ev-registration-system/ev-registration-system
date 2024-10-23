@@ -1,5 +1,4 @@
 import Calendar from '../../components/Bookings/Calendar';
-import ReservationButtons from '../../components/Bookings/ReservationButtons'
 
 const BookingPage = () => {
     return (
