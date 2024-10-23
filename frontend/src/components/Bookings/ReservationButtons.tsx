@@ -1,10 +1,10 @@
 import React from 'react';
-import '../stylings/reservationButtons.css'
+import '../../stylings/ReservationButtons.css'
 import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { db } from "../firebase";
+import { db } from "../../firebase";
 import { useRef } from "react";
 
-export default function reservationButtons() {
+export default function ReservationButtons() {
     const startTime = useRef<HTMLInputElement>(null);
     const endTime = useRef<HTMLInputElement>(null);
     const ref = collection(db, "bookings");

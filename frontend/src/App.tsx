@@ -1,18 +1,17 @@
 // import React from 'react';
 // import { db } from './firebase'
 // import { collection, getDocs } from 'firebase/firestore'
-import CreateBooking from './components/bookings'
-import Calendar from './components/calendar'
-import Rbuttons from './components/reservationButtons'
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import BookingPage from './views/BookingPage/BookingPage'
 
 function App() {
 
     return (
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Welcome to the EV Registration System</h1>
-            <Calendar />
-            <Rbuttons />
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/" element={<BookingPage />} />
+            </Routes>
+        </Router>
     );
 }
 
