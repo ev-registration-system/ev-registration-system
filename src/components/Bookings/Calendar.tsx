@@ -22,6 +22,7 @@ export default function Calendar() {
     const bookings = querySnapshot.docs.map(doc => {
       const data = doc.data();
       return {
+        id: doc.id,
         start: data.startTime.toDate(),
         end: data.endTime.toDate(),
       };
@@ -80,11 +81,6 @@ export default function Calendar() {
           style={{ height: '100%', width: '100%' }} 
         />
       ) }
-
-      <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px' }}>
-        <input type="datetime-local" ref={startTime} placeholder="Enter the start time" required />
-        <input type="datetime-local" ref={endTime} placeholder="Enter the end time" required />
-      </div>
     </div>
   );
 }
