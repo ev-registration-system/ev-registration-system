@@ -6,6 +6,13 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { collection, getDocs, Timestamp, addDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 
+
+interface Booking {
+  id: string;        // The unique identifier for the booking
+  start: Date;      // Start time of the booking
+  end: Date;        // End time of the booking
+}
+
 const localizer = momentLocalizer(moment);
 const ref = collection(db, "bookings");
 
@@ -24,6 +31,7 @@ export default function Calendar() {
       return {
         start: data.startTime.toDate(),
         end: data.endTime.toDate(),
+        id: doc.id,
       };
     });
     setBookings(bookings); // Update state with the fetched bookings
@@ -58,6 +66,11 @@ export default function Calendar() {
     }
   };
 
+  //select booking function 
+  const onSelectBooking = (booking: Booking) => { 
+    console.log('Selected booking:', booking);
+  }
+
   return (
 
     <div
@@ -78,6 +91,7 @@ export default function Calendar() {
           startAccessor="start"
           endAccessor="end"
           style={{ height: '100%', width: '100%' }} 
+          onSelectEvent={(booking: Booking) => onSelectBooking(booking)} // when a booking is selected, trigger 'onSelectBooking'
         />
       ) }
 
