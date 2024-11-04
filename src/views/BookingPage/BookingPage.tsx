@@ -17,11 +17,13 @@ const BookingPage = () => {
     return (
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
             <h1>Welcome to the EV Registration System</h1>
+            <div className="booking-message">
+                To delete a booking, click on it.
+            </div>
             <Calendar/>
             {/* Buttons */}
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
                 <button className="button" onClick={openModal}>Make a Reservation</button>
-                <button className="button" onClick={() => console.log('Delete clicked')}>Cancel Reservation</button>
                 <button className="button" onClick={() => console.log('Update clicked')}>Modify Reservation</button>
             </div>
             {isModalOpen && (

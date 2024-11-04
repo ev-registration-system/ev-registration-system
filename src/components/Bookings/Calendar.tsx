@@ -5,12 +5,12 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { collection, getDocs, Timestamp, addDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
+import DeleteBooking from './DeleteBooking'; 
 
-
-interface Booking {
-  id: string;        // The unique identifier for the booking
-  start: Date;      // Start time of the booking
-  end: Date;        // End time of the booking
+interface Booking { // booking type that gets passed to 'onSelectBooking'
+  id: string; // unique booking id 
+  start: Date;
+  end: Date;
 }
 
 const localizer = momentLocalizer(moment);
@@ -22,6 +22,8 @@ export default function Calendar() {
 
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null); // Keep track of the currently selected booking's ID. If none is selected then equal to NULL
+  const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);  // To control the visibility of the delete confirmation modal. True when open, False when closed.
 
   const getBookings = async () => {
     const querySnapshot = await getDocs(ref);
@@ -67,9 +69,20 @@ export default function Calendar() {
   };
 
   //select booking function 
-  const onSelectBooking = (booking: Booking) => { 
+  const onSelectBooking = (booking: Booking) => {  
     console.log('Selected booking:', booking);
+    setSelectedBookingId(booking.id); // Set the selected booking id to the one that is selected
+    setDeleteModalOpen(true); // Open the delete modal
   }
+
+  const handleDeleteModalClose = () => {
+    setDeleteModalOpen(false); // Close the delete modal
+    setSelectedBookingId(null); // Reset selected booking ID
+  };
+
+  const refreshBookings = () => {
+    getBookings(); // Refresh bookings after deletion
+  };
 
   return (
 
@@ -93,12 +106,19 @@ export default function Calendar() {
           style={{ height: '100%', width: '100%' }} 
           onSelectEvent={(booking: Booking) => onSelectBooking(booking)} // when a booking is selected, trigger 'onSelectBooking'
         />
+        
       ) }
 
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px' }}>
         <input type="datetime-local" ref={startTime} placeholder="Enter the start time" required />
         <input type="datetime-local" ref={endTime} placeholder="Enter the end time" required />
       </div>
+      <DeleteBooking 
+                isOpen={isDeleteModalOpen} 
+                onClose={handleDeleteModalClose} 
+                bookingId={selectedBookingId} 
+                onDelete={refreshBookings} 
+            />
     </div>
   );
 }
