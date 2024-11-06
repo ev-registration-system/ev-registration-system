@@ -1,9 +1,8 @@
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
+import { initializeApp, getApps, FirebaseApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-import {
-  getFirestore
-} from 'firebase/firestore'
+import { getFirestore } from "firebase/firestore";
+import { getFunctions } from "firebase/functions";
+
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -19,9 +18,15 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
-// setup database
-export const db = getFirestore();
+let app: FirebaseApp; // Explicitly declare the type of 'app'
+if (!getApps().length) {
+  app = initializeApp(firebaseConfig);
+} else {
+  app = getApps()[0];
+}
+
+const analytics = getAnalytics(app);
+export const db = getFirestore(app);
+export const functions = getFunctions(app);
+export { app }; // Export the 'app' variable
