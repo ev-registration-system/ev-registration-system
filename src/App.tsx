@@ -1,22 +1,34 @@
-// import React from 'react';
-// import { db } from './firebase'
-// import { collection, getDocs } from 'firebase/firestore'
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import BookingPage from './views/BookingPage/BookingPage'
+import { Theme, ThemeProvider } from "@emotion/react";
+import { ColorModeContext, useMode } from "./Theme";
+import { CssBaseline } from "@mui/material";
+import { Route, Routes } from "react-router-dom";
+import Sidebar from "./global/Sidebar";
+import Dashboard from "./views/dashboard/Dashboard";
 
 function App() {
+    const [theme, colorMode] = useMode() as [
+        Theme,
+        { toggleColorMode: () => void }
+    ];
 
     return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<BookingPage />} />
-            </Routes>
-        </Router>
+        <ColorModeContext.Provider value={{ toggleColorMode: colorMode.toggleColorMode }}>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+                <div className="app">
+                    {/* Global Sidebar */}
+                    <Sidebar initialSelected="Home" />
+                    
+                    <main className="content">
+                        <Routes>
+                            <Route path="/dashboard" element={<Dashboard />} />
+                            <Route path="/" element={<Dashboard />} />
+                        </Routes>
+                    </main>
+                </div>
+            </ThemeProvider>
+        </ColorModeContext.Provider>
     );
 }
 
 export default App;
-
-
-
-// <CreateBooking />
