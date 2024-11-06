@@ -81,16 +81,9 @@ export default function Calendar() {
         />
       ) }
 
-      <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px' }}>
         <input type="datetime-local" ref={startTime} placeholder="Enter the start time" required />
         <input type="datetime-local" ref={endTime} placeholder="Enter the end time" required />
-      </div>
-
-      {/* Buttons */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
-        <button className="button" onClick={handleBooking}>Make a Reservation</button>
-        <button className="button" onClick={() => console.log('Delete clicked')}>Cancel Reservation</button>
-        <button className="button" onClick={() => console.log('Update clicked')}>Modify Reservation</button>
       </div>
     </div>
   );
