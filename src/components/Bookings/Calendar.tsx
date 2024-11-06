@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import '../../stylings/ReservationButtons.css'
+//import '../../stylings/ReservationButtons.css'
+import '../../output.css';
 import { Calendar as BigCalendar, momentLocalizer, Event, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
@@ -9,8 +10,6 @@ import { db } from '../../../firebase';
 const localizer = momentLocalizer(moment);
 const ref = collection(db, "bookings");
 
-
-
 export default function Calendar() {
 
   const [bookings, setBookings] = useState<any[]>([]);
@@ -18,7 +17,6 @@ export default function Calendar() {
 
   const getBookings = async () => {
     const querySnapshot = await getDocs(ref);
-    
     const bookings = querySnapshot.docs.map(doc => {
       const data = doc.data();
       return {
@@ -60,14 +58,7 @@ export default function Calendar() {
 
   return (
 
-    <div
-      style={{
-        height: '600px',
-        margin: '50px auto', // fancy Centering logic
-        width: '80%', 
-        maxWidth: '1000px',  
-      }}
-    >
+    <div className="container mx-auto my-12 max-w-4xl">
     {loading ? (
         <p>Loading bookings...</p>
       ) : (
@@ -77,7 +68,7 @@ export default function Calendar() {
           defaultView={Views.WEEK}
           startAccessor="start"
           endAccessor="end"
-          style={{ height: '100%', width: '100%' }} 
+          className="h-[600px] w-[500]"
         />
       ) }
 

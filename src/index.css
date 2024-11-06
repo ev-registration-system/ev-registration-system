@@ -1,4 +1,18 @@
-:root {
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .input {
+    @apply w-full sm:w-auto border border-gray-300 rounded-md px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500;
+  }
+
+  .btn {
+    @apply w-full sm:w-auto px-4 py-2 rounded-md font-semibold text-center focus:outline-none transition-colors duration-200;
+  }
+}
+
+/* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -24,8 +38,6 @@ a:hover {
 
 body {
   margin: 0;
-  /*display: flex;*/  /*I removed this because it was screwing up the styling everywhere else*/
-  /*place-items: center;*/
   min-width: 320px;
   min-height: 100vh;
 }
@@ -65,4 +77,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */
