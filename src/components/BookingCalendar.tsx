@@ -30,25 +30,34 @@ const BookingCalendar = () => {
     const colors = tokens(theme.palette.mode); 
 
     // Fetch bookings from Firestore
-    const getBookings = async () => {
+    // BookingCalendar.tsx
+
+const getBookings = async () => {
+    try {
         const querySnapshot = await getDocs(bookingRef);
         const fetchedBookings = querySnapshot.docs.map(doc => {
             const data = doc.data();
+            
             return {
                 id: doc.id,
-                start: data.startTime.toDate(),
-                end: data.endTime.toDate(),
+                start: data.startTime instanceof Timestamp ? data.startTime.toDate() : new Date(data.startTime),
+                end: data.endTime instanceof Timestamp ? data.endTime.toDate() : new Date(data.endTime),
             };
         });
         setBookings(fetchedBookings);
         setLoading(false);
-    };
+    } catch (error) {
+        console.error("Error fetching bookings:", error);
+        setLoading(false);
+    }
+};
+
 
     useEffect(() => {
         getBookings();
     }, []);
 
-    // Open reservation modal
+    // Open and close reservation modal
     const openReservationModal = () => setReservationModalOpen(true);
     const closeReservationModal = () => {
         setReservationModalOpen(false);
@@ -141,7 +150,27 @@ const BookingCalendar = () => {
             </div>
 
             {/* Reservation Modal */}
-            <Modal isOpen={isReservationModalOpen} onRequestClose={closeReservationModal} style={{ overlay: { zIndex: 1000 } }}>
+            <Modal
+                isOpen={isReservationModalOpen}
+                onRequestClose={closeReservationModal}
+                style={{
+                    overlay: {
+                        zIndex: 2000, // Ensure overlay appears above other elements
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Dim background for better focus
+                    },
+                    content: {
+                        position: 'fixed',
+                        top: '50%',
+                        left: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        maxWidth: '500px',
+                        width: '90%', // Responsive width
+                        padding: '20px',
+                        borderRadius: '8px',
+                        zIndex: 2001, // Ensure content is above overlay
+                    }
+                }}
+            >
                 <div className='ModalWrapper'>
                     <div className='ModalContent'>
                         <h2>Make a Reservation</h2>
@@ -155,6 +184,7 @@ const BookingCalendar = () => {
                                     required
                                 />
                             </label>
+                            <br /><br />
                             <label>
                                 End Time:
                                 <input
@@ -164,6 +194,7 @@ const BookingCalendar = () => {
                                     required
                                 />
                             </label>
+                            <br /><br />
                             <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
                                 <button type="submit">Submit</button>
                                 <button type="button" onClick={closeReservationModal}>Close</button>
@@ -199,3 +230,4 @@ const BookingCalendar = () => {
 };
 
 export default BookingCalendar;
+

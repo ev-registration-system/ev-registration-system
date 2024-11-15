@@ -10,7 +10,7 @@ const Dashboard = () => {
 
     // Function to handle logout
     const handleLogout = () => {
-        localStorage.removeItem('token'); // Assuming the JWT token is stored under 'token'
+        localStorage.removeItem('token'); 
         navigate('/login');
     };
 

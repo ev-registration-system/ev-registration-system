@@ -16,9 +16,10 @@ function App() {
             <ThemeProvider theme={theme}>
                 <CssBaseline />
                 <div className="app">
-                    {/* Global Sidebar */}
-                    <Sidebar initialSelected="Home" />
-                    
+                    <div className="sidebar">
+                        {/* Global Sidebar */}
+                        <Sidebar initialSelected="Home" />
+                    </div>
                     <main className="content">
                         <Routes>
                             <Route path="/dashboard" element={<Dashboard />} />

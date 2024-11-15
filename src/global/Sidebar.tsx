@@ -19,6 +19,7 @@ function SideBar({ initialSelected = "Home" }: SideBarProps) {
     return (
         <Box
             sx={{
+                height: "100vh",
                 "& .pro-sidebar-inner": {
                     background: theme.palette.primary.main,
                 },
