@@ -1,7 +1,7 @@
 import { Box, Button, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../Theme";
 import { useNavigate } from 'react-router-dom';
-import BookingCalendar from '../../components/BookingCalendar';
+import BookingPage from '../../views/BookingPage/BookingPage';
 
 const Dashboard = () => {
     const theme = useTheme();
@@ -57,7 +57,7 @@ const Dashboard = () => {
                     borderRadius: 2,
                 }}
             >
-                <BookingCalendar /> 
+                <BookingPage /> 
             </Box>
         </Box>
     );
