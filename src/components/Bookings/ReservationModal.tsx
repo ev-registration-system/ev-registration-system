@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import '../../stylings/ReservationButtons.css'
 import '../../stylings/ModalStyling.css'
-import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
-import { db } from "../../../firebase";
 import Modal from 'react-modal';
+import { getAuth } from 'firebase/auth';
 
 interface ReservationModalProps {
     isOpen: boolean;
@@ -11,8 +10,6 @@ interface ReservationModalProps {
 }
 
 export default function ReservationModal({onClose, isOpen}: ReservationModalProps) {
-    const ref = collection(db, "bookings");
-
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
 
@@ -45,26 +42,56 @@ export default function ReservationModal({onClose, isOpen}: ReservationModalProp
         console.log('End Time:', endTime);
 
         if (startTime && endTime) {
-            const start = new Date(startTime);
-            const end = new Date(endTime);
-            let data = {
-                startTime: Timestamp.fromDate(start),
-                endTime: Timestamp.fromDate(end)
-            };
-
             try {
-                await addDoc(ref, data);
-                console.log("Booking added Successfully!");
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                if (currentUser) {
+                    // Get the ID token
+                    const idToken = await currentUser.getIdToken(true);
+
+                    let data = {
+                        startTime: startTime,
+                        endTime: endTime,
+                        userId: currentUser.uid
+                    };
+
+                    // Call the addBooking Cloud Function
+                    const response = await fetch('https://addbooking-w2ytv3mava-uc.a.run.app', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${idToken}`,
+                        },
+                        body: JSON.stringify(data),
+                    });
+    
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log("Booking added successfully!", result);
+                        // Optionally, update your UI or state here
+                    } else {
+                        const error = await response.json();
+                        console.error("Error adding booking: ", error.error);
+                        // Optionally, display the error message to the user
+                    }
+                } else {
+                    // User is not authenticated
+                    console.error("User is not authenticated.");
+                    // Redirect to login page or show an error message
+                }
             } catch (error) {
-                console.error("Error adding booking: ", error);
+                console.error("Error calling Cloud Function: ", error);
+                // Handle network errors or unexpected issues
             }
+        } else {
+            console.error("Start time and end time are required.");
         }
 
         onClose();
     };
 
     return (
-        <div>
             <Modal isOpen={isOpen} onRequestClose={onClose} style={{overlay: {zIndex:1000}}}>
                 <div className='ModalWrapper'>
                     <div className='ModalContent'>
@@ -111,6 +138,5 @@ export default function ReservationModal({onClose, isOpen}: ReservationModalProp
                     </div>
                 </div>
             </Modal>
-        </div> 
     );   
 }

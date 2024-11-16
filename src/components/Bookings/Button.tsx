@@ -1,4 +1,4 @@
-import React, { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react';
+import { ButtonHTMLAttributes, CSSProperties, ReactNode } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   type?: 'button' | 'submit' | 'reset';

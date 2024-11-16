@@ -15,9 +15,8 @@ const BookingPage = () => {
             navigate('/login'); // Redirect to login page
         } catch (error) {
             console.error('Failed to log out:', error);
-}
-
-const BookingPage = () => {
+        }
+    }
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -49,4 +48,4 @@ const BookingPage = () => {
     );
 };
 
-export default BookingPage
+export default BookingPage;

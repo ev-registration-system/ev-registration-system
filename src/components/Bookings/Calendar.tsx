@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 //import '../../stylings/ReservationButtons.css'
 import '../../output.css';
-import { Calendar as BigCalendar, momentLocalizer, Event, Views } from 'react-big-calendar';
+import { Calendar as BigCalendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { collection, getDocs, Timestamp, addDoc } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebase';
 
 const localizer = momentLocalizer(moment);
@@ -19,6 +19,7 @@ export default function Calendar() {
     const querySnapshot = await getDocs(ref);
     const bookings = querySnapshot.docs.map(doc => {
       const data = doc.data();
+      console.log(data);
       return {
         start: data.startTime.toDate(),
         end: data.endTime.toDate(),
@@ -34,27 +35,6 @@ export default function Calendar() {
 
   const startTime = useRef<HTMLInputElement>(null);
   const endTime = useRef<HTMLInputElement>(null);
-
-  const handleBooking = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (startTime.current && endTime.current) {
-      const start = new Date(startTime.current.value);
-      const end = new Date(endTime.current.value);
-      let data = {
-          startTime: Timestamp.fromDate(start),
-          endTime: Timestamp.fromDate(end)
-      };
-  
-        try {
-            await addDoc(ref, data);
-            await getBookings();
-            console.log("Booking added!");
-        } catch (error) {
-            console.error("Error adding booking: ", error);
-        }
-    }
-  };
 
   return (
 
