@@ -83,3 +83,6 @@ class DataHandler{
     //     }
 
 }
+
+export const receiveData = DataHandler.receiveData;
+export const RetrieveHistoricalData = DataHandler.RetrieveHistoricalData;
