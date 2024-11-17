@@ -31,9 +31,6 @@ const BookingPage = () => {
     return (
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
             <h1>Welcome to the EV Registration System</h1>
-            <Button onClick={handleLogout}>
-                Logout
-            </Button>
             <Calendar/>
             {/* Buttons */}
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
