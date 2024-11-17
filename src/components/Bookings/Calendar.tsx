@@ -22,8 +22,8 @@ export default function Calendar() {
     const bookings = querySnapshot.docs.map(doc => {
       const data = doc.data();
       return {
-        start: data.startTime.toDate(),
-        end: data.endTime.toDate(),
+        start: new Date(data.startTime),
+        end: new Date(data.endTime),
       };
     });
     setBookings(bookings); // Update state with the fetched bookings
