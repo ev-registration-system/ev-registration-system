@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../state/AuthProvider/AuthProvider';
+import { useAuth } from '../../state/AuthProvider/AuthProvider.tsx';
 
 function LoginPage() {
     const [error, setError] = useState<string | null>(null);
