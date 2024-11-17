@@ -20,5 +20,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "firebase.ts"]
+  "include": ["src", "firebase.ts", "functions/src/data_handler.ts"]
 }
