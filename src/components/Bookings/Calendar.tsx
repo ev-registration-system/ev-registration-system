@@ -5,7 +5,7 @@ import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { collection, getDocs, Timestamp, addDoc } from 'firebase/firestore';
 import { db } from '../../../firebase';
-import { sendSms } from '../../services/TwilioService';
+//import { sendSms } from '../../services/TwilioService';
 
 const localizer = momentLocalizer(moment);
 const ref = collection(db, "bookings");
@@ -23,8 +23,8 @@ export default function Calendar() {
     const bookings = querySnapshot.docs.map(doc => {
       const data = doc.data();
       return {
-        start: data.startTime.toDate(),
-        end: data.endTime.toDate(),
+        start: new Date(data.startTime),
+        end: new Date(data.endTime),
       };
     });
     setBookings(bookings); // Update state with the fetched bookings
@@ -55,7 +55,7 @@ export default function Calendar() {
             console.log("Booking added!");
 
             //testing for sms 
-            await sendSms('+15068382586', 'Booking added!');
+            //await sendSms('+15068382586', 'Booking added!');
         } catch (error) {
             console.error("Error adding booking: ", error);
         }
