@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import '../../stylings/ReservationButtons.css'
 import '../../stylings/ModalStyling.css'
-import { collection, addDoc, getDocs, Timestamp } from "firebase/firestore";
+import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../../firebase";
 import Modal from 'react-modal';
 
