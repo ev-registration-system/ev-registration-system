@@ -10,10 +10,10 @@ class vehicleHandler{
     static addVehicle = onRequest(async (request, response) => {
         logger.info("add vehicle function triggered", {structuredData: true});
 
-        const {license, user_id, make, model, year} = request.body
+        const {license, user_id, make, model, year, color} = request.body
 
-        if(!license || !user_id || !make || !model || !year){
-            logger.error("Missing required fields", {license, user_id, make, model, year});
+        if(!license || !user_id || !make || !model || !year || !color){
+            logger.error("Missing required fields", {license, user_id, make, model, year, color});
             response.status(404).send("Missing required fields")
             return;
         }
@@ -26,16 +26,24 @@ class vehicleHandler{
                 make: make,
                 model: model,
                 year: year,
+                color: color
             });
-            logger.info("Vehicle successfully added", {license, user_id, make, model, year});
+            logger.info("Vehicle successfully added", {license, user_id, make, model, year, color});
             response.status(200).send("Vehicle successfully added");
         } catch (error){
             logger.error("Error adding vehicle", error);
             response.status(500).send("Error adding vehicle");
         }
     });
+    
 
-    static async getVehicle(user_id: number){
+    static getVehicle = onRequest(async (request, response) => {
+        const user_id = request.query.id as string;
+        if(!user_id){
+            logger.error("Missing user ID in query parameters");
+            response.status(400).send("Missing user ID");
+            return;
+        }
         try{
             const ref = db.collection(vehicleHandler.COLLECTION_NAME);
             const query = ref.where("user_id", "==", user_id);
@@ -47,13 +55,15 @@ class vehicleHandler{
                 result.push({id: doc.id, ...doc.data()});
             });
 
-            logger.info("User Vehicles retrieved", {result});
-            return result;
+            logger.info("User Vehicles retrieved", {user_id, result});
+            response.status(200).json(result);
+            
         } catch(error){
             logger.error("Error retrieving user vehicles", error);
-            throw new Error("Error retrieving user vehicles");
+            response.status(500).send("Error retrieving user vehicles");
         }
-    }
+    });
 }
 
 export const addVehicle = vehicleHandler.addVehicle;
+export const getVehicle = vehicleHandler.getVehicle;
