@@ -2,17 +2,23 @@ import { Box, Button, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../Theme";
 import { useNavigate } from 'react-router-dom';
 import BookingPage from '../../views/BookingPage/BookingPage';
+import { signOut } from "firebase/auth";
+import { auth } from "../../../firebase";
 
 const Dashboard = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const navigate = useNavigate();
 
     // Function to handle logout
-    const handleLogout = () => {
-        localStorage.removeItem('token'); 
-        navigate('/login');
-    };
+    const handleLogout = async () => {
+        try {
+            await signOut(auth); // Logs the user out
+            const navigate = useNavigate();
+            navigate('/login'); // Redirect to login page
+        } catch (error) {
+            console.error('Failed to log out:', error);
+        }
+    }
 
     return (
         <Box m="20px">

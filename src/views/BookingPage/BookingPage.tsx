@@ -4,10 +4,8 @@ import ReservationModal from '../../components/Bookings/ReservationModal';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { Booking } from '../../types/types';
-import Button from '../../components/Bookings/Button';
-import { useNavigate } from 'react-router-dom';
-import { auth } from '../../../firebase';
-import { signOut } from 'firebase/auth';
+import { tokens } from '../../Theme';
+import { Button, useTheme } from '@mui/material';
 
 const ref = collection(db, "bookings");
 
@@ -16,6 +14,8 @@ const BookingPage = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
 
     const getBookings = async () => {
         const querySnapshot = await getDocs(ref);
@@ -23,6 +23,7 @@ const BookingPage = () => {
             const data = doc.data();
             console.log(data);
             return {
+                id: doc.id,
                 start: data.startTime.toDate(),
                 end: data.endTime.toDate(),
             };
@@ -45,45 +46,44 @@ const BookingPage = () => {
         setIsModalOpen(false);
     };
 
-    const handleLogout = async () => {
-        try {
-            await signOut(auth); // Logs the user out
-            const navigate = useNavigate();
-            navigate('/login'); // Redirect to login page
-        } catch (error) {
-            console.error('Failed to log out:', error);
-        }
-    }
-
     return (
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Welcome to the EV Registration System</h1>
-            <Button onClick={handleLogout}>
-                Logout
-            </Button>
             <div
             style={{
-                height: '600px',
+                height: '100%',
                 margin: '50px auto', // fancy Centering logic
-                width: '80%', 
-                maxWidth: '1000px',  
+                width: '100%',
             }}
             >
             {loading ? (
                 <p>Loading bookings...</p>
             ) : (
-                <Calendar bookings={bookings}/>
+                <Calendar bookings={bookings} getBookings={getBookings}/>
             ) }
             </div>
             
             {/* Buttons */}
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
-                <button className="button" onClick={openModal}>Make a Reservation</button>
-                <button className="button" onClick={() => console.log('Delete clicked')}>Cancel Reservation</button>
-                <button className="button" onClick={() => console.log('Update clicked')}>Modify Reservation</button>
+                <Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: "bold",
+                        '&:hover': {
+                            backgroundColor: colors.accent[400]
+                        },
+                    }}
+                    onClick={openModal}
+                >
+                    Make a Reservation
+                </Button>
             </div>
             {isModalOpen && (
-                <ReservationModal onClose={closeModal} isOpen />
+                <ReservationModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                />
             )}
         </div>
     );

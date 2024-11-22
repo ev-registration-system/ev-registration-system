@@ -31,8 +31,6 @@ const App: React.FC = () => {
                         {showSidebar && (
                             <Sidebar
                                 initialSelected="Home"
-                                isCollapsed={!isSidebarOpen}
-                                onToggleCollapse={() => setSidebarOpen(!isSidebarOpen)}
                             />
                         )}
 
