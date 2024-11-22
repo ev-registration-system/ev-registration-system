@@ -1,19 +1,48 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Calendar from '../../components/Bookings/Calendar';
 import ReservationModal from '../../components/Bookings/ReservationModal';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../../firebase';
+import { Booking } from '../../types/types';
+import { tokens } from '../../Theme';
+import { Button, useTheme } from '@mui/material';
+
+const ref = collection(db, "bookings");
 
 const BookingPage = () => {
+
+    const [bookings, setBookings] = useState<Booking[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isGraphVisible, setIsGraphVisible] = useState(false);
-    const [plotImage, setPlotImage] = useState<string | null>(null); // State to hold the plot image for emissions
-    const [currentEmission, setCurrentEmission] = useState<number | null>(null);  // State for current emission
-    const [currentHour, setCurrentHour] = useState<number | null>(null);  // State for current hour
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
+
+    const getBookings = async () => {
+        const querySnapshot = await getDocs(ref);
+        const bookings = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            console.log(data);
+            return {
+                id: doc.id,
+                start: data.startTime.toDate(),
+                end: data.endTime.toDate(),
+            };
+        });
+        console.log(bookings);
+        setBookings(bookings); // Update state with the fetched bookings
+        setLoading(false); // Indicate loading is done
+    };
+
+    useEffect(() => {
+        getBookings(); // Fetch bookings when the component mounts
+    }, []);
 
     const openModal = () => {
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
+        getBookings();
         setIsModalOpen(false);
     };
 
@@ -73,35 +102,42 @@ const BookingPage = () => {
 
     return (
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <h1>Welcome to the EV Registration System</h1>
-
-            {/* Display the current emission factor for the current hour */}
-            {currentEmission !== null && currentHour !== null && (
-                <div style={{ marginTop: '20px' }}>
-                    <h3>Current Emission for Hour {currentHour}: {currentEmission} kg CO2 per kWh</h3>
-                </div>
-            )}
-
-            <button className="button" onClick={toggleGraph}>
-                {isGraphVisible ? 'Hide Emissions Graph' : 'Show Emissions Graph'}
-            </button>
-
-            {isGraphVisible && plotImage && (
-                <div style={{ marginTop: '20px' }}>
-                    <img src={plotImage} alt="Hourly Emissions Plot" style={{ width: '80%', maxWidth: '800px' }} />
-                </div>
-            )}
-
-            <div className="booking-message">
-                To delete a booking, click on it.
+            <div
+            style={{
+                height: '100%',
+                margin: '50px auto', // fancy Centering logic
+                width: '100%',
+            }}
+            >
+            {loading ? (
+                <p>Loading bookings...</p>
+            ) : (
+                <Calendar bookings={bookings} getBookings={getBookings}/>
+            ) }
             </div>
-            <Calendar />
+            
+            {/* Buttons */}
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
-                <button className="button" onClick={openModal}>Make a Reservation</button>
-                <button className="button" onClick={() => console.log('Update clicked')}>Modify Reservation</button>
+                <Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: "bold",
+                        '&:hover': {
+                            backgroundColor: colors.accent[400]
+                        },
+                    }}
+                    onClick={openModal}
+                >
+                    Make a Reservation
+                </Button>
             </div>
             {isModalOpen && (
-                <ReservationModal onClose={closeModal} isOpen />
+                <ReservationModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                />
             )}
         </div>
     );

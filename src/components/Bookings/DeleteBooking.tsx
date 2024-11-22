@@ -4,7 +4,7 @@ import { collection, deleteDoc, doc } from 'firebase/firestore';
 import Modal from 'react-modal';
 
 // Define the props for the DeleteBooking function
-interface DeleteBooking { 
+interface DeleteBookingProps { 
     isOpen: boolean; // Check if modal is open or close
     onClose: () => void; // Function to close the modal
     bookingId: string | null; // ID of the booking to be deleted (NULL if none selected)
@@ -12,7 +12,7 @@ interface DeleteBooking {
 }
 
 // Function to delete bookings 
-const DeleteBooking: React.FC<DeleteBooking> = ({ isOpen, onClose, bookingId, onDelete }) => {
+const DeleteBooking: React.FC<DeleteBookingProps> = ({ isOpen, onClose, bookingId, onDelete }) => {
     const handleDelete = async () => {
         if (bookingId) { // Only proceed if a bookingId is provided
             const bookingRef = doc(collection(db, 'bookings'), bookingId); // Reference to the booking document in Firestore DB
@@ -23,6 +23,8 @@ const DeleteBooking: React.FC<DeleteBooking> = ({ isOpen, onClose, bookingId, on
             } catch (error) {
                 console.error("Error deleting booking: ", error);
             }
+        } else {
+            console.log("No booking ID provided.");
         }
         onClose(); 
     };
