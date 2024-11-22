@@ -112,9 +112,24 @@ const BookingPage = () => {
                 </div>
             )}
 
-            <button className="button" onClick={toggleGraph}>
-                {isGraphVisible ? 'Hide Emissions Graph' : 'Show Emissions Graph'}
-            </button>
+
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
+                <Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: "bold",
+                        '&:hover': {
+                            backgroundColor: colors.accent[400]
+                        },
+                    }}
+                    onClick={toggleGraph}
+                >
+                    {isGraphVisible ? 'Hide Emissions Graph' : 'Show Emissions Graph'}
+                </Button>
+            </div>
 
             {isGraphVisible && plotImage && (
                 <div style={{ marginTop: '20px' }}>
