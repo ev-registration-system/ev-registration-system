@@ -14,6 +14,10 @@ const BookingPage = () => {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isGraphVisible, setIsGraphVisible] = useState(false);
+    const [plotImage, setPlotImage] = useState<string | null>(null); // State to hold the plot image for emissions
+    const [currentEmission, setCurrentEmission] = useState<number | null>(null);  // State for current emission
+    const [currentHour, setCurrentHour] = useState<number | null>(null);  // State for current hour
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
@@ -102,6 +106,21 @@ const BookingPage = () => {
 
     return (
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            {currentEmission !== null && currentHour !== null && (
+                <div style={{ marginTop: '20px' }}>
+                    <h3>Current Emission for Hour {currentHour}: {currentEmission} kg CO2 per kWh</h3>
+                </div>
+            )}
+
+            <button className="button" onClick={toggleGraph}>
+                {isGraphVisible ? 'Hide Emissions Graph' : 'Show Emissions Graph'}
+            </button>
+
+            {isGraphVisible && plotImage && (
+                <div style={{ marginTop: '20px' }}>
+                    <img src={plotImage} alt="Hourly Emissions Plot" style={{ width: '80%', maxWidth: '800px' }} />
+                </div>
+            )}
             <div
             style={{
                 height: '100%',
@@ -112,11 +131,13 @@ const BookingPage = () => {
             {loading ? (
                 <p>Loading bookings...</p>
             ) : (
+                
                 <Calendar bookings={bookings} getBookings={getBookings}/>
             ) }
             </div>
             
             {/* Buttons */}
+            
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
                 <Button
                     variant="contained"
