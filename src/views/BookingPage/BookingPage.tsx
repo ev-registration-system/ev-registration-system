@@ -1,103 +1,86 @@
-import { useState, useEffect } from 'react';
-import { Calendar as BigCalendar, momentLocalizer, Views } from 'react-big-calendar';
-import moment from 'moment';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { collection, getDocs, Timestamp } from 'firebase/firestore';
+import { useEffect, useState } from 'react';
+import Calendar from '../../components/Bookings/Calendar';
+import ReservationModal from '../../components/Bookings/ReservationModal';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebase';
-import { Button, useTheme } from '@mui/material';
-import { tokens } from '../../Theme';
-import ReservationModal from '../../components/Bookings/ReservationModal'; 
-import DeleteBooking from '../../components/Bookings/DeleteBooking'; 
+import { Booking } from '../../types/types';
+import Button from '../../components/Bookings/Button';
+import { useNavigate } from 'react-router-dom';
+import { auth } from '../../../firebase';
+import { signOut } from 'firebase/auth';
 
-const localizer = momentLocalizer(moment);
-const bookingRef = collection(db, "bookings");
-
-interface Booking {
-    id: string;
-    start: Date;
-    end: Date;
-}
+const ref = collection(db, "bookings");
 
 const BookingPage = () => {
+
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
-    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
-    const [isReservationModalOpen, setReservationModalOpen] = useState(false);
-    const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-
-    // Fetch bookings from Firestore
     const getBookings = async () => {
-        try {
-            const querySnapshot = await getDocs(bookingRef);
-            const fetchedBookings = querySnapshot.docs.map(doc => {
-                const data = doc.data();
-                return {
-                    id: doc.id,
-                    start: data.startTime instanceof Timestamp ? data.startTime.toDate() : new Date(data.startTime),
-                    end: data.endTime instanceof Timestamp ? data.endTime.toDate() : new Date(data.endTime),
-                };
-            });
-            setBookings(fetchedBookings);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching bookings:", error);
-            setLoading(false);
-        }
+        const querySnapshot = await getDocs(ref);
+        const bookings = querySnapshot.docs.map(doc => {
+            const data = doc.data();
+            console.log(data);
+            return {
+                start: data.startTime.toDate(),
+                end: data.endTime.toDate(),
+            };
+        });
+        console.log(bookings);
+        setBookings(bookings); // Update state with the fetched bookings
+        setLoading(false); // Indicate loading is done
     };
 
     useEffect(() => {
-        getBookings();
+        getBookings(); // Fetch bookings when the component mounts
     }, []);
 
-    // Open and close reservation modal
-    const openReservationModal = () => setReservationModalOpen(true);
-    const closeReservationModal = () => setReservationModalOpen(false);
-
-    // Open delete modal and set selected booking ID
-    const openDeleteModal = (bookingId: string) => {
-        setSelectedBookingId(bookingId);
-        setDeleteModalOpen(true);
+    const openModal = () => {
+        setIsModalOpen(true);
     };
-    const closeDeleteModal = () => setDeleteModalOpen(false);
+
+    const closeModal = () => {
+        getBookings();
+        setIsModalOpen(false);
+    };
+
+    const handleLogout = async () => {
+        try {
+            await signOut(auth); // Logs the user out
+            const navigate = useNavigate();
+            navigate('/login'); // Redirect to login page
+        } catch (error) {
+            console.error('Failed to log out:', error);
+        }
+    }
 
     return (
-        <div style={{ textAlign: 'center', marginTop: '5px' }}>
-            {/* Calendar */}
-            <div style={{ height: '600px', margin: '50px auto', width: '100%', maxWidth: '1000px' }}>
-                {loading ? (
-                    <p>Loading bookings...</p>
-                ) : (
-                    <BigCalendar
-                        localizer={localizer}
-                        events={bookings}
-                        defaultView={Views.WEEK}
-                        startAccessor="start"
-                        endAccessor="end"
-                        style={{ height: '80%', width: '100%' }}
-                        onSelectEvent={(booking) => openDeleteModal(booking.id)}
-                    />
-                )}
-
-                {/* Make Reservation Button */}
-                <div style={{ marginTop: '20px' }}>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            color: colors.grey[100],
-                            backgroundColor: colors.primary[400],
-                            fontWeight: "bold",
-                            '&:hover': {
-                                backgroundColor: colors.accent[400]
-                            },
-                        }}
-                        onClick={openReservationModal}
-                    >
-                        Make a Reservation
-                    </Button>
-                </div>
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            <h1>Welcome to the EV Registration System</h1>
+            <Button onClick={handleLogout}>
+                Logout
+            </Button>
+            <div
+            style={{
+                height: '600px',
+                margin: '50px auto', // fancy Centering logic
+                width: '80%', 
+                maxWidth: '1000px',  
+            }}
+            >
+            {loading ? (
+                <p>Loading bookings...</p>
+            ) : (
+                <Calendar bookings={bookings}/>
+            ) }
+            </div>
+            
+            {/* Buttons */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
+                <button className="button" onClick={openModal}>Make a Reservation</button>
+                <button className="button" onClick={() => console.log('Delete clicked')}>Cancel Reservation</button>
+                <button className="button" onClick={() => console.log('Update clicked')}>Modify Reservation</button>
             </div>
 
             {/* Reservation Modal */}
