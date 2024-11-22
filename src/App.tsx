@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LoginPage from './views/LoginPage/LoginPage';
 import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes';
 import { AuthProvider } from './state/AuthProvider/AuthProvider';
@@ -8,7 +8,6 @@ import { ColorModeContext, useMode } from "./Theme";
 import { CssBaseline, Box } from "@mui/material";
 import Dashboard from "./views/dashboard/Dashboard";
 import { useState } from 'react';
-import { useAuth } from "./state/AuthProvider/AuthProvider"
 
 const App: React.FC = () => {
     const [theme, colorMode] = useMode() as [
@@ -17,7 +16,10 @@ const App: React.FC = () => {
     ];
 
     const [isSidebarOpen, setSidebarOpen] = useState(true); // Sidebar state
-    const { isAuthenticated } = useAuth(); // Assuming isAuthenticated is coming from a context
+    const location = useLocation(); // Get the current location (URL)
+
+    // Hide the sidebar on the login page
+    const showSidebar = location.pathname !== "/login";
 
     return (
         <AuthProvider>
@@ -26,7 +28,7 @@ const App: React.FC = () => {
                     <CssBaseline />
                     <Box display="flex">
                         {/* Sidebar */}
-                        {isAuthenticated && (
+                        {showSidebar && (
                             <Sidebar
                                 initialSelected="Home"
                                 isCollapsed={!isSidebarOpen}
@@ -37,7 +39,7 @@ const App: React.FC = () => {
                         <Box
                             sx={{
                                 flexGrow: 1,
-                                paddingLeft: isSidebarOpen ? "270px" : "80px",
+                                paddingLeft: showSidebar && isSidebarOpen ? "270px" : "80px", // Adjust content padding based on sidebar visibility
                                 transition: "padding-left 0.3s",
                                 overflow: "auto",
                             }}
@@ -45,15 +47,14 @@ const App: React.FC = () => {
                             {/* Main content area */}
                             <main className="content">
                                 <Routes>
-                                    <Route
-                                        path="/login"
-                                        element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <LoginPage />}
-                                    />
+                                    <Route path="/login" element={<LoginPage />} />
+                                    
                                     {/* Protected Routes */}
                                     <Route element={<ProtectedRoutes />}>
                                         <Route path="/dashboard" element={<Dashboard />} />
                                         <Route path="/" element={<Dashboard />} />
                                     </Route>
+                                    
                                     {/* Catch-all Route */}
                                     <Route path="*" element={<Navigate to="/" replace />} />
                                 </Routes>
@@ -67,4 +68,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
