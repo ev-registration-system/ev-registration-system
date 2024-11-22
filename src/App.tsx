@@ -17,7 +17,6 @@ const App: React.FC = () => {
     ];
 
     return (
-        <Router>
             <AuthProvider>
                 <ColorModeContext.Provider value={{ toggleColorMode: colorMode.toggleColorMode }}>
                     <ThemeProvider theme={theme}>
@@ -27,15 +26,13 @@ const App: React.FC = () => {
                             
                             {/* Protected routes wrapper */}
                             <Route element={<ProtectedRoutes />}>
+                                <Sidebar initialSelected="Home" />
                                 <div className="sidebar">
                                     {/* Global Sidebar */}
-                                    <Sidebar initialSelected="Home" />
                                 </div>
                                 <main className="content">
-                                    <Routes>
-                                        <Route path="/dashboard" element={<Dashboard />} />
-                                        <Route path="/" element={<Dashboard />} />
-                                    </Routes>
+                                    <Route path="/dashboard" element={<Dashboard />} />
+                                    <Route path="/" element={<Dashboard />} />
                                 </main>
                             </Route>
                             {/* Catch-all route */}
@@ -44,7 +41,6 @@ const App: React.FC = () => {
                     </ThemeProvider>
                 </ColorModeContext.Provider>                
             </AuthProvider>
-        </Router>
     );
 };
 

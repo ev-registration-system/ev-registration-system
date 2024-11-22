@@ -82,21 +82,9 @@ const BookingPage = () => {
                 <button className="button" onClick={() => console.log('Delete clicked')}>Cancel Reservation</button>
                 <button className="button" onClick={() => console.log('Update clicked')}>Modify Reservation</button>
             </div>
-
-            {/* Reservation Modal */}
-            <ReservationModal
-                isOpen={isReservationModalOpen}
-                onClose={closeReservationModal}
-                onBookingCreated={getBookings}
-            />
-
-            {/* Delete Booking Modal */}
-            <DeleteBooking
-                isOpen={isDeleteModalOpen}
-                onClose={closeDeleteModal}
-                bookingId={selectedBookingId}
-                onDelete={getBookings}
-            />
+            {isModalOpen && (
+                <ReservationModal onClose={closeModal} isOpen />
+            )}
         </div>
     );
 };

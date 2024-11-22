@@ -6,10 +6,9 @@ import { db } from '../../../firebase';
 interface ReservationModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onBookingCreated: () => void;
 }
 
-const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose, onBookingCreated }) => {
+const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) => {
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
     const bookingRef = collection(db, "bookings");
@@ -25,7 +24,6 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose, on
             };
             try {
                 await addDoc(bookingRef, bookingData);
-                onBookingCreated();
                 onClose(); 
             } catch (error) {
                 console.error("Error adding booking:", error);
