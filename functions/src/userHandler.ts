@@ -1,12 +1,24 @@
-import { onRequest } from "firebase-functions/https";
 import * as admin from "firebase-admin"
 import * as logger from "firebase-functions/logger"
 
+if (!admin.apps.length) {
+    admin.initializeApp();
+}
+
 const db = admin.firestore()
+
+export interface User{
+    id?: string;
+    username: string;
+    password: string;
+    email: string;
+    phone: number;
+}
 
 class userHandler{
     private static COLLECTION_NAME = "users"
 
+    
     // static addUser = onRequest(async (request, response) => {
     //     logger.info("add User function triggered", {structuredData: true});
 
@@ -34,20 +46,24 @@ class userHandler{
     //     }
     // });
 
-    static async addUser(username: string, password: string, email: string, phone: number){
-        if(!username || !password || !email || !phone){
-            throw new Error("Missing required fields")
-        }
+    static async addUser(user: User){
         try{
             const ref = db.collection(userHandler.COLLECTION_NAME);
-            await ref.add({
-                username: username,
-                password: password,
-                email: email,
-                phone: phone
+            const docRef = await ref.add({
+                username: user.username,
+                password: user.password,
+                email: user.email,
+                phone: user.phone
             });
-            logger.info("User added successfully", {username, password, email, phone});
-            return true
+
+            const querySnapshot = await docRef.get()
+            const newUser: User = {
+                id: querySnapshot.id,
+                ...querySnapshot.data()
+            } as User;
+
+            logger.info("User added successfully", {newUser});
+            return newUser
         } catch (error) {
             logger.error("Error adding user", error);
             throw new Error("Error adding user");
@@ -75,7 +91,7 @@ class userHandler{
     //     }
     // });
 
-    static async getUser(username: string, password: string){
+    static async getUser(username: string, password: string): Promise<User | null>{
         if(!username || !password){
             throw new Error("Missing username or password");
         }
@@ -84,11 +100,15 @@ class userHandler{
             const query = ref.where("username", "==", username).where("password", "==", password);
             const querySnapshot = await query.get();
             if(querySnapshot.empty){
-                return false;
+                return null;
             }
-            
-            logger.info("User retrieved", {querySnapshot});
-            return querySnapshot.docs
+            const doc = querySnapshot.docs[0];
+            const userRetrieved: User = {
+                id: doc.id, ...doc.data()
+            } as User;
+
+            logger.info("User retrieved", {userRetrieved});
+            return userRetrieved
         } catch (error){
             logger.error("Error retrieving user", error);
             throw new Error("Error retrieving user");

@@ -1,6 +1,19 @@
-import {onRequest} from "firebase-functions/v2/https"
 import * as admin from "firebase-admin"
+import { FieldValue, Timestamp } from "firebase-admin/firestore";
 import * as logger from "firebase-functions/logger"
+
+export interface Data{
+    id?: string;
+    usage: number;
+    user_id: string;
+    vehicle_id: string;
+    entryTime?: Timestamp;
+}
+
+
+if (!admin.apps.length) {
+    admin.initializeApp();
+}
 
 const db = admin.firestore()
 
@@ -34,16 +47,23 @@ class DataHandler{
     //     }
     // });
 
-    static async receiveData(usage: number, user_id: string, vehicle_id: string){
+    static async receiveData(newData: Data){
         try{
             const ref = db.collection(DataHandler.COLLECTION_NAME);
-            await ref.add({
-                usage: usage,
-                user_id: user_id,
-                vehicle_id: vehicle_id,
+            const docRef = await ref.add({
+                usage: newData.usage,
+                user_id: newData.user_id,
+                vehicle_id: newData.vehicle_id,
+                entryTime: FieldValue.serverTimestamp()
             });
-            logger.info("Data successfully added", {usage, user_id, vehicle_id});
-            return true
+
+            const querySnapchot = await docRef.get()
+            const dataEntered: Data = {
+                id: querySnapchot.id,
+                ...querySnapchot.data()
+            } as Data;
+            logger.info("Data successfully added", {dataEntered});
+            return dataEntered
         } catch (error) {
             logger.error("Error adding data", error);
             throw new Error("Error adding data");
@@ -53,11 +73,26 @@ class DataHandler{
     static async RetrieveHistoricalData(start: admin.firestore.Timestamp, end: admin.firestore.Timestamp){
         try{
             const ref = db.collection(DataHandler.COLLECTION_NAME);
-            const query = ref.where("timestamp", ">=", start).where("timestamp", "<=", end);
-
+            const query = ref.where("entryTime", ">=", start).where("entryTime", "<=", end);
             const querySnapchot = await query.get();
-            logger.info("Historical data retrived", {querySnapchot});
-            return querySnapchot;
+
+            if(querySnapchot.empty){
+                return [];
+            }
+
+            const result: Data[] = querySnapchot.docs.map(doc => {
+                const data = doc.data()
+                return{
+                    id: doc.id,
+                    usage: data.usage,
+                    user_id: data.user_id,
+                    vehicle_id: data.vehicle_id,
+                    entryTime: data.entryTime.toDate()
+                } as Data;
+            });
+
+            logger.info("Historical data retrived", {result});
+            return result;
         } catch(error){
             logger.error("Error retrieving historical data", error);
             throw new Error("Error retrieving historical data");
