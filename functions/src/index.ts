@@ -29,15 +29,14 @@ export const helloWorld = onRequest((request, response) => {
 
 
 export const addUser = onRequest(async (request, response) => {
-  const {username, password, email, phone} = request.body;
-  if(!username || !password || !email || !phone){
-    logger.error("Missing required fields", {username, password, email, phone});
+  const {username, email, phone} = request.body;
+  if(!username || !email || !phone){
+    logger.error("Missing required fields", {username, email, phone});
     response.status(404).send("Missing required fields");
   }
 
   const newUser: user.User = {
     username: username,
-    password: password,
     email: email,
     phone: phone
   }
@@ -47,7 +46,6 @@ export const addUser = onRequest(async (request, response) => {
         response.status(201).json({message: "User has been created", 
           id: userAdded.id,
           username: userAdded.username,
-          password: userAdded.password,
           email: userAdded.email,
           phone: userAdded.phone});
     } catch(error){
@@ -64,7 +62,7 @@ export const getUser = onRequest(async (request, response) => {
     response.status(404).send("Missing required fields");
   }
     try{
-      const getUser = await user.getUser(username, password);
+      const getUser = await user.getUser(username);
       if(!getUser){
         logger.info("User not found");
         response.status(200).send("User Not Found");
@@ -73,7 +71,6 @@ export const getUser = onRequest(async (request, response) => {
       response.status(200).json({
         message: "User has been retrieved",
         username: getUser?.username,
-        password: getUser?.password,
         email: getUser?.email,
         phone: getUser?.phone
       });

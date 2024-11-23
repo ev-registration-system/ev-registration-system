@@ -10,7 +10,6 @@ const db = admin.firestore()
 export interface User{
     id?: string;
     username: string;
-    password: string;
     email: string;
     phone: number;
 }
@@ -51,7 +50,6 @@ class userHandler{
             const ref = db.collection(userHandler.COLLECTION_NAME);
             const docRef = await ref.add({
                 username: user.username,
-                password: user.password,
                 email: user.email,
                 phone: user.phone
             });
@@ -91,13 +89,13 @@ class userHandler{
     //     }
     // });
 
-    static async getUser(username: string, password: string): Promise<User | null>{
-        if(!username || !password){
+    static async getUser(username: string): Promise<User | null>{
+        if(!username){
             throw new Error("Missing username or password");
         }
         try{
             const ref = db.collection(userHandler.COLLECTION_NAME);
-            const query = ref.where("username", "==", username).where("password", "==", password);
+            const query = ref.where("username", "==", username);
             const querySnapshot = await query.get();
             if(querySnapshot.empty){
                 return null;
