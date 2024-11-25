@@ -46,13 +46,13 @@ const App: React.FC = () => {
                             <main className="content">
                                 <Routes>
                                     <Route path="/login" element={<LoginPage />} />
-                                    
+
                                     {/* Protected Routes */}
                                     <Route element={<ProtectedRoutes />}>
                                         <Route path="/dashboard" element={<Dashboard />} />
                                         <Route path="/" element={<Dashboard />} />
                                     </Route>
-                                    
+
                                     {/* Catch-all Route */}
                                     <Route path="*" element={<Navigate to="/" replace />} />
                                 </Routes>
@@ -63,6 +63,10 @@ const App: React.FC = () => {
             </ColorModeContext.Provider>
         </AuthProvider>
     );
-};
+}
 
 export default App;
+
+
+
+// <CreateBooking />

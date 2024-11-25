@@ -150,7 +150,7 @@ const BookingPage = () => {
                 <Calendar bookings={bookings} getBookings={getBookings}/>
             ) }
             </div>
-            
+
             {/* Buttons */}
             
             <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
