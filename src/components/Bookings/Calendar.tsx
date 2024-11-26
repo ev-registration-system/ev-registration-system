@@ -1,11 +1,10 @@
-// import React, { useState, useEffect, useRef } from 'react';
 import '../../stylings/ReservationButtons.css'
 import { Calendar as BigCalendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Booking } from '../../types/types.ts'
 import DeleteBooking from './DeleteBooking';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 
 interface CalendarProps {
   bookings: Booking[];
@@ -18,9 +17,6 @@ const Calendar: React.FC<CalendarProps> = ({ bookings, getBookings }) => {
 
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null); // Keep track of the currently selected booking's ID. If none is selected then equal to NULL
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);  // To control the visibility of the delete confirmation modal. True when open, False when closed.
-
-  const startTime = useRef<HTMLInputElement>(null);
-  const endTime = useRef<HTMLInputElement>(null);
 
   //select booking function 
   const onSelectBooking = (booking: Booking) => {  
