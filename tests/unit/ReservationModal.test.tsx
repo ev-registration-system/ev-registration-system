@@ -1,6 +1,7 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import ReservationModal from '../../src/components/Bookings/ReservationModal';
 import { addDoc } from 'firebase/firestore';
+import React from 'react';
 
 jest.mock('firebase/firestore', () => ({
     collection: jest.fn(() => 'mockCollection'),

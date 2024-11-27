@@ -1,5 +1,6 @@
 import { render, screen, waitFor, act} from '@testing-library/react';
 import BookingPage from '../../src/views/BookingPage/BookingPage';
+import React from 'react';
 
 jest.mock('../../firebase', () => ({
   db: 'mockDb',

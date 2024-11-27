@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import DeleteBooking from '../../src/components/Bookings/DeleteBooking';
+import React from 'react';
 //import { act } from 'react';
 
 jest.mock('firebase/firestore', () => ({

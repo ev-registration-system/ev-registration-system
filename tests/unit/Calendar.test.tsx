@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import Calendar from '../../src/components/Bookings/Calendar';
+import React from 'react';
 
 jest.mock('../../src/components/Bookings/DeleteBooking', () => ({
   __esModule: true,
