@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import DeleteBooking from '../../src/components/Bookings/DeleteBooking';
-import { act } from 'react';
+//import { act } from 'react';
 
 jest.mock('firebase/firestore', () => ({
     collection: jest.fn(),
@@ -12,7 +12,8 @@ describe('DeleteBooking Component', () => {
   const mockOnClose = jest.fn();
   const mockOnDelete = jest.fn();
 
-  test('renders the modal when open', () => {
+  //Test ensures modal is rendered
+  test('Renders Delete Modal When Open', () => {
     render(
       <DeleteBooking isOpen={true} onClose={mockOnClose} bookingId="123" onDelete={mockOnDelete} />
     );
@@ -22,7 +23,8 @@ describe('DeleteBooking Component', () => {
     expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 
-  test('calls deleteDoc and onDelete when "Yes" is clicked', async () => {
+  //Test calls deleteDoc and onDelete when "Yes" is clicked
+  test('Delete Booking', async () => {
     const { deleteDoc } = require('firebase/firestore');
   
     render(
@@ -32,28 +34,10 @@ describe('DeleteBooking Component', () => {
     const yesButton = screen.getByText('Yes');
     fireEvent.click(yesButton);
   
-    // Wait for async operations to complete
     await screen.findByText('Yes');
   
-    expect(deleteDoc).toHaveBeenCalledWith(expect.any(Object)); // Ensure `deleteDoc` was called
-    expect(mockOnDelete).toHaveBeenCalled(); // Validate `onDelete` callback
-    expect(mockOnClose).toHaveBeenCalled(); // Validate `onClose` callback
+    expect(deleteDoc).toHaveBeenCalledWith(expect.any(Object)); //This Ensures `deleteDoc` was called
+    expect(mockOnDelete).toHaveBeenCalled();
+    expect(mockOnClose).toHaveBeenCalled(); 
   });  
-
-  /*test('calls onClose when "Cancel" is clicked', () => {
-    render(
-      <DeleteBooking isOpen={true} onClose={mockOnClose} bookingId="123" onDelete={mockOnDelete} />
-    );
-  
-    const cancelButton = screen.getByText('Cancel');
-  
-    act(() => {
-      fireEvent.click(cancelButton);
-    });
-  
-    // Assert `mockOnClose` is called exactly once
-    expect(mockOnClose).toHaveBeenCalledTimes(1);
-    // Assert `mockOnDelete` is not called
-    expect(mockOnDelete).not.toHaveBeenCalled();
-  }); */
 });

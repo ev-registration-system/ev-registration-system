@@ -21,11 +21,19 @@ Object.defineProperty(global, 'import.meta', {
   },
 });
 
+//This deletes mocks after test has completed
+afterEach(() => {
+    jest.clearAllMocks();
+});
+
+//This suppresses console logs during tests
+jest.spyOn(global.console, 'log').mockImplementation(() => {});
+jest.spyOn(global.console, 'error').mockImplementation(() => {});
+
 //This mock `firebase.ts` to avoid Vite and Firebase dependencies during tests
-// Mock `firebase.ts` to avoid actual Firebase dependencies during tests
 jest.mock('../firebase', () => ({
-    db: {}, // Empty db mock as a placeholder for potential mocks
-    auth: {}, // Mock Firebase Auth as empty for tests
+    db: {}, // Empty db mock 
+    auth: {}, //This mocks Firebase Auth as empty for tests
   }));
   
   // Mock Firestore methods and return structures to match Firestore expectations
@@ -50,25 +58,26 @@ jest.mock('../firebase', () => ({
   }));
 
 // Mock global fetch
-/*global.fetch = jest.fn(() =>
-    Promise.resolve({
-      ok: true,
-      status: 200,
-      json: () => Promise.resolve({ emissions: 'mockedEmissionData' }),
-      headers: new Headers(),
-      redirected: false,
-      statusText: 'OK',
-      type: 'default',
-      url: 'http://mocked-url',
-      body: null,
-      bodyUsed: false,
-      clone: jest.fn(),
-      arrayBuffer: jest.fn(),
-      blob: jest.fn(),
-      formData: jest.fn(),
-      text: jest.fn(),
-    } as Response) // Ensure the return type matches the Response interface
-);*/
-
-// Log initialization
-console.log('Mock Firebase and Firestore initialized');
+//This is for the fetch emissions call in booking page
+global.fetch = jest.fn(() =>
+    Promise.resolve(
+      {
+        ok: true,
+        status: 200,
+        headers: new Headers(),
+        redirected: false,
+        statusText: 'OK',
+        type: 'default',
+        url: 'http://mocked-url',
+        body: null,
+        bodyUsed: false,
+        json: jest.fn(() => Promise.resolve({ emissions: 'mockedEmissionData' })),
+        clone: jest.fn(),
+        arrayBuffer: jest.fn(() => Promise.resolve(new ArrayBuffer(0))),
+        blob: jest.fn(() => Promise.resolve(new Blob())),
+        formData: jest.fn(() => Promise.resolve(new FormData())),
+        text: jest.fn(() => Promise.resolve('mocked text')),
+        bytes: jest.fn(() => Promise.resolve(new Uint8Array())),
+      } as unknown as Response // Properly cast the entire object to `Response`
+    )
+);

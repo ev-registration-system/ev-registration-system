@@ -14,19 +14,11 @@ describe('Calendar Component', () => {
   ];
   const mockGetBookings = jest.fn();
 
-  test('renders the calendar with bookings', () => {
+  //Tests that start and end times of booking are properly displayed on calendar
+  test('Renders Bookings on Calendar', () => {
     render(<Calendar bookings={mockBookings} getBookings={mockGetBookings} />);
 
     expect(screen.getByText('10:00 AM')).toBeInTheDocument();
     expect(screen.getByText('2:00 PM')).toBeInTheDocument();
   });
-
-  /*test('opens the delete modal when a booking is selected', () => {
-    render(<Calendar bookings={mockBookings} getBookings={mockGetBookings} />);
-  
-    const bookingEvent = screen.getByText('10:00 AM');
-    fireEvent.click(bookingEvent);
-  
-    expect(screen.getByTestId('delete-modal')).toBeInTheDocument();
-  });*/
 });

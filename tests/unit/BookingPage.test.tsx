@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act} from '@testing-library/react';
 import BookingPage from '../../src/views/BookingPage/BookingPage';
 
 jest.mock('../../firebase', () => ({
@@ -28,13 +28,18 @@ jest.mock('../../src/components/Bookings/ReservationModal', () => ({
 }));
 
 describe('BookingPage Component', () => {
-  test('renders "Loading bookings..." initially', () => {
+  //Test renders loading message initially
+  test('Render Loading Message', () => {
     render(<BookingPage />);
     expect(screen.getByText('Loading bookings...')).toBeInTheDocument();
   });
 
-  test('renders Calendar when bookings are loaded', async () => {
-    render(<BookingPage />);
+  //Test renders calendar once bookings are loaded in
+  test('Renders Calendar With Bookings', async () => {
+    await act(async () => {
+      render(<BookingPage />);
+    });
+
     await waitFor(() => {
       expect(screen.getByText('Mocked Calendar')).toBeInTheDocument();
     });
