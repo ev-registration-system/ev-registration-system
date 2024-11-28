@@ -15,7 +15,7 @@ jest.mock('firebase/firestore', () => ({
 }));
 
 describe('ReservationModal - Adding a Booking', () => {
-    //Tests that a new booking is created and added
+    //Tests that a new booking with correct start and end times is added to db
     test('New Booking Added', async () => {
         const mockOnClose = jest.fn();
       
@@ -25,23 +25,22 @@ describe('ReservationModal - Adding a Booking', () => {
         const endTimeInput = screen.getByLabelText('End Time:');
         const submitButton = screen.getByText('Submit');
       
-        fireEvent.change(startTimeInput, { target: { value: '2024-11-01T10:00' } }); // UTC time
-        fireEvent.change(endTimeInput, { target: { value: '2024-11-01T12:00' } }); // UTC time
+        fireEvent.change(startTimeInput, { target: { value: '2024-11-01T10:00' } });
+        fireEvent.change(endTimeInput, { target: { value: '2024-11-01T12:00' } }); 
+
+        const startEpoch = new Date('2024-11-01T10:00:00').getTime() / 1000; 
+        const endEpoch = new Date('2024-11-01T12:00:00').getTime() / 1000;
       
         fireEvent.click(submitButton);
       
         await waitFor(() => {
-          // Adjusted UTC timestamps
-          const startTimestamp = { seconds: 1730466000, nanoseconds: 0 }; // 2024-11-01T10:00 UTC
-          const endTimestamp = { seconds: 1730473200, nanoseconds: 0 };   // 2024-11-01T12:00 UTC
       
           expect(addDoc).toHaveBeenCalledWith('mockCollection', {
-            startTime: startTimestamp,
-            endTime: endTimestamp,
+            startTime: { seconds: startEpoch, nanoseconds: 0 },
+            endTime: { seconds: endEpoch, nanoseconds: 0 },
           });
       
           expect(mockOnClose).toHaveBeenCalledTimes(1);
         });
     });;
 });
-
