@@ -13,7 +13,7 @@
     "allowSyntheticDefaultImports": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "types": ["jest", "node"]
+    "types": ["jest", "node", "vite/client"]
   },
-  "include": ["tests/**/*", "src/**/*.test.ts", "src/**/*.test.tsx"]
+  "include": ["tests/**/*"]
 }
