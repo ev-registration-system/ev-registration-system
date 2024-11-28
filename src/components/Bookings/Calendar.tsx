@@ -1,8 +1,8 @@
-import '../../stylings/ReservationButtons.css'
+//import '../../stylings/ReservationButtons.css'
 import { Calendar as BigCalendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Booking } from '../../types/types.ts'
+import { Booking } from '../../types/types'
 import DeleteBooking from './DeleteBooking';
 import { useState } from 'react';
 

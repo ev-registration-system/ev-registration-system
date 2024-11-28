@@ -1,4 +1,4 @@
-import { BrowserRouter as Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import LoginPage from './views/LoginPage/LoginPage';
 import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes';
 import { AuthProvider } from './state/AuthProvider/AuthProvider';
