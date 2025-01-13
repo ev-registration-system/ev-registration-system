@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../state/AuthProvider/AuthProvider';
-//import '../../output.css';
+
 
 function LoginPage() {
     const [error, setError] = useState<string | null>(null);

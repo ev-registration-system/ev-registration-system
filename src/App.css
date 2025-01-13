@@ -40,3 +40,12 @@
 .read-the-docs {
   color: #888;
 }
+
+.booking-message {
+  background-color: #f0f0f0;
+  padding: 10px;
+  text-align: center;
+  color: #000000;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
