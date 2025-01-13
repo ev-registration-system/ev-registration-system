@@ -7,11 +7,12 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 
 interface SideBarProps {
     initialSelected?: string;
+    isCollapsed: boolean;
+    setIsCollapsed: (collapsed: boolean) => void;
 }
 
-function SideBar({ initialSelected = "Home" }: SideBarProps) {
+function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: SideBarProps) {
     const theme = useTheme();
-    const [isCollapsed, setIsCollapsed] = useState(false);
     const [selected, setSelected] = useState(initialSelected);
 
     const userName = "Guest User";
@@ -19,9 +20,12 @@ function SideBar({ initialSelected = "Home" }: SideBarProps) {
     return (
         <Box
             sx={{
+                position: "fixed",
                 height: "100vh",
+                zIndex: 100,
                 "& .pro-sidebar-inner": {
                     background: theme.palette.primary.main,
+                    height: "100vh",
                 },
                 "& .pro-icon-wrapper": {
                     background: "transparent !important",
@@ -39,7 +43,6 @@ function SideBar({ initialSelected = "Home" }: SideBarProps) {
         >
             <ProSidebar collapsed={isCollapsed}>
                 <Menu iconShape="square">
-                    {/* Toggle Collapse Icon */}
                     <MenuItem
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
@@ -74,11 +77,7 @@ function SideBar({ initialSelected = "Home" }: SideBarProps) {
                             justifyContent="center"
                             flexDirection="column"
                         >
-                            <Typography
-                                variant="h6"
-                                color="white"
-                                fontWeight="bold"
-                            >
+                            <Typography variant="h6" color="white" fontWeight="bold">
                                 {userName}
                             </Typography>
                         </Box>
@@ -99,5 +98,5 @@ function SideBar({ initialSelected = "Home" }: SideBarProps) {
     );
 }
 
-export default SideBar;
+export default Sidebar;
 
