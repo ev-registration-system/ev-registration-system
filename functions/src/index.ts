@@ -13,14 +13,39 @@ import * as vehicle from "./vehicleHandler";
 import * as admin from "firebase-admin"
 import * as user from "./userHandler";
 import * as data from "./dataHandler";
-
+import { getFirestore } from "firebase-admin/firestore";
 
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
-// Start writing functions
-// https://firebase.google.com/docs/functions/typescript
+const db = getFirestore();
+
+export const sendMessage = onRequest(async (req, res) => {
+    try {
+        // Extract 'to' and 'body' fields from the request body
+        const { to, body } = req.body;
+
+        // Basic validation to ensure required fields are provided
+        if (!to || !body) {
+            res.status(400).send({ error: "Invalid input. 'to' and 'body' fields are required." });
+            return;
+        }
+
+        // Create a new message object
+        const message = {
+            to,
+            body
+        };
+
+        // Add the message to the 'messages' collection in Firestore
+        const result = await db.collection('messages').add(message);
+        res.status(201).send({ message: "Message added successfully.", messageId: result.id });
+    } catch (error) {
+        console.error("Error adding message:", error);
+        res.status(500).send({ error: "Internal Server Error. Please try again later." });
+    }
+});
 
 export const helloWorld = onRequest((request, response) => {
   logger.info("Hello logs!", {structuredData: true});
