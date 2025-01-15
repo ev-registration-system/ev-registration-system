@@ -5,6 +5,8 @@ import "react-pro-sidebar/dist/css/styles.css";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined"; 
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import EventIcon from "@mui/icons-material/Event";
+import { useNavigate } from "react-router-dom"; 
 
 interface SideBarProps {
     initialSelected?: string;
@@ -14,9 +16,15 @@ interface SideBarProps {
 
 function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: SideBarProps) {
     const theme = useTheme();
+    const navigate = useNavigate();
     const [selected, setSelected] = useState(initialSelected);
 
     const userName = "Guest User";
+
+    const handleNavigation = (route: string) => {
+        setSelected(route);  // Update selected state
+        navigate(route);  // Navigate to the clicked page
+    };
 
     return (
         <Box
@@ -59,9 +67,6 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                                 alignItems="center"
                                 ml="15px"
                             >
-                                <Typography variant="h5" color="white">
-                                    Dashboard
-                                </Typography>
                                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                                     <MenuOutlinedIcon />
                                 </IconButton>
@@ -87,17 +92,27 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                     {/* Home Page*/}
                     <MenuItem
                         active={selected === "Home"}
-                        onClick={() => setSelected("Home")}
+                        onClick={() => handleNavigation("/")}
                         icon={<HomeOutlinedIcon />}
                         style={{ color: theme.palette.common.white }}
                     >
                         <Typography>Home</Typography>
                     </MenuItem>
 
+                    {/* Bookings Page */}
+                    <MenuItem
+                        active={selected === ""}
+                        onClick={() => handleNavigation("/bookings")} 
+                        icon={<EventIcon />}
+                        style={{ color: theme.palette.common.white }}
+                    >
+                        <Typography>Bookings</Typography>
+                    </MenuItem>
+
                     {/* Emissions Page */}
                     <MenuItem
                         active={selected === "Home"}
-                        onClick={() => setSelected("Home")}
+                        onClick={() => handleNavigation("/emissions")}
                         icon={<TrendingUpIcon />}
                         style={{ color: theme.palette.common.white }}
                     >

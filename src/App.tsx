@@ -7,6 +7,8 @@ import { Theme, ThemeProvider } from "@emotion/react";
 import { ColorModeContext, useMode } from "./Theme";
 import { CssBaseline, Box } from "@mui/material";
 import Dashboard from "./views/dashboard/Dashboard";
+import BookingPage from "./views/BookingPage/BookingPage";
+import EmissionsPage from "./views/EmissionsPage/EmissionsPage";
 import { useState } from 'react';
 
 const App: React.FC = () => {
@@ -15,9 +17,9 @@ const App: React.FC = () => {
         { toggleColorMode: () => void }
     ];
 
-    const location = useLocation(); // Get the current location (URL)
+    const location = useLocation(); //Get the current location (URL)
 
-    // Hide the sidebar on the login page
+    //Hide the sidebar on the login page
     const showSidebar = location.pathname !== "/login";
 
     //Tracks sidebar state, collapsed or open
@@ -59,6 +61,8 @@ const App: React.FC = () => {
                                     <Route element={<ProtectedRoutes />}>
                                         <Route path="/dashboard" element={<Dashboard />} />
                                         <Route path="/" element={<Dashboard />} />
+                                        <Route path="/bookings" element={<BookingPage />} /> 
+                                        <Route path="/emissions" element={<EmissionsPage />} /> 
                                     </Route>
 
                                     {/* Catch-all Route */}
