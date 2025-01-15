@@ -4,6 +4,7 @@ import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import "react-pro-sidebar/dist/css/styles.css";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined"; 
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 
 interface SideBarProps {
     initialSelected?: string;
@@ -83,7 +84,7 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                         </Box>
                     )}
 
-                    {/* Dummy Menu Item */}
+                    {/* Home Page*/}
                     <MenuItem
                         active={selected === "Home"}
                         onClick={() => setSelected("Home")}
@@ -91,6 +92,16 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                         style={{ color: theme.palette.common.white }}
                     >
                         <Typography>Home</Typography>
+                    </MenuItem>
+
+                    {/* Emissions Page */}
+                    <MenuItem
+                        active={selected === "Home"}
+                        onClick={() => setSelected("Home")}
+                        icon={<TrendingUpIcon />}
+                        style={{ color: theme.palette.common.white }}
+                    >
+                        <Typography>Emissions</Typography>
                     </MenuItem>
                 </Menu>
             </ProSidebar>
