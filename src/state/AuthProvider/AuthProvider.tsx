@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User } from 'firebase/auth';
-import { auth } from '../../../firebase'; // Adjust path to your Firebase config
+import { auth } from '../../../firebase';
 
 interface AuthContextType {
   user: User | null;

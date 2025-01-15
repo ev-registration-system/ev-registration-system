@@ -16,6 +16,7 @@ function LoginPage() {
             await loginWithGoogle(); // Open Google sign-in popup
             navigate('/'); // Redirect to booking page on success
         } catch (err) {
+            console.error(err)
             setError('Failed to login with Google.');
         } finally {
             setLoading(false);
