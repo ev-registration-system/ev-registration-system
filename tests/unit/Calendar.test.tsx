@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import Calendar from '../../src/components/Bookings/Calendar';
 import React from 'react';
 

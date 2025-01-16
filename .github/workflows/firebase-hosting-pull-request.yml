@@ -18,6 +18,7 @@ jobs:
       - run: npm ci
       - name: Verify Timezone
         run: date
+      - run: npm run lint
       - run: npx jest
       - run: npm run build
       # - uses: FirebaseExtended/action-hosting-deploy@v0

@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import DeleteBooking from '../../src/components/Bookings/DeleteBooking';
+import { deleteDoc } from 'firebase/firestore';
 import React from 'react';
 //import { act } from 'react';
 
@@ -26,8 +27,6 @@ describe('DeleteBooking Component', () => {
 
   //Test calls deleteDoc and onDelete when "Yes" is clicked
   test('Delete Booking', async () => {
-    const { deleteDoc } = require('firebase/firestore');
-  
     render(
       <DeleteBooking isOpen={true} onClose={mockOnClose} bookingId="123" onDelete={mockOnDelete} />
     );

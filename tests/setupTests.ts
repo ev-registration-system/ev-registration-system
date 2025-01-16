@@ -4,8 +4,18 @@ import { jest } from '@jest/globals';
 
 Modal.setAppElement(document.body); //This sets an app elemnt for the test modals
 
-//This mocks `import.meta.env` for Vite variables
-(global as any).importMetaEnv = {
+interface ImportMetaEnv {
+  VITE_FIREBASE_API_KEY: string;
+  VITE_FIREBASE_AUTH_DOMAIN: string;
+  VITE_FIREBASE_PROJECT_ID: string;
+  VITE_FIREBASE_STORAGE_BUCKET: string;
+  VITE_FIREBASE_MESSAGING_SENDER_ID: string;
+  VITE_FIREBASE_APP_ID: string;
+  VITE_FIREBASE_MEASUREMENT_ID: string;
+}
+
+// This mocks `import.meta.env` for Vite variables
+const importMetaEnv: ImportMetaEnv = {
   VITE_FIREBASE_API_KEY: 'test-api-key',
   VITE_FIREBASE_AUTH_DOMAIN: 'test-auth-domain',
   VITE_FIREBASE_PROJECT_ID: 'test-project-id',
@@ -17,7 +27,7 @@ Modal.setAppElement(document.body); //This sets an app elemnt for the test modal
 
 Object.defineProperty(global, 'import.meta', {
   value: {
-    env: (global as any).importMetaEnv,
+    env: importMetaEnv,
   },
 });
 

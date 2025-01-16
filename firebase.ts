@@ -19,7 +19,9 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+initializeApp(firebaseConfig);
+
+// Not using analytics as of now
 //const analytics = getAnalytics(app);
 
 // setup database
