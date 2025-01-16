@@ -164,32 +164,52 @@ const BookingPage = () => {
 
 			{/* Buttons */}
 
-			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					width: '50%',
-					margin: '20px auto',
-				}}
-			>
-				<Button
-					variant="contained"
-					sx={{
-						'color': colors.grey[100],
-						'backgroundColor': colors.primary[400],
-						'fontWeight': 'bold',
-						'&:hover': {
-							backgroundColor: colors.accent[400],
-						},
-					}}
-					onClick={openModal}
-				>
-					Make a Reservation
-				</Button>
-			</div>
-			{isModalOpen && <ReservationModal isOpen={isModalOpen} onClose={closeModal} />}
-		</div>
-	)
-}
+            {isGraphVisible && plotImage && (
+                <div style={{ marginTop: '20px' }}>
+                    <img src={plotImage} alt="Hourly Emissions Plot" style={{ width: '80%', maxWidth: '800px' }} />
+                </div>
+            )}
+            <div
+            style={{
+                height: '100%',
+                margin: '50px auto', // fancy Centering logic
+                width: '100%',
+            }}
+            >
+            {loading ? (
+                <p>Loading bookings...</p>
+            ) : (
+                
+                <Calendar bookings={bookings} getBookings={getBookings}/>
+            ) }
+            </div>
 
-export default BookingPage
+            {/* Buttons */}
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
+                <Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: "bold",
+                        '&:hover': {
+                            backgroundColor: colors.accent[400]
+                        },
+                    }}
+                    onClick={openModal}
+                >
+                    Make a Reservation
+                </Button>
+            </div>
+            {isModalOpen && (
+                <ReservationModal
+                    isOpen={isModalOpen}
+                    onClose={closeModal}
+                />
+            )}
+        </div>
+    );
+};
+
+export default BookingPage;
