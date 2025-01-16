@@ -7,6 +7,9 @@ import { Theme, ThemeProvider } from "@emotion/react";
 import { ColorModeContext, useMode } from "./Theme";
 import { CssBaseline, Box } from "@mui/material";
 import Dashboard from "./views/dashboard/Dashboard";
+import BookingPage from "./views/BookingPage/BookingPage";
+import EmissionsPage from "./views/EmissionsPage/EmissionsPage";
+import { useState } from 'react';
 
 const App: React.FC = () => {
     const [theme, colorMode] = useMode() as [
@@ -14,10 +17,13 @@ const App: React.FC = () => {
         { toggleColorMode: () => void }
     ];
 
-    const location = useLocation(); // Get the current location (URL)
+    const location = useLocation(); //Get the current location (URL)
 
-    // Hide the sidebar on the login page
+    //Hide the sidebar on the login page
     const showSidebar = location.pathname !== "/login";
+
+    //Tracks sidebar state, collapsed or open
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     return (
         <AuthProvider>
@@ -29,18 +35,24 @@ const App: React.FC = () => {
                         {showSidebar && (
                             <Sidebar
                                 initialSelected="Home"
+                                isCollapsed={isSidebarCollapsed}
+                                setIsCollapsed={setIsSidebarCollapsed}
                             />
                         )}
 
                         <Box
                             sx={{
                                 flexGrow: 1,
-                                paddingLeft: showSidebar ? "270px" : "80px", // Adjust content padding based on sidebar visibility
+                                paddingLeft: showSidebar
+                                    ? isSidebarCollapsed
+                                        ? "80px" //Collapsed sidebar width
+                                        : "270px" //Open sidebar width
+                                    : "0px", //No sidebar
                                 transition: "padding-left 0.3s",
                                 overflow: "auto",
                             }}
                         >
-                            {/* Main content area */}
+                            {/* Main */}
                             <main className="content">
                                 <Routes>
                                     <Route path="/login" element={<LoginPage />} />
@@ -49,6 +61,8 @@ const App: React.FC = () => {
                                     <Route element={<ProtectedRoutes />}>
                                         <Route path="/dashboard" element={<Dashboard />} />
                                         <Route path="/" element={<Dashboard />} />
+                                        <Route path="/bookings" element={<BookingPage />} /> 
+                                        <Route path="/emissions" element={<EmissionsPage />} /> 
                                     </Route>
 
                                     {/* Catch-all Route */}

@@ -4,24 +4,37 @@ import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import "react-pro-sidebar/dist/css/styles.css";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined"; 
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import EventIcon from "@mui/icons-material/Event";
+import { useNavigate } from "react-router-dom"; 
 
 interface SideBarProps {
     initialSelected?: string;
+    isCollapsed: boolean;
+    setIsCollapsed: (collapsed: boolean) => void;
 }
 
-function SideBar({ initialSelected = "Home" }: SideBarProps) {
+function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: SideBarProps) {
     const theme = useTheme();
-    const [isCollapsed, setIsCollapsed] = useState(false);
+    const navigate = useNavigate();
     const [selected, setSelected] = useState(initialSelected);
 
     const userName = "Guest User";
 
+    const handleNavigation = (route: string) => {
+        setSelected(route);  // Update selected state
+        navigate(route);  // Navigate to the clicked page
+    };
+
     return (
         <Box
             sx={{
+                position: "fixed",
                 height: "100vh",
+                zIndex: 100,
                 "& .pro-sidebar-inner": {
                     background: theme.palette.primary.main,
+                    height: "100vh",
                 },
                 "& .pro-icon-wrapper": {
                     background: "transparent !important",
@@ -39,7 +52,6 @@ function SideBar({ initialSelected = "Home" }: SideBarProps) {
         >
             <ProSidebar collapsed={isCollapsed}>
                 <Menu iconShape="square">
-                    {/* Toggle Collapse Icon */}
                     <MenuItem
                         onClick={() => setIsCollapsed(!isCollapsed)}
                         icon={isCollapsed ? <MenuOutlinedIcon /> : undefined}
@@ -55,9 +67,6 @@ function SideBar({ initialSelected = "Home" }: SideBarProps) {
                                 alignItems="center"
                                 ml="15px"
                             >
-                                <Typography variant="h5" color="white">
-                                    Dashboard
-                                </Typography>
                                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                                     <MenuOutlinedIcon />
                                 </IconButton>
@@ -74,24 +83,40 @@ function SideBar({ initialSelected = "Home" }: SideBarProps) {
                             justifyContent="center"
                             flexDirection="column"
                         >
-                            <Typography
-                                variant="h6"
-                                color="white"
-                                fontWeight="bold"
-                            >
+                            <Typography variant="h6" color="white" fontWeight="bold">
                                 {userName}
                             </Typography>
                         </Box>
                     )}
 
-                    {/* Dummy Menu Item */}
+                    {/* Home Page*/}
                     <MenuItem
                         active={selected === "Home"}
-                        onClick={() => setSelected("Home")}
+                        onClick={() => handleNavigation("/")}
                         icon={<HomeOutlinedIcon />}
                         style={{ color: theme.palette.common.white }}
                     >
                         <Typography>Home</Typography>
+                    </MenuItem>
+
+                    {/* Bookings Page */}
+                    <MenuItem
+                        active={selected === ""}
+                        onClick={() => handleNavigation("/bookings")} 
+                        icon={<EventIcon />}
+                        style={{ color: theme.palette.common.white }}
+                    >
+                        <Typography>Bookings</Typography>
+                    </MenuItem>
+
+                    {/* Emissions Page */}
+                    <MenuItem
+                        active={selected === "Home"}
+                        onClick={() => handleNavigation("/emissions")}
+                        icon={<TrendingUpIcon />}
+                        style={{ color: theme.palette.common.white }}
+                    >
+                        <Typography>Emissions</Typography>
                     </MenuItem>
                 </Menu>
             </ProSidebar>
@@ -99,5 +124,5 @@ function SideBar({ initialSelected = "Home" }: SideBarProps) {
     );
 }
 
-export default SideBar;
+export default Sidebar;
 
