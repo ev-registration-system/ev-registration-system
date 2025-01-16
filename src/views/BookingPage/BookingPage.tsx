@@ -106,62 +106,32 @@ const BookingPage = () => {
     */
 
 	return (
-		<div style={{ textAlign: 'center', marginTop: '50px' }}>
-			{currentEmission !== null && currentHour !== null && (
-				<div style={{ marginTop: '20px' }}>
-					<h3>
-						Current Emission for Hour {currentHour}: {currentEmission} kg CO2 per kWh
-					</h3>
-				</div>
-			)}
+        <div style={{ textAlign: 'center', marginTop: '50px' }}>
+            {currentEmission !== null && currentHour !== null && (
+                <div style={{ marginTop: '20px' }}>
+                    <h3>Current Emission for Hour {currentHour}: {currentEmission} kg CO2 per kWh</h3>
+                </div>
+            )}
 
-			<div
-				style={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					width: '50%',
-					margin: '20px auto',
-				}}
-			>
-				<Button
-					variant="contained"
-					sx={{
-						'color': colors.grey[100],
-						'backgroundColor': colors.primary[400],
-						'fontWeight': 'bold',
-						'&:hover': {
-							backgroundColor: colors.accent[400],
-						},
-					}}
-					onClick={toggleGraph}
-				>
-					{isGraphVisible ? 'Hide Emissions Graph' : 'Show Emissions Graph'}
-				</Button>
-			</div>
 
-			{isGraphVisible && plotImage && (
-				<div style={{ marginTop: '20px' }}>
-					<img
-						src={plotImage}
-						alt="Hourly Emissions Plot"
-						style={{ width: '80%', maxWidth: '800px' }}
-					/>
-				</div>
-			)}
-			<div
-				style={{
-					height: '100%',
-					margin: '50px auto', // fancy Centering logic
-					width: '100%',
-				}}
-			>
-				{loading ? (
-					<p>Loading bookings...</p>
-				) : (
-					<Calendar bookings={bookings} getBookings={getBookings} />
-				)}
-			</div>
 
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
+                <Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: "bold",
+                        '&:hover': {
+                            backgroundColor: colors.accent[400]
+                        },
+                    }}
+                    onClick={toggleGraph}
+                >
+                    {isGraphVisible ? 'Hide Emissions Graph' : 'Show Emissions Graph'}
+                </Button>
+            </div>
+			
 			{/* Buttons */}
 
             {isGraphVisible && plotImage && (
