@@ -29,7 +29,7 @@ const Button: React.FC<ButtonProps> = ({
       onClick={onClick}
       className={`${
         isLoading ? hover : colour
-      } rounded-md w-full px-4 py-3 text-white hover:bg-accent transition-all duration-300 ${className}`}
+      } ${className}`}
       style={style}
       disabled={isLoading}
       {...rest}
