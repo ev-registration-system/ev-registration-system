@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 //import '../../stylings/ReservationButtons.css'
-import '../../output.css';
 import { Calendar as BigCalendar, momentLocalizer, Views } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
