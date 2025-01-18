@@ -1,6 +1,4 @@
 import { useState } from 'react';
-import '../../stylings/ReservationButtons.css'
-import '../../stylings/ModalStyling.css'
 import Modal from 'react-modal';
 import { getAuth } from 'firebase/auth';
 interface ReservationModalProps {
@@ -23,7 +21,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
                     // Get the ID token
                     const idToken = await currentUser.getIdToken(true);
 
-                    let data = {
+                    const data = {
                         startTime: startTime,
                         endTime: endTime,
                         userId: currentUser.uid
