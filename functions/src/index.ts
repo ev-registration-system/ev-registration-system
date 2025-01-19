@@ -15,7 +15,6 @@ import * as vehicle from "./vehicleHandler";
 import * as user from "./userHandler";
 import * as data from "./dataHandler";
 
-admin.initializeApp();
 const db = getFirestore();
 
 if (!admin.apps.length) {
