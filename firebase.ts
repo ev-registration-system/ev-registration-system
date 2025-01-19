@@ -21,7 +21,6 @@ const firebaseConfig = {
 // Initialize Firebase
 initializeApp(firebaseConfig);
 
-// Not using analytics as of now
 //const analytics = getAnalytics(app);
 
 // setup database
