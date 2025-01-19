@@ -16,19 +16,50 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
     const [vehicleYear, setVehicleYear] = useState('');
     const [vehicleColor, setVehicleColor] = useState('');
 
-    const uid = getAuth().currentUser?.uid
-
+    
     //getAuth().currentUser
-
+    
     const handleVehicle = async(e: React.FormEvent) => {
         e.preventDefault();
         if(vehcicleLicense && vehicleMake && vehicleModel && vehicleYear && vehicleColor){
             try{
-                //handle adding
-                onClose();
+                const uid = getAuth().currentUser?.uid
+                if(uid){
+                    const idToken = await getAuth().currentUser?.getIdToken(true);
+                    const data = {
+                        license: vehcicleLicense,
+                        user_id: uid,
+                        make: vehicleMake,
+                        model: vehicleModel,
+                        year: vehicleYear,
+                        color: vehicleColor
+                    };
+                    //add the right url
+                    const response = await fetch('http://127.0.0.1:5001/ev-registration-system/us-central1/addVehicle', {
+                        method: 'POST',
+                        headers: {
+                            'Content_Type': 'application/json',
+                            'Authorization': `Bearer ${idToken}`,
+                        },
+                        body: JSON.stringify(data),
+                    });
+
+                    if(response.ok){
+                        const result = await response.json();
+                        console.log("Vehicle Added Successfully!", result);
+                    } else {
+                        const error = await response.json();
+                        console.error("Error adding vehicle: ", error.error);
+                    }
+                    onClose();
+                } else {
+                    console.error("User is not authenticated");
+                }
             } catch (error){
-                console.error("Error adding vehicle: ", error);
+                console.error("Error Calling AddVehicle Cloudfunction: ", error);
             }
+        } else {
+            console.error("All Field are required");
         }
     };
     return (
