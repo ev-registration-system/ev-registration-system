@@ -13,6 +13,10 @@ jobs:
       TZ: America/Halifax 
     steps:
       - uses: actions/checkout@v4
+      - name: Set up Node.js v18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.20.4
       - run: npm ci
       - run: npm run lint
       - run: npx jest

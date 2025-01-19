@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Modal from 'react-modal';
-import { Timestamp, addDoc, collection } from 'firebase/firestore';
-import { db } from '../../../firebase';
-
+import { getAuth } from 'firebase/auth';
 interface ReservationModalProps {
     isOpen: boolean;
     onClose: () => void;
@@ -11,23 +9,54 @@ interface ReservationModalProps {
 const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) => {
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
-    const bookingRef = collection(db, "bookings");
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (startTime && endTime) {
-            const start = new Date(startTime);
-            const end = new Date(endTime);
-            const bookingData = {
-                startTime: Timestamp.fromDate(start),
-                endTime: Timestamp.fromDate(end)
-            };
             try {
-                await addDoc(bookingRef, bookingData);
-                onClose(); 
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                if (currentUser) {
+                    // Get the ID token
+                    const idToken = await currentUser.getIdToken(true);
+
+                    const data = {
+                        startTime: startTime,
+                        endTime: endTime,
+                        userId: currentUser.uid
+                    };
+
+                    // Call the addBooking Cloud Function
+                    const response = await fetch('https://addbooking-w2ytv3mava-uc.a.run.app', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${idToken}`,
+                        },
+                        body: JSON.stringify(data),
+                    });
+    
+                    if (response.ok) {
+                        const result = await response.json();
+                        console.log("Booking added successfully!", result);
+                        // Optionally, update your UI or state here
+                    } else {
+                        const error = await response.json();
+                        console.error("Error adding booking: ", error.error);
+                        // Optionally, display the error message to the user
+                    }
+                } else {
+                    // User is not authenticated
+                    console.error("User is not authenticated.");
+                    // Redirect to login page or show an error message
+                }
             } catch (error) {
-                console.error("Error adding booking:", error);
+                console.error("Error calling Cloud Function: ", error);
+                // Handle network errors or unexpected issues
             }
+        } else {
+            console.error("Start time and end time are required.");
         }
     };
 
