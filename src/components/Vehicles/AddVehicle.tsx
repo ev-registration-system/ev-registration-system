@@ -1,5 +1,7 @@
+import { getAuth } from 'firebase/auth';
 import React, {useState} from 'react';
 import Modal from 'react-modal';
+
 
 interface AddVehicleProps{
     isOpen: boolean;
@@ -13,6 +15,10 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
     const [vehicleModel, setVehicleModel] = useState('');
     const [vehicleYear, setVehicleYear] = useState('');
     const [vehicleColor, setVehicleColor] = useState('');
+
+    const uid = getAuth().currentUser?.uid
+
+    //getAuth().currentUser
 
     const handleVehicle = async(e: React.FormEvent) => {
         e.preventDefault();
