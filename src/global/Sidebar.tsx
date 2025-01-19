@@ -118,6 +118,16 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                     >
                         <Typography>Emissions</Typography>
                     </MenuItem>
+
+                    {/* Emissions Page */}
+                    <MenuItem
+                        active={selected === "Home"}
+                        onClick={() => handleNavigation("/vehicles")}
+                        icon={<TrendingUpIcon />}
+                        style={{ color: theme.palette.common.white }}
+                    >
+                        <Typography>Vehicles</Typography>
+                    </MenuItem>
                 </Menu>
             </ProSidebar>
         </Box>

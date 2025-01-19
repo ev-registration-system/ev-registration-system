@@ -1,4 +1,4 @@
-import AddVehicle from 'src/components/Vehicles/AddVehicle'
+import AddVehicle from '../../components/Vehicles/AddVehicle'
 import {tokens} from '../../Theme'
 import { getDocs, collection } from 'firebase/firestore'
 import { db } from '../../../firebase'
@@ -68,3 +68,5 @@ const VehiclesPage = () => {
         </div>
     )
 }
+
+export default VehiclesPage;
