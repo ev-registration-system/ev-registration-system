@@ -194,8 +194,9 @@ export const getUser = onRequest(async (request, response) => {
 
 
 export const addVehicle = onRequest(async (request, response) => {
+  console.log("Inside the cloud function")
   const {license, user_id, make, model, year, color} = request.body
-  
+  console.log("license: "  + license + " user_id: " + user_id + " make: " + make + "model: " + model + " year: " + year + " color: " + color);
   if(!license || !user_id || !make || !model || !year || !color){
     logger.error("Missing required fields", {license, user_id, make, model, year, color});
     response.status(404).send("Missing required fields")
@@ -212,6 +213,7 @@ export const addVehicle = onRequest(async (request, response) => {
   }
 
   try{
+    console.log("Adding")
     const vehicleAdded = await vehicle.addVehicle(vehicleToAdd);
     response.status(201).json({message: "Vehicle has been added",
       id: vehicleAdded.id,

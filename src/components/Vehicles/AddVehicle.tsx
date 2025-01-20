@@ -25,7 +25,9 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
             try{
                 const uid = getAuth().currentUser?.uid
                 if(uid){
+                    console.log("Found uid");
                     const idToken = await getAuth().currentUser?.getIdToken(true);
+                    console.log("license: " + vehcicleLicense);
                     const data = {
                         license: vehcicleLicense,
                         user_id: uid,
@@ -34,6 +36,8 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
                         year: vehicleYear,
                         color: vehicleColor
                     };
+                    console.log(data);
+                    console.log("Created data")
                     //add the right url
                     const response = await fetch('http://127.0.0.1:5001/ev-registration-system/us-central1/addVehicle', {
                         method: 'POST',
@@ -43,7 +47,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
                         },
                         body: JSON.stringify(data),
                     });
-
+                    console.log("Called the cloud function")
                     if(response.ok){
                         const result = await response.json();
                         console.log("Vehicle Added Successfully!", result);

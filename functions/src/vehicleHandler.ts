@@ -52,6 +52,7 @@ class vehicleHandler{
     static async addVehicle(vehicleToAdd: Vehicle){
         try{
             const ref = db.collection(vehicleHandler.COLLECTION_NAME);
+            console.log("Here")
             const docRef = await ref.add({
                 license: vehicleToAdd.license,
                 user_id: vehicleToAdd.user_id,
@@ -61,6 +62,7 @@ class vehicleHandler{
                 color: vehicleToAdd.color
             });
 
+            console.log("Added")
             const querySnapchot = await docRef.get()
             const vehicleAdded: Vehicle = {
                 id: querySnapchot.id,
