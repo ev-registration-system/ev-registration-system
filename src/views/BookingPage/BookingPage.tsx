@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
 import { collection, getDocs } from 'firebase/firestore'
@@ -19,6 +19,8 @@ const BookingPage = () => {
 	const [currentHour, setCurrentHour] = useState<number | null>(null) // State for current hour
 	const theme = useTheme()
 	const colors = tokens(theme.palette.mode)
+	const [isCheckedIn, setIsCheckedIn] = useState(false);
+	const [isDisabled, setIsDisabled] = useState(false);
 
 	const getBookings = async () => {
 		const querySnapshot = await getDocs(ref)
@@ -105,6 +107,76 @@ const BookingPage = () => {
 
     */
 
+	useEffect(() => {
+		async function runCheck() {
+			const hasValidReservation = await checkForValidReservation();
+			setIsDisabled(!hasValidReservation);
+		  }
+		  runCheck();
+	  }, []);
+	
+	async function checkForValidReservation() {
+		//const reservations = await getDocs(ref)
+		const mockData = [
+			{
+			  id: 'mock-1',
+			  start: new Date('2025-01-20T10:00:00'),
+			  end: new Date('2025-01-20T12:00:00'),
+			},
+			{
+			  id: 'mock-2',
+			  start: new Date('2025-01-20T15:00:00'),
+			  end: new Date('2025-01-20T18:00:00'),
+			},
+		];
+
+		let foundValid = false;
+		const GRACE_PERIOD = 5 * 60 * 1000; // 5 minutes measured in ms
+		mockData.forEach(booking => {
+			const now = new Date().getTime();
+			const start = booking.start.getTime();
+			const end = booking.end.getTime();
+			const graceStart = start - GRACE_PERIOD;
+
+			
+			if (now >= graceStart && now <= end) {
+				foundValid = true;
+			}
+		});
+		return foundValid;
+
+	}
+	const handleCheckInCheckOut = async () => {
+
+		if (isCheckedIn) {
+			console.log('Checking out')
+			setIsCheckedIn(false);
+
+			// clearing any existing timers
+			// if (autoCheckoutTimerRef.current) {
+			// 	clearTimeout(autoCheckoutTimerRef.current);
+			// 	autoCheckoutTimerRef.current = null;
+			//   }
+		}
+		else {
+			const isValid = await checkForValidReservation();
+
+			if (!isValid) {
+				console.log('no reservation found');
+			}
+			else {
+				console.log('valid time found'); // turn ev charger on
+				setIsCheckedIn(true);
+				console.log('Checking in');
+
+				setIsDisabled(true);
+				setTimeout(() => {
+				  setIsDisabled(false);
+				}, 5000);
+			}
+		}		
+	}
+
 	return (
         <div style={{ textAlign: 'center', marginTop: '50px' }}>
             {currentEmission !== null && currentHour !== null && (
@@ -131,8 +203,6 @@ const BookingPage = () => {
                     {isGraphVisible ? 'Hide Emissions Graph' : 'Show Emissions Graph'}
                 </Button>
             </div>
-			
-			{/* Buttons */}
 
             {isGraphVisible && plotImage && (
                 <div style={{ marginTop: '20px' }}>
@@ -156,7 +226,7 @@ const BookingPage = () => {
 
             {/* Buttons */}
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', width: '70%', margin: '20px auto', gap: '16px' }}>
                 <Button
                     variant="contained"
                     sx={{
@@ -170,6 +240,23 @@ const BookingPage = () => {
                     onClick={openModal}
                 >
                     Make a Reservation
+                </Button>
+
+				{/*Check in button*/}
+				<Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: "bold",
+                        '&:hover': {
+                            backgroundColor: colors.accent[400]
+                        },
+                    }}
+                    onClick={handleCheckInCheckOut}
+					disabled={isDisabled}
+                >
+                    {isCheckedIn ? 'Check out' : 'Check in'}
                 </Button>
             </div>
             {isModalOpen && (
