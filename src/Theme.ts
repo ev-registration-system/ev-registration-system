@@ -32,7 +32,7 @@ export const tokens = (mode: string) => ({
                   200: "#83E683",
                   300: "#5CDC5C",
                   400: "#36D336",
-                  500: "#0FCF0F", // Main green accent
+                  500: "#66E566", // Main green accent
                   600: "#0B9F0B",
                   700: "#086F08",
                   800: "#054F05",
