@@ -55,48 +55,46 @@ const BookingPage = () => {
 			padding: 2,
 			borderRadius: 2,
 		}}
-	>
-        <div style={{ textAlign: 'center', marginTop: '50px' }}>
-            <div
-            style={{
-                height: '100%',
-                margin: '50px auto', // fancy Centering logic
-                width: '100%',
-            }}
-            >
-            	{loading ? (
-                	<p>Loading bookings...</p>
-            	) : (
+		>
+        	<div style={{ textAlign: 'center', marginTop: '50px' }}>
+            	<div
+            	style={{
+                	height: '100%',
+                	margin: '50px auto', // fancy Centering logic
+                	width: '100%',
+            	}}
+            	>
+            		{loading ? (
+                		<p>Loading bookings...</p>
+            		) : (
                 
-                <Calendar bookings={bookings} getBookings={getBookings}/>
-            	) }
-            </div>
-
-            {/* Buttons */}
+                	<Calendar bookings={bookings} getBookings={getBookings}/>
+            		) }
+            	</div>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
-                <Button
-                    variant="contained"
-                    sx={{
-                        color: colors.grey[100],
-                        backgroundColor: colors.primary[400],
-                        fontWeight: "bold",
-                        '&:hover': {
-                            backgroundColor: colors.accent[400]
-                        },
-                    }}
-                    onClick={openModal}
-                >
-                    Make a Reservation
-                </Button>
-            </div>
-            {isModalOpen && (
-                <ReservationModal
-                    isOpen={isModalOpen}
-                    onClose={closeModal}
-                />
-            )}
-        </div>
+            	<div style={{ display: 'flex', justifyContent: 'center', margin: '20px auto' }}>
+                	<Button
+                    	variant="contained"
+                    	sx={{
+                        	color: colors.grey[100],
+                        	backgroundColor: colors.primary[400],
+                        	fontWeight: "bold",
+                        	'&:hover': {
+                            	backgroundColor: colors.accent[400]
+                        	},
+                    	}}
+                    	onClick={openModal}
+                	>
+                    	Make a Reservation
+                	</Button>
+            	</div>
+            	{isModalOpen && (
+                	<ReservationModal
+                    	isOpen={isModalOpen}
+                    	onClose={closeModal}
+                	/>
+            	)}
+        	</div>
 		</Box>
     );
 };

@@ -67,7 +67,7 @@ const EmissionsPage = () => {
                     </div>
                 )}
     
-                <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', margin: '20px auto' }}>
                     <Button
                         variant="contained"
                         sx={{
