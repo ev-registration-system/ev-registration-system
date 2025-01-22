@@ -46,56 +46,103 @@ const BookingPage = () => {
 	}
 
 	return (
-		<Box
-		display="flex"
-		justifyContent="center"
-		alignItems="center"
-		sx={{
-			backgroundColor: colors.primary[400],
-			padding: 2,
-			borderRadius: 2,
-		}}
-		>
-        	<div style={{ textAlign: 'center', marginTop: '50px' }}>
-            	<div
-            	style={{
-                	height: '100%',
-                	margin: '50px auto', // fancy Centering logic
-                	width: '100%',
-            	}}
-            	>
-            		{loading ? (
-                		<p>Loading bookings...</p>
-            		) : (
-                
-                	<Calendar bookings={bookings} getBookings={getBookings}/>
-            		) }
-            	</div>
-            
-            	<div style={{ display: 'flex', justifyContent: 'center', margin: '20px auto' }}>
-                	<Button
-                    	variant="contained"
-                    	sx={{
-                        	color: colors.grey[100],
-                        	backgroundColor: colors.primary[400],
-                        	fontWeight: "bold",
-                        	'&:hover': {
-                            	backgroundColor: colors.accent[400]
-                        	},
-                    	}}
-                    	onClick={openModal}
-                	>
-                    	Make a Reservation
-                	</Button>
-            	</div>
-            	{isModalOpen && (
-                	<ReservationModal
-                    	isOpen={isModalOpen}
-                    	onClose={closeModal}
-                	/>
-            	)}
-        	</div>
-		</Box>
+        <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="flex-start"
+            sx={{
+                backgroundColor: colors.primary[400],
+                padding: 2,
+                borderRadius: 2,
+                width: '100%',
+            }}
+        >
+            {/* Calendar */}
+            <Box
+                sx={{
+                    flex: 4, // 4/5 of the width
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    overflow: 'auto',
+                }}
+            >
+                {loading ? (
+                    <p>Loading bookings...</p>
+                ) : (
+                    <Calendar bookings={bookings} getBookings={getBookings} />
+                )}
+            </Box>
+
+            {/* Buttons */}
+            <Box
+                sx={{
+                    flex: 1, // 1/5 of the width
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    alignItems: 'center',
+                    gap: '20px', 
+                }}
+            >
+                {/* Make a Reservation Button */}
+                <Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: 'bold',
+						width: '80%',
+                        height: '50px', 
+                        '&:hover': {
+                            backgroundColor: colors.accent[400],
+                        },
+                    }}
+                    onClick={openModal}
+                >
+                    Make a Reservation
+                </Button>
+
+                {/* Upcoming Bookings Button */}
+                <Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: 'bold',
+						width: '80%',
+                        height: '50px', 
+                        '&:hover': {
+                            backgroundColor: colors.accent[400],
+                        },
+                    }}
+                    onClick={() => console.log('Upcoming Bookings clicked')}
+                >
+                    Upcoming Bookings
+                </Button>
+
+                {/* Past Bookings Button */}
+                <Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: 'bold',
+						width: '80%',
+                        height: '50px', 
+                        '&:hover': {
+                            backgroundColor: colors.accent[400],
+                        },
+                    }}
+                    onClick={() => console.log('Past Bookings clicked')}
+                >
+                    Past Bookings
+                </Button>
+            </Box>
+
+            {/* Reservation Modal */}
+            {isModalOpen && <ReservationModal isOpen={isModalOpen} onClose={closeModal} />}
+        </Box>
     );
 };
 

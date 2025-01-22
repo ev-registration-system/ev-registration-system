@@ -22,9 +22,9 @@ const EmissionsPage = () => {
                 // 'blob' (holding img contents in binary) is waiting for server response
                 const blob = await response.blob()
                 // Creates temporary URL for the Blob object
-                const imageUrl = URL.createObjectURL(blob)
+                const imageURL = URL.createObjectURL(blob)
                 // State to hold plot imgage ('plotImage') is updated
-                setPlotImage(imageUrl)
+                setPlotImage(imageURL)
                 // Display graph
                 setIsGraphVisible(true)
             } catch (error) {
@@ -83,6 +83,11 @@ const EmissionsPage = () => {
                         {isGraphVisible ? 'Hide Emissions Graph' : 'Show Emissions Graph'}
                     </Button>
                 </div>
+                {isGraphVisible && plotImage && (
+                    <div style={{ marginTop: '20px' }}>
+                        <img src={plotImage} alt="Hourly Emissions Plot" style={{ width: '80%', maxWidth: '800px' }} />
+                    </div>
+                )}
             </div>
         </div>
     );

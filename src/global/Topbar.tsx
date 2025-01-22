@@ -36,6 +36,7 @@ const Topbar: React.FC<TopBarProps> = ({ isSidebarCollapsed }) => {
                 padding: '10px 20px',
                 backgroundColor: colors.accent[500],
                 boxShadow: 3,
+                height: '60px',
                 width: '100%',
                 position: 'relative',
                 paddingLeft: isSidebarCollapsed ? '80px' : '270px', 

@@ -1,4 +1,4 @@
-import { Box, Button, Typography, useTheme } from '@mui/material'
+import { Box, Typography, useTheme } from '@mui/material'
 import { tokens } from '../../Theme'
 
 const Dashboard = () => {
