@@ -1,96 +1,73 @@
-import { useEffect, useState } from 'react'
-import { Button, useTheme } from '@mui/material'
-import { tokens } from '../../Theme'
-const EmissionsPage = () => {
-    const [isGraphVisible, setIsGraphVisible] = useState(false)
-    const [plotImage, setPlotImage] = useState<string | null>(null) // State to hold the plot image for emissions
-    const [currentEmission, setCurrentEmission] = useState<number | null>(null) // State for current emission
-    const [currentHour, setCurrentHour] = useState<number | null>(null) // State for current hour
-    const theme = useTheme()
-    const colors = tokens(theme.palette.mode)
+import React, { useState, useEffect } from "react";
 
-    // Toggle visibility of emissions graph after clicking button
-    const toggleGraph = async () => {
-        if (isGraphVisible) {
-            setIsGraphVisible(false) // If graph is visible, hide it
-        } else {
-            try {
-                const response = await fetch('http://127.0.0.1:5000/plot') // Network request to the backend server where Flask is running
-                if (!response.ok) {
-                    throw new Error('Failed to fetch plot image') // Throw error if image can't be fetched
-                }
-                // 'blob' (holding img contents in binary) is waiting for server response
-                const blob = await response.blob()
-                // Creates temporary URL for the Blob object
-                const imageURL = URL.createObjectURL(blob)
-                // State to hold plot imgage ('plotImage') is updated
-                setPlotImage(imageURL)
-                // Display graph
-                setIsGraphVisible(true)
-            } catch (error) {
-                console.error('Error fetching plot:', error)
-            }
-        }
-    }
-    
-    // Fetch the current emission data for the current hour
-    const fetchCurrentEmission = async () => {
-         try {
-            const response = await fetch('http://127.0.0.1:5000/get-number') // Network request to the backend server where Flask is running
-            // JSONs data is stored in 'data' once server responds
-            const data = await response.json()
-    
-            if (data.current_emission !== undefined) {
-                setCurrentEmission(data.current_emission) // Set current emission in state
-                setCurrentHour(data.hour) // Set current hour in state
-            } else {
-                console.error('Error fetching current emission:', data.error) // Throw error if unable to fetch JSON from server
-            }
-        } catch (error) {
-            console.error('Error fetching current emission:', error)
-        }
-    }
+const EmissionDisplay: React.FC = () => {
+    const [currentEmission, setCurrentEmission] = useState<number | null>(null);
+    const [currentHour, setCurrentHour] = useState<number | null>(null);
 
-    // fetchCurrentEmission() runs when the componnet mounts (when page is loaded)
-    useEffect(() => {
-        fetchCurrentEmission()
-    }, []) // Empty brackets tells React to run the useEffect hook only once
+// Emission data array 
+const emissionData = [
+  { date: "2024-01-01", hour: 1, emissionFactor: 0.52096844 },
+  { date: "2024-01-01", hour: 2, emissionFactor: 0.54082056 },
+  { date: "2024-01-01", hour: 3, emissionFactor: 0.5501421 },
+  { date: "2024-01-01", hour: 4, emissionFactor: 0.56156863 },
+  { date: "2024-01-01", hour: 5, emissionFactor: 0.56156863 },
+  { date: "2024-01-01", hour: 6, emissionFactor: 0.53037037 },
+  { date: "2024-01-01", hour: 7, emissionFactor: 0.50758621 },
+  { date: "2024-01-01", hour: 8, emissionFactor: 0.50709677 },
+  { date: "2024-01-01", hour: 9, emissionFactor: 0.52196721 },
+  { date: "2024-01-01", hour: 10, emissionFactor: 0.53754386 },
+  { date: "2024-01-01", hour: 11, emissionFactor: 0.54037736 },
+  { date: "2024-01-01", hour: 12, emissionFactor: 0.54552381 },
+  { date: "2024-01-01", hour: 13, emissionFactor: 0.54552381 },
+  { date: "2024-01-01", hour: 14, emissionFactor: 0.54552381 },
+  { date: "2024-01-01", hour: 15, emissionFactor: 0.53037037 },
+  { date: "2024-01-01", hour: 16, emissionFactor: 0.51448276 },
+  { date: "2024-01-01", hour: 17, emissionFactor: 0.50885246 },
+  { date: "2024-01-01", hour: 18, emissionFactor: 0.50885246 },
+  { date: "2024-01-01", hour: 19, emissionFactor: 0.51733333 },
+  { date: "2024-01-01", hour: 20, emissionFactor: 0.52660152 },
+  { date: "2024-01-01", hour: 21, emissionFactor: 0.52477565 },
+  { date: "2024-01-01", hour: 22, emissionFactor: 0.50954121 },
+  { date: "2024-01-01", hour: 23, emissionFactor: 0.52096844 },
+  { date: "2024-01-01", hour: 24, emissionFactor: 0.52096844 },
+];
 
-    return (
-        <div>
-            <h1>Emissions Page</h1>
-                    
-            <div style={{ textAlign: 'center', marginTop: '50px' }}>
-                {currentEmission !== null && currentHour !== null && (
-                    <div style={{ marginTop: '20px' }}>
-                        <h3>Current Emission for Hour {currentHour}: {currentEmission} kg CO2 per kWh</h3>
-                    </div>
-                )}
-    
-                <div style={{ display: 'flex', justifyContent: 'center', margin: '20px auto' }}>
-                    <Button
-                        variant="contained"
-                        sx={{
-                            color: colors.grey[100],
-                            backgroundColor: colors.primary[400],
-                            fontWeight: "bold",
-                            '&:hover': {
-                                backgroundColor: colors.accent[400]
-                            },
-                        }}
-                        onClick={toggleGraph}
-                    >
-                        {isGraphVisible ? 'Hide Emissions Graph' : 'Show Emissions Graph'}
-                    </Button>
-                </div>
-                {isGraphVisible && plotImage && (
-                    <div style={{ marginTop: '20px' }}>
-                        <img src={plotImage} alt="Hourly Emissions Plot" style={{ width: '80%', maxWidth: '800px' }} />
-                    </div>
-                )}
-            </div>
-        </div>
+  useEffect(() => {
+    // Hardcoded date: "2024-01-01"
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentDate = "2024-01-01";
+
+    // Find the emission data for the current hour
+    const emissionRecord = emissionData.find(
+      (record) => record.date === currentDate && record.hour === currentHour
     );
+
+    setCurrentHour(currentHour);
+    if (emissionRecord) {
+      setCurrentEmission(emissionRecord.emissionFactor);
+    } else {
+      setCurrentEmission(null);
+    }
+  }, []);
+
+  return (
+    <div style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+      <h1>Current Hour Emission</h1>
+      {currentHour !== null && (
+        <p>
+          Current Hour: <strong>{currentHour}</strong>
+        </p>
+      )}
+      {currentEmission !== null ? (
+        <p>
+          The emission factor for the current hour is: <strong>{currentEmission.toFixed(6)}</strong> kg CO₂ per kWh.
+        </p>
+      ) : (
+        <p>No emission data available for the current hour.</p>
+      )}
+    </div>
+  );
 };
 
-export default EmissionsPage;
+export default EmissionDisplay;
