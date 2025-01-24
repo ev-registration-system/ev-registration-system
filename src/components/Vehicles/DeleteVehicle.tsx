@@ -1,3 +1,4 @@
+import { getAuth } from 'firebase/auth';
 import React, {useState} from 'react';
 import Modal from 'react-modal';
 
@@ -10,9 +11,22 @@ interface DeleteBookingProps {
 
 const DeleteVehicle: React.FC<DeleteBookingProps> = ({isOpen, onClose, vehicleId, onDelete}) => {
     const handleDelete = async () => {
-        if(vehicleId) {
+        const uid = getAuth().currentUser?.uid
+        if(vehicleId && uid) {
             try{
                 //trigger delete function
+                const idToken = await getAuth().currentUser?.getIdToken(true);
+                const data = {
+                    vehicle_id: vehicleId,
+                };
+                const response = await fetch('http://127.0.0.1:5001/ev-registration-system/us-central1/deleteVehicle', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${idToken}`,
+                    },
+                    body: JSON.stringify(data),
+                });
                 console.log("Vehicle " + vehicleId + " successfully deleted");
                 onDelete();
             } catch (error) {

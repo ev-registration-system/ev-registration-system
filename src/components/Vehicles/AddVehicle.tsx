@@ -42,7 +42,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
                     const response = await fetch('http://127.0.0.1:5001/ev-registration-system/us-central1/addVehicle', {
                         method: 'POST',
                         headers: {
-                            'Content_Type': 'application/json',
+                            'Content-Type': 'application/json',
                             'Authorization': `Bearer ${idToken}`,
                         },
                         body: JSON.stringify(data),
