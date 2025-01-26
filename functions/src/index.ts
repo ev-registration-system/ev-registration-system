@@ -228,31 +228,32 @@ export const addVehicle = onRequest(async (request, response) => {
 });
 
 
-export const getVehicle = onRequest(async (request, response) => {
-    const user_id = request.body.id as string;
-    if(!user_id){
-      logger.error("Missing required fields", {user_id});
-      response.status(400).send("Missing required fields");
-      return;
-    }
-    try{
-        const vehicleRetrieved = await vehicle.getVehicle(user_id);
-        if(!vehicleRetrieved){
-          logger.info("vehicles not found");
-          response.status(200).send("vehicles not found");
-          return;
-        }
+// export const getVehicle = onRequest(async (request, response) => {
+//     const { user_id } = request.body;
+//     console.log("user_id: " + user_id);
+//     if(!user_id){
+//       logger.error("Missing required fields", {user_id});
+//       response.status(400).send("Missing required fields");
+//       return;
+//     }
+//     try{
+//         const vehicleRetrieved = await vehicle.getVehicle(user_id);
+//         if(!vehicleRetrieved){
+//           logger.info("vehicles not found");
+//           response.status(200).send("vehicles not found");
+//           return;
+//         }
 
-        response.status(200).json({
-          message: "Vehicles has been retrieved",
-          vehicleRetrieved
-        });
+//         response.status(200).json({
+//           message: "Vehicles has been retrieved",
+//           vehicleRetrieved
+//         });
 
-    } catch(error) {
-        logger.error("Error calling function getVehicle", error);
-        response.status(500).send("Error calling function getVehicle");
-    }
-});
+//     } catch(error) {
+//         logger.error("Error calling function getVehicle", error);
+//         response.status(500).send("Error calling function getVehicle");
+//     }
+// });
 
 
 export const deleteVehicle = onRequest(async (request, response) => {

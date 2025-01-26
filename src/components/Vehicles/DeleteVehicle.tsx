@@ -1,5 +1,5 @@
 import { getAuth } from 'firebase/auth';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import Modal from 'react-modal';
 
 interface DeleteBookingProps {
@@ -10,14 +10,21 @@ interface DeleteBookingProps {
 }
 
 const DeleteVehicle: React.FC<DeleteBookingProps> = ({isOpen, onClose, vehicleId, onDelete}) => {
-    const handleDelete = async () => {
+   
+    const [inputVehicleId, setInputVehicleId] = useState(vehicleId || '');
+    
+    useEffect(() => {
+        setInputVehicleId(vehicleId || '');
+    }, [vehicleId]);
+    
+    const handleDelete = async () => {    
         const uid = getAuth().currentUser?.uid
-        if(vehicleId && uid) {
+        if(inputVehicleId  && uid) {
             try{
                 //trigger delete function
                 const idToken = await getAuth().currentUser?.getIdToken(true);
                 const data = {
-                    vehicle_id: vehicleId,
+                    vehicle_id: inputVehicleId,
                 };
                 const response = await fetch('http://127.0.0.1:5001/ev-registration-system/us-central1/deleteVehicle', {
                     method: 'DELETE',
@@ -27,7 +34,7 @@ const DeleteVehicle: React.FC<DeleteBookingProps> = ({isOpen, onClose, vehicleId
                     },
                     body: JSON.stringify(data),
                 });
-                console.log("Vehicle " + vehicleId + " successfully deleted");
+                console.log("Vehicle " + inputVehicleId  + " successfully deleted");
                 onDelete();
             } catch (error) {
                 console.error("Error deleting vehicle: ", error);
