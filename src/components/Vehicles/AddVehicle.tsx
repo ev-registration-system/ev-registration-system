@@ -47,15 +47,14 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
                         },
                         body: JSON.stringify(data),
                     });
-                    console.log("Called the cloud function")
                     if(response.ok){
+                        onClose();
                         const result = await response.json();
                         console.log("Vehicle Added Successfully!", result);
                     } else {
                         const error = await response.json();
                         console.error("Error adding vehicle: ", error.error);
                     }
-                    onClose();
                 } else {
                     console.error("User is not authenticated");
                 }
@@ -65,6 +64,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
         } else {
             console.error("All Field are required");
         }
+        onClose()
     };
     return (
         <Modal
