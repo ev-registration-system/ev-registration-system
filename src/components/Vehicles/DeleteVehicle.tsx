@@ -34,7 +34,7 @@ const DeleteVehicle: React.FC<DeleteBookingProps> = ({isOpen, onClose, vehicleId
                     },
                     body: JSON.stringify(data),
                 });
-                console.log("Vehicle " + inputVehicleId  + " successfully deleted");
+                console.log("Vehicle " + inputVehicleId  + " successfully deleted" + " " + response);
                 onDelete();
             } catch (error) {
                 console.error("Error deleting vehicle: ", error);

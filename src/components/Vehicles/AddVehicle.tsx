@@ -1,7 +1,7 @@
 import { getAuth } from 'firebase/auth';
 import React, {useState} from 'react';
 import Modal from 'react-modal';
-import { Box, Button, colors, TextField, Typography, useTheme } from '@mui/material'
+import { Box, Button, TextField, Typography, useTheme } from '@mui/material'
 import { tokens } from '../../Theme'
 
 
