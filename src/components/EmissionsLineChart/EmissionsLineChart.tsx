@@ -7,7 +7,7 @@ const EmissionsLineChart: React.FC = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
 
-	const emissionData = [
+	const emissionData = useMemo(() =>  [
 		{ date: "2024-01-01", hour: 1, emissionFactor: 0.52096844 },
 		{ date: "2024-01-01", hour: 2, emissionFactor: 0.54082056 },
 		{ date: "2024-01-01", hour: 3, emissionFactor: 0.5501421 },
@@ -32,7 +32,7 @@ const EmissionsLineChart: React.FC = () => {
 		{ date: "2024-01-01", hour: 22, emissionFactor: 0.50954121 },
 		{ date: "2024-01-01", hour: 23, emissionFactor: 0.52096844 },
 		{ date: "2024-01-01", hour: 24, emissionFactor: 0.52096844 },
-	];
+	], []);
 
 	const [currentHour, setCurrentHour] = useState<number>(0);
 	const [currentEmission, setCurrentEmission] = useState<number | null>(null);
@@ -51,11 +51,11 @@ const EmissionsLineChart: React.FC = () => {
 		} else {
 			setCurrentEmission(null);
 		}
-	}, [currentHour]);
+	}, [currentHour, emissionData]);
 
 	const filteredData = useMemo(() => {
 		return emissionData.filter((entry) => entry.hour <= currentHour); // This makes sure only data up to current hour is displayed
-	}, [currentHour]);
+	}, [currentHour, emissionData]);
 
 	const chartData = useMemo(() => {
 		return [
