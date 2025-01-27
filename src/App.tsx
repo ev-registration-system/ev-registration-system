@@ -10,6 +10,7 @@ import { CssBaseline, Box } from "@mui/material";
 import Dashboard from "./views/dashboard/Dashboard";
 import BookingPage from "./views/BookingPage/BookingPage";
 import EmissionsPage from "./views/EmissionsPage/EmissionsPage";
+import VehiclesPage from "./views/VehiclesPage/VehiclesPage"
 import { useState } from 'react';
 
 const App: React.FC = () => {
@@ -67,6 +68,7 @@ const App: React.FC = () => {
                                         <Route path="/" element={<Dashboard />} />
                                         <Route path="/bookings" element={<BookingPage />} /> 
                                         <Route path="/emissions" element={<EmissionsPage />} /> 
+                                        <Route path="/vehicles" element={<VehiclesPage />} />
                                     </Route>
 
                                     {/* Catch-all Route */}

@@ -20,6 +20,8 @@ const Topbar: React.FC<TopBarProps> = ({ isSidebarCollapsed }) => {
                 return 'Bookings';
             case '/emissions':
                 return 'Emissions';
+            case '/vehicles':
+                return 'Vehicles';
             default:
                 return 'Dashboard';
         }
