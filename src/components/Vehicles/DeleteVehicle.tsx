@@ -26,7 +26,7 @@ const DeleteVehicle: React.FC<DeleteBookingProps> = ({isOpen, onClose, vehicleId
                 const data = {
                     vehicle_id: inputVehicleId,
                 };
-                const response = await fetch('http://127.0.0.1:5001/ev-registration-system/us-central1/deleteVehicle', {
+                const response = await fetch('https://deletevehicle-w2ytv3mava-uc.a.run.app', {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json',
