@@ -11,10 +11,21 @@ const EmissionsPage = () => {
 			{/* Header */}
 			<Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
 				<Typography variant="h3" fontWeight="bold" color={colors.grey[100]}>
-					Welcome to the 
+					Welcome to the Emissions Page
 				</Typography>
 			</Box>
-      <EmissionsLineChart />
+
+      {/* Line Chart */}
+      <Box
+        sx={{
+          backgroundColor: colors.grey[900], 
+          padding: 2,
+          borderRadius: 2,
+          boxShadow: 3, 
+        }}
+      >
+        <EmissionsLineChart />
+      </Box>
 		</Box>
 	)
 }
