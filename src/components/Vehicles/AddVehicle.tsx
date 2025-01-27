@@ -1,6 +1,8 @@
 import { getAuth } from 'firebase/auth';
 import React, {useState} from 'react';
 import Modal from 'react-modal';
+import { Box, Button, colors, TextField, Typography, useTheme } from '@mui/material'
+import { tokens } from '../../Theme'
 
 
 interface AddVehicleProps{
@@ -15,6 +17,8 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
     const [vehicleModel, setVehicleModel] = useState('');
     const [vehicleYear, setVehicleYear] = useState('');
     const [vehicleColor, setVehicleColor] = useState('');
+    const theme = useTheme()
+    const colors = tokens(theme.palette.mode)
 
     
     //getAuth().currentUser
@@ -68,85 +72,145 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
     };
     return (
         <Modal
-            isOpen={isOpen}
-            onRequestClose={onClose}
-            style={{
-                overlay: {zIndex: 2000, backgroundColor: 'rgba(0,0,0,0.5)'},
-                content: {
-                    position: 'fixed',
-                    top: '50%',
-                    left:'50%',
-                    transform: 'translate(-50%, -50%)',
-                    maxWidth: '500px',
-                    width: '90%',
-                    padding: '20px',
-                    borderRadius: '8px',
-                    zIndex: 2001,
-                }
-            }}
+          isOpen={isOpen}
+          onRequestClose={onClose}
+          style={{
+            overlay: { zIndex: 2000, backgroundColor: 'rgba(0,0,0,0.5)' },
+            content: {
+              position: 'fixed',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              maxWidth: '500px',
+              width: '90%',
+              height: '500px',
+              padding: '20px',
+              borderRadius: '8px',
+              backgroundColor: colors.grey[900],
+              zIndex: 2001,
+            },
+          }}
         >
-            <div>
-                <h2>Add a Vehicle</h2>
-                <form onSubmit={handleVehicle}>
-                    <label>
-                        Vehicle License Plate:
-                        <input
-                            type="text"
-                            value={vehcicleLicense}
-                            onChange={(e) => setVehicleLicense(e.target.value)}
-                            required
-                        >
-                        </input>
-                    </label>
-                    <br/><br/>
-                    <label>Vehicle Make: 
-                        <input
-                            type="text"
-                            value={vehicleMake}
-                            onChange={(e) => setVehicleMake(e.target.value)}
-                            required
-                        >
-                        </input>
-                    </label>
-                    <br/><br/>
-                    <label>
-                        Vehicle Model:
-                        <input
-                            type="text"
-                            value={vehicleModel}
-                            onChange={(e) => setVehicleModel(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <br/><br/>
-                    <label>
-                        Vehicle Year:
-                        <input
-                            type="number"
-                            value={vehicleYear}
-                            onChange={(e) => setVehicleYear(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <br/><br/>
-                    <label>
-                        Vehicle Color:
-                        <input
-                            type="text"
-                            value={vehicleColor}
-                            onChange={(e) => setVehicleColor(e.target.value)}
-                            required
-                        />
-                    </label>
-                    <br/><br/>
-                    <div style={{display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px'}}>
-                        <button type="submit">Submit</button>
-                        <button type="button" onClick={onClose}>Close</button>
-                    </div>
-                </form>
-            </div>
+          <Box sx={{ textAlign: 'center' }}>
+            <Typography variant="h5" color={colors.grey[100]} mb={2}>
+              Add a Vehicle
+            </Typography>
+    
+            <form onSubmit={handleVehicle}>
+              <Box mb={2}>
+                <TextField
+                  label="Vehicle License Plate"
+                  variant="outlined"
+                  fullWidth
+                  value={vehcicleLicense}
+                  onChange={(e) => setVehicleLicense(e.target.value)}
+                  required
+                  sx={{
+                    backgroundColor: colors.grey[900],
+                    '& .MuiInputBase-root': {
+                      color: colors.grey[100],
+                    },
+                  }}
+                />
+              </Box>
+    
+              <Box mb={2}>
+                <TextField
+                  label="Vehicle Make"
+                  variant="outlined"
+                  fullWidth
+                  value={vehicleMake}
+                  onChange={(e) => setVehicleMake(e.target.value)}
+                  required
+                  sx={{
+                    backgroundColor: colors.grey[900],
+                    '& .MuiInputBase-root': {
+                      color: colors.grey[100],
+                    },
+                  }}
+                />
+              </Box>
+    
+              <Box mb={2}>
+                <TextField
+                  label="Vehicle Model"
+                  variant="outlined"
+                  fullWidth
+                  value={vehicleModel}
+                  onChange={(e) => setVehicleModel(e.target.value)}
+                  required
+                  sx={{
+                    backgroundColor: colors.grey[900],
+                    '& .MuiInputBase-root': {
+                      color: colors.grey[100],
+                    },
+                  }}
+                />
+              </Box>
+    
+              <Box mb={2}>
+                <TextField
+                  label="Vehicle Year"
+                  variant="outlined"
+                  fullWidth
+                  type="number"
+                  value={vehicleYear}
+                  onChange={(e) => setVehicleYear(e.target.value)}
+                  required
+                  sx={{
+                    backgroundColor: colors.grey[900],
+                    '& .MuiInputBase-root': {
+                      color: colors.grey[100],
+                    },
+                  }}
+                />
+              </Box>
+    
+              <Box mb={3}>
+                <TextField
+                  label="Vehicle Color"
+                  variant="outlined"
+                  fullWidth
+                  value={vehicleColor}
+                  onChange={(e) => setVehicleColor(e.target.value)}
+                  required
+                  sx={{
+                    backgroundColor: colors.grey[900],
+                    '& .MuiInputBase-root': {
+                      color: colors.grey[100],
+                    },
+                  }}
+                />
+              </Box>
+    
+              <Box sx={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{
+                    backgroundColor: colors.accent[500],
+                    '&:hover': { backgroundColor: colors.accent[600] },
+                  }}
+                >
+                  Submit
+                </Button>
+                <Button
+                  type="button"
+                  variant="outlined"
+                  onClick={onClose}
+                  sx={{
+                    color: colors.accent[500],
+                    borderColor: colors.accent[500],
+                    '&:hover': { borderColor: colors.accent[600], color: colors.accent[600] },
+                  }}
+                >
+                  Close
+                </Button>
+              </Box>
+            </form>
+          </Box>
         </Modal>
-    );
+      )
 }
 
 export default AddVehicle;

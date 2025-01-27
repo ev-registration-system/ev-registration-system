@@ -2,7 +2,7 @@ import AddVehicle from '../../components/Vehicles/AddVehicle'
 import {tokens} from '../../Theme'
 import { getDocs, collection, query, where } from 'firebase/firestore'
 import { db } from '../../../firebase'
-import {Button, Table, TableBody, TableCell, TableHead, TableRow, useTheme} from '@mui/material'
+import {Box, Button, Table, TableBody, TableCell, TableHead, TableRow, Typography, useTheme} from '@mui/material'
 import { useEffect, useState } from 'react'
 import { getAuth } from 'firebase/auth'
 import { Vehicle } from 'src/types/types'
@@ -10,10 +10,18 @@ import DeleteVehicle from '../../components/Vehicles/DeleteVehicle'
 
 const ref = collection(db, 'vehicles')
 
+/*const mockVehicles = [
+    { id: '1', license: 'ABC123', make: 'Toyota', model: 'Corolla', year: '2020', color: 'Red' },
+    { id: '2', license: 'XYZ456', make: 'Honda', model: 'Civic', year: '2021', color: 'Blue' },
+    { id: '3', license: 'LMN789', make: 'Ford', model: 'Focus', year: '2019', color: 'Black' },
+    { id: '4', license: 'DEF234', make: 'Chevrolet', model: 'Malibu', year: '2022', color: 'White' },
+    { id: '5', license: 'GHI567', make: 'Tesla', model: 'Model 3', year: '2023', color: 'Silver' },
+]*/
 
 const VehiclesPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [vehicles, setVehicles] = useState<Vehicle[]>([])
+    //const [vehicles, setVehicles] = useState(mockVehicles)
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [vehicleToDelete, setVehicleToDelete] = useState<string | null>(null)
     const theme = useTheme()
@@ -76,23 +84,27 @@ const VehiclesPage = () => {
     }, [])
 
     return (
-        <div style={{textAlign: 'center', marginTop: '50px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', width: '50%', margin: '20px auto' }}>
+        <Box sx={{ padding: '20px', textAlign: 'center' }}>
+            {/* Header */}
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
+                <Typography variant="h3" fontWeight="bold" color={colors.grey[100]}>
+                    Manage Your Vehicles
+                </Typography>
                 <Button
                     variant="contained"
                     sx={{
                         color: colors.grey[100],
-                        backgroundColor: colors.primary[400],
-                        fontWeight: "bold",
-                        '&:hover': {
-                            backgroundColor: colors.accent[400]
-                        },
+                        backgroundColor: colors.accent[400],
+                        fontWeight: 'bold', 
+                        '&:hover': { backgroundColor: colors.accent[500], }
                     }}
                     onClick={openModal}
                 >
                     Add Vehicle
                 </Button>
-            </div>
+            </Box>
+
+            {/* Add Vehicle Modal */}
             {isModalOpen && (
                 <AddVehicle
                     isOpen={isModalOpen}
@@ -100,15 +112,16 @@ const VehiclesPage = () => {
                 />
             )}
 
-            <Table sx={{margin: '20px auto', width: '80%'}}>
+            {/* Vehicles Table */}
+            <Table sx={{ marginTop: '30px', width: '100%', border: `3px solid ${colors.accent[400]}` }}>
                 <TableHead>
                     <TableRow>
-                        <TableCell>License</TableCell>
-                        <TableCell>Make</TableCell>
-                        <TableCell>Model</TableCell>
-                        <TableCell>Year</TableCell>
-                        <TableCell>Color</TableCell>
-                        <TableCell>Actions</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: colors.grey[100] }}>License</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: colors.grey[100] }}>Make</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: colors.grey[100] }}>Model</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: colors.grey[100] }}>Year</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: colors.grey[100] }}>Color</TableCell>
+                        <TableCell sx={{ fontWeight: 'bold', color: colors.grey[100] }}>Actions</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -119,18 +132,26 @@ const VehiclesPage = () => {
                             <TableCell>{vehicle.model}</TableCell>
                             <TableCell>{vehicle.year}</TableCell>
                             <TableCell>{vehicle.color}</TableCell>
-                            <TableCell><Button
+                            <TableCell>
+                                <Button
                                     variant="outlined"
                                     color="error"
                                     onClick={() => handleDelete(vehicle.id)}
+                                    sx={{
+                                        borderColor: colors.accent[400],
+                                        color: colors.grey[100],
+                                        '&:hover': { borderColor: colors.grey[500], color: colors.grey[500] }
+                                    }}
                                 >
                                     Delete
-                                </Button></TableCell>
+                                </Button>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
 
+            {/* Delete Vehicle Modal */}
             {vehicleToDelete && (
                 <DeleteVehicle
                     isOpen={isDeleteModalOpen}
@@ -139,7 +160,7 @@ const VehiclesPage = () => {
                     onDelete={handleDeleteSuccess}
                 />
             )}
-        </div>
+        </Box>
     )
 }
 
