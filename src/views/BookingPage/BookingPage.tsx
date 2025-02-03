@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
 import { collection, getDocs } from 'firebase/firestore'
@@ -116,7 +116,19 @@ const BookingPage = () => {
 	  }, []);
 	
 	async function checkForValidReservation() {
-		//const reservations = await getDocs(ref)
+		console.log("getting docs");
+		const querySnapshot = await getDocs(ref)
+		console.log("snapshot" + querySnapshot)
+		const bookings = querySnapshot.docs.map(doc => {
+			const data = doc.data()
+			return {
+				id: doc.id,
+				start: data.startTime.toDate(),
+				end: data.endTime.toDate(),
+			}
+		})
+		console.log("docs: " + bookings);
+
 		const mockData = [
 			{
 			  id: 'mock-1',
@@ -125,10 +137,11 @@ const BookingPage = () => {
 			},
 			{
 			  id: 'mock-2',
-			  start: new Date('2025-01-20T15:00:00'),
-			  end: new Date('2025-01-20T18:00:00'),
+			  start: new Date('2025-01-27T10:00:00'),
+			  end: new Date('2025-01-27T12:00:00'),
 			},
 		];
+
 
 		let foundValid = false;
 		const GRACE_PERIOD = 5 * 60 * 1000; // 5 minutes measured in ms
@@ -152,11 +165,6 @@ const BookingPage = () => {
 			console.log('Checking out')
 			setIsCheckedIn(false);
 
-			// clearing any existing timers
-			// if (autoCheckoutTimerRef.current) {
-			// 	clearTimeout(autoCheckoutTimerRef.current);
-			// 	autoCheckoutTimerRef.current = null;
-			//   }
 		}
 		else {
 			const isValid = await checkForValidReservation();
