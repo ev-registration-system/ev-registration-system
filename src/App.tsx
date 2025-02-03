@@ -3,12 +3,14 @@ import LoginPage from './views/LoginPage/LoginPage';
 import ProtectedRoutes from './components/ProtectedRoutes/ProtectedRoutes';
 import { AuthProvider } from './state/AuthProvider/AuthProvider';
 import Sidebar from "./global/Sidebar";
+import Topbar from "./global/Topbar"
 import { Theme, ThemeProvider } from "@emotion/react";
 import { ColorModeContext, useMode } from "./Theme";
 import { CssBaseline, Box } from "@mui/material";
 import Dashboard from "./views/dashboard/Dashboard";
 import BookingPage from "./views/BookingPage/BookingPage";
 import EmissionsPage from "./views/EmissionsPage/EmissionsPage";
+import VehiclesPage from "./views/VehiclesPage/VehiclesPage"
 import { useState } from 'react';
 
 const App: React.FC = () => {
@@ -21,6 +23,7 @@ const App: React.FC = () => {
 
     //Hide the sidebar on the login page
     const showSidebar = location.pathname !== "/login";
+    const showTopbar = location.pathname !== "/login";
 
     //Tracks sidebar state, collapsed or open
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
@@ -30,7 +33,9 @@ const App: React.FC = () => {
             <ColorModeContext.Provider value={{ toggleColorMode: colorMode.toggleColorMode }}>
                 <ThemeProvider theme={theme}>
                     <CssBaseline />
-                    <Box display="flex">
+                    <Box display="flex" flexDirection="column" height="100vh">
+                        {/* TopBar */}
+                        {showTopbar && <Topbar isSidebarCollapsed={isSidebarCollapsed}/>}
                         {/* Sidebar */}
                         {showSidebar && (
                             <Sidebar
@@ -63,6 +68,7 @@ const App: React.FC = () => {
                                         <Route path="/" element={<Dashboard />} />
                                         <Route path="/bookings" element={<BookingPage />} /> 
                                         <Route path="/emissions" element={<EmissionsPage />} /> 
+                                        <Route path="/vehicles" element={<VehiclesPage />} />
                                     </Route>
 
                                     {/* Catch-all Route */}
@@ -78,7 +84,3 @@ const App: React.FC = () => {
 }
 
 export default App;
-
-
-
-// <CreateBooking />
