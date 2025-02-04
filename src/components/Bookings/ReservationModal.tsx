@@ -24,6 +24,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
                     const data = {
                         startTime: startTime,
                         endTime: endTime,
+                        checkedIn: false,
                         userId: currentUser.uid
                     };
 

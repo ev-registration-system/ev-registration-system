@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs, updateDoc, doc } from 'firebase/firestore'
 import { db } from '../../../firebase'
 import { Booking } from '../../types/types'
 import { tokens } from '../../Theme'
@@ -65,40 +65,43 @@ const BookingPage = () => {
 				id: doc.id,
 				start: data.startTime.toDate(),
 				end: data.endTime.toDate(),
+				checkedIn: data.checkedIn,
 			}
 		})
 		console.log("docs: " + bookings);
 
-		const mockData = [
-			{
-			  id: 'mock-1',
-			  start: new Date('2025-01-20T10:00:00'),
-			  end: new Date('2025-01-20T12:00:00'),
-			},
-			{
-			  id: 'mock-2',
-			  start: new Date('2025-01-27T10:00:00'),
-			  end: new Date('2025-01-27T12:00:00'),
-			},
-		];
-
-
-		let foundValid = false;
+		let foundValid = {state: false, id: ""}
 		const GRACE_PERIOD = 5 * 60 * 1000; // 5 minutes measured in ms
-		mockData.forEach(booking => {
+		bookings.forEach(booking => {
 			const now = new Date().getTime();
 			const start = booking.start.getTime();
 			const end = booking.end.getTime();
+			const checkedIn = booking.checkedIn;
 			const graceStart = start - GRACE_PERIOD;
 
 			
-			if (now >= graceStart && now <= end) {
-				foundValid = true;
+			if (now >= graceStart && now <= end && checkedIn === false) {
+				foundValid.state = true;
+				foundValid.id = booking.id
 			}
 		});
 		return foundValid;
 
 	}
+
+	const updateBookingCheckedInStatus = async (bookingId: string, state: boolean) => {
+		const ref = doc(db, 'bookings', bookingId);
+		try {
+			await updateDoc(ref, {
+			  checkedIn: state,
+			})
+			console.log(`Booking ${bookingId} updated to checkedIn: ${state}`)
+		  } catch (error) {
+			console.error('Error updating booking:', error)
+		  }
+
+	}
+
 	const handleCheckInCheckOut = async () => {
 
 		if (isCheckedIn) {
@@ -107,16 +110,21 @@ const BookingPage = () => {
 
 		}
 		else {
-			const isValid = await checkForValidReservation();
+			let booking = await checkForValidReservation();
+			const isValid = booking.state;
+			const id = booking.id;
 
 			if (!isValid) {
 				console.log('no reservation found');
 			}
 			else {
 				console.log('valid time found'); // turn ev charger on
+
 				setIsCheckedIn(true);
 				console.log('Checking in');
 
+				updateBookingCheckedInStatus(id, isValid);
+				
 				setIsDisabled(true);
 				setTimeout(() => {
 				  setIsDisabled(false);
@@ -217,6 +225,25 @@ const BookingPage = () => {
                     onClick={() => console.log('Past Bookings clicked')}
                 >
                     Past Bookings
+                </Button>
+
+				{/* Check-In Check-Out Button*/}
+				<Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: "bold",
+						width: '80%',
+                        height: '50px', 
+                        '&:hover': {
+                            backgroundColor: colors.accent[400]
+                        },
+                    }}
+                    onClick={handleCheckInCheckOut}
+					disabled={isDisabled}
+                >
+                    {isCheckedIn ? 'Check out' : 'Check in'}
                 </Button>
             </Box>
 
