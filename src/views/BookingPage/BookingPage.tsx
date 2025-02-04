@@ -49,7 +49,7 @@ const BookingPage = () => {
 
 	useEffect(() => {
 		async function runCheck() {
-			const hasValidReservation = await checkForValidReservation();
+			const hasValidReservation = (await checkForValidReservation()).state;
 			setIsDisabled(!hasValidReservation);
 		  }
 		  runCheck();
