@@ -330,3 +330,32 @@ export const retrieveHistoricalData = onRequest(async (request, response) => {
 		response.status(500).send("Error calling function RetrieveHistoricalData")
 	}
 });
+
+export const getEmissionsData = onRequest(async (req, res) => {
+  try {
+      const emissionsDoc = await db.collection("emissions").doc("emissions_data").get();
+
+      if (!emissionsDoc.exists) {
+          res.status(404).json({ error: "Emissions data not found" });
+          return;
+      }
+
+      const emissionsArray = emissionsDoc.data()?.emissions || [];
+      if (!Array.isArray(emissionsArray) || emissionsArray.length !== 24) {
+          res.status(400).json({ error: "Invalid emissions data format" });
+          return;
+      }
+
+      // Convert array into expected format
+      const formattedData = emissionsArray.map((emissionFactor: number, hour: number) => ({
+          date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
+          hour: hour + 1,
+          emissionFactor,
+      }));
+
+      res.status(200).json(formattedData);
+  } catch (error) {
+      console.error("Error fetching emissions data:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
