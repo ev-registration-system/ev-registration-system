@@ -6,6 +6,8 @@ import { db } from '../../../firebase'
 import { Booking } from '../../types/types'
 import { tokens } from '../../Theme'
 import { Box, Button, useTheme } from '@mui/material'
+import { checkForValidReservation, handleCheckInCheckOut } from '../../components/Bookings/CheckInCheckOut';
+
 
 const ref = collection(db, 'bookings')
 
@@ -55,83 +57,7 @@ const BookingPage = () => {
 		  runCheck();
 	  }, []);
 	
-	async function checkForValidReservation() {
-		console.log("getting docs");
-		const querySnapshot = await getDocs(ref)
-		console.log("snapshot" + querySnapshot)
-		const bookings = querySnapshot.docs.map(doc => {
-			const data = doc.data()
-			return {
-				id: doc.id,
-				start: data.startTime.toDate(),
-				end: data.endTime.toDate(),
-				checkedIn: data.checkedIn,
-			}
-		})
-		console.log("docs: " + bookings);
-
-		let foundValid = {state: false, id: ""}
-		const GRACE_PERIOD = 5 * 60 * 1000; // 5 minutes measured in ms
-		bookings.forEach(booking => {
-			const now = new Date().getTime();
-			const start = booking.start.getTime();
-			const end = booking.end.getTime();
-			const checkedIn = booking.checkedIn;
-			const graceStart = start - GRACE_PERIOD;
-
-			
-			if (now >= graceStart && now <= end && checkedIn === false) {
-				foundValid.state = true;
-				foundValid.id = booking.id
-			}
-		});
-		return foundValid;
-
-	}
-
-	const updateBookingCheckedInStatus = async (bookingId: string, state: boolean) => {
-		const ref = doc(db, 'bookings', bookingId);
-		try {
-			await updateDoc(ref, {
-			  checkedIn: state,
-			})
-			console.log(`Booking ${bookingId} updated to checkedIn: ${state}`)
-		  } catch (error) {
-			console.error('Error updating booking:', error)
-		  }
-
-	}
-
-	const handleCheckInCheckOut = async () => {
-
-		if (isCheckedIn) {
-			console.log('Checking out')
-			setIsCheckedIn(false);
-
-		}
-		else {
-			let booking = await checkForValidReservation();
-			const isValid = booking.state;
-			const id = booking.id;
-
-			if (!isValid) {
-				console.log('no reservation found');
-			}
-			else {
-				console.log('valid time found'); // turn ev charger on
-
-				setIsCheckedIn(true);
-				console.log('Checking in');
-
-				updateBookingCheckedInStatus(id, isValid);
-				
-				setIsDisabled(true);
-				setTimeout(() => {
-				  setIsDisabled(false);
-				}, 5000);
-			}
-		}		
-	}
+	
 
 	return (
         <Box
@@ -240,7 +166,7 @@ const BookingPage = () => {
                             backgroundColor: colors.accent[400]
                         },
                     }}
-                    onClick={handleCheckInCheckOut}
+                    onClick={() => handleCheckInCheckOut(isCheckedIn, setIsCheckedIn, setIsDisabled)}
 					disabled={isDisabled}
                 >
                     {isCheckedIn ? 'Check out' : 'Check in'}
