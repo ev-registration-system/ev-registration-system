@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
+import NotificationModal from '../../components/Notifications/NotificationModal';
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from '../../../firebase'
 import { Booking } from '../../types/types'
@@ -13,6 +14,7 @@ const BookingPage = () => {
 	const [bookings, setBookings] = useState<Booking[]>([])
 	const [loading, setLoading] = useState(true)
 	const [isModalOpen, setIsModalOpen] = useState(false)
+    const [isNotificationModalOpen, setIsNotificationModalOpen] = useState(false);
 	const theme = useTheme()
 	const colors = tokens(theme.palette.mode)
 
@@ -116,7 +118,7 @@ const BookingPage = () => {
                             backgroundColor: colors.accent[400],
                         },
                     }}
-                    onClick={() => console.log('Upcoming Bookings clicked')}
+                    onClick={() => setIsNotificationModalOpen(true)}
                 >
                     Upcoming Bookings
                 </Button>
@@ -142,6 +144,8 @@ const BookingPage = () => {
 
             {/* Reservation Modal */}
             {isModalOpen && <ReservationModal isOpen={isModalOpen} onClose={closeModal} />}
+            {/* Notification Modal */}
+            {isNotificationModalOpen && <NotificationModal isOpen={isNotificationModalOpen} onClose={() => setIsNotificationModalOpen(false)} />}
         </Box>
     );
 };
