@@ -2,48 +2,60 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ResponsiveLine } from '@nivo/line';
 import { useTheme, Box, Typography } from '@mui/material';
 import { tokens } from '../../Theme';
+import { getAuth } from 'firebase/auth';
 
 const EmissionsLineChart: React.FC = () => {
 	const theme = useTheme();
 	const colors = tokens(theme.palette.mode);
-
-	const emissionData = useMemo(() =>  [
-		{ date: "2024-01-01", hour: 1, emissionFactor: 0.52096844 },
-		{ date: "2024-01-01", hour: 2, emissionFactor: 0.54082056 },
-		{ date: "2024-01-01", hour: 3, emissionFactor: 0.5501421 },
-		{ date: "2024-01-01", hour: 4, emissionFactor: 0.56156863 },
-		{ date: "2024-01-01", hour: 5, emissionFactor: 0.56156863 },
-		{ date: "2024-01-01", hour: 6, emissionFactor: 0.53037037 },
-		{ date: "2024-01-01", hour: 7, emissionFactor: 0.50758621 },
-		{ date: "2024-01-01", hour: 8, emissionFactor: 0.50709677 },
-		{ date: "2024-01-01", hour: 9, emissionFactor: 0.52196721 },
-		{ date: "2024-01-01", hour: 10, emissionFactor: 0.53754386 },
-		{ date: "2024-01-01", hour: 11, emissionFactor: 0.54037736 },
-		{ date: "2024-01-01", hour: 12, emissionFactor: 0.54552381 },
-		{ date: "2024-01-01", hour: 13, emissionFactor: 0.54552381 },
-		{ date: "2024-01-01", hour: 14, emissionFactor: 0.54552381 },
-		{ date: "2024-01-01", hour: 15, emissionFactor: 0.53037037 },
-		{ date: "2024-01-01", hour: 16, emissionFactor: 0.51448276 },
-		{ date: "2024-01-01", hour: 17, emissionFactor: 0.50885246 },
-		{ date: "2024-01-01", hour: 18, emissionFactor: 0.50885246 },
-		{ date: "2024-01-01", hour: 19, emissionFactor: 0.51733333 },
-		{ date: "2024-01-01", hour: 20, emissionFactor: 0.52660152 },
-		{ date: "2024-01-01", hour: 21, emissionFactor: 0.52477565 },
-		{ date: "2024-01-01", hour: 22, emissionFactor: 0.50954121 },
-		{ date: "2024-01-01", hour: 23, emissionFactor: 0.52096844 },
-		{ date: "2024-01-01", hour: 24, emissionFactor: 0.52096844 },
-	], []);
-
 	const [currentHour, setCurrentHour] = useState<number>(0);
+	const [currentDay, setCurrentDay] = useState<string>(new Date().toISOString().split("T")[0]);
 	const [currentEmission, setCurrentEmission] = useState<number | null>(null);
+	const [emissionData, setEmissionData] = useState<{ date: string; hour: number; emissionFactor: number }[]>([]);
+
+	useEffect(() => {
+        const fetchEmissions = async () => {
+            try {
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                if (currentUser) {
+                    const idToken = await currentUser.getIdToken(true);
+
+                    const response = await fetch(`http://127.0.0.1:5001/ev-registration-system/us-central1/getEmissionsData`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${idToken}`,
+                        },
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        setEmissionData(result);
+                    } else {
+                        const error = await response.json();
+                        console.error("Error fetching emissions: ", error.error);
+                    }
+                } else {
+                    console.error("User is not authenticated.");
+                }
+            } catch (error) {
+                console.error("Error calling Cloud Function: ", error);
+            }
+        };
+
+        fetchEmissions();
+    }, [currentDay]); // Update data whenever the day changes
 
 	useEffect(() => {
 		const now = new Date();
 		const currentHour = now.getHours();
 		setCurrentHour(currentHour);
+		//Note we might want to set an interval to update the current day, as there is no need to do it constantly
+		const currentDay = now.toISOString().split("T")[0];
+		setCurrentDay(currentDay);
 
 		const emissionRecord = emissionData.find(
-			(record) => record.date === "2024-01-01" && record.hour === currentHour
+			(record) => record.date === currentDay && record.hour === currentHour
 		);
 
 		if (emissionRecord) {
