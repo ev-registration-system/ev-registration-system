@@ -6,6 +6,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined"; 
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import EventIcon from "@mui/icons-material/Event";
+import CarIcon from "@mui/icons-material/DirectionsCar";
 import { useNavigate } from "react-router-dom"; 
 
 interface SideBarProps {
@@ -117,6 +118,16 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                         style={{ color: theme.palette.common.white }}
                     >
                         <Typography>Emissions</Typography>
+                    </MenuItem>
+
+                    {/* Vehicles Page */}
+                    <MenuItem
+                        active={selected === "Home"}
+                        onClick={() => handleNavigation("/vehicles")}
+                        icon={<CarIcon />}
+                        style={{ color: theme.palette.common.white }}
+                    >
+                        <Typography>Vehicles</Typography>
                     </MenuItem>
                 </Menu>
             </ProSidebar>
