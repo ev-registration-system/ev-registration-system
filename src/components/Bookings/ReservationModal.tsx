@@ -1,14 +1,24 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
 import { getAuth } from 'firebase/auth';
+import { calculateDynamicPrice } from './priceCalc';
 interface ReservationModalProps {
     isOpen: boolean;
     onClose: () => void;
-}
+}    
 
 const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) => {
+    const [dynamicPrice, setDynamicPrice] = useState<number | null>(null); // state to store dynamic price
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
+
+    const handleTimeChange = async () => {
+        if (startTime && endTime) {
+            const price = await calculateDynamicPrice(startTime, endTime);
+            setDynamicPrice(price);
+        }
+    };
+    
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -87,7 +97,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
                         <input
                             type="datetime-local"
                             value={startTime}
-                            onChange={(e) => setStartTime(e.target.value)}
+                            onChange={(e) => {setStartTime(e.target.value); handleTimeChange();}} 
                             required
                         />
                     </label>
@@ -97,11 +107,12 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
                         <input
                             type="datetime-local"
                             value={endTime}
-                            onChange={(e) => setEndTime(e.target.value)}
+                            onChange={(e) => {setEndTime(e.target.value); handleTimeChange();}}
                             required
                         />
                     </label>
                     <br /><br />
+                    {dynamicPrice !== null && <p>Estimated Price: ${dynamicPrice.toFixed(2)}</p>}
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
                         <button type="submit">Submit</button>
                         <button type="button" onClick={onClose}>Close</button>
