@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { ResponsiveLine } from '@nivo/line';
 import { useTheme, Box, Typography } from '@mui/material';
 import { tokens } from '../../Theme';
-import { getAuth } from 'firebase/auth';
+import { fetchEmissionsData } from "../../utils/fetchEmissionsData";
 
 const EmissionsLineChart: React.FC = () => {
 	const theme = useTheme();
@@ -14,33 +14,8 @@ const EmissionsLineChart: React.FC = () => {
 
 	useEffect(() => {
         const fetchEmissions = async () => {
-            try {
-                const auth = getAuth();
-                const currentUser = auth.currentUser;
-
-                if (currentUser) {
-                    const idToken = await currentUser.getIdToken(true);
-
-                    const response = await fetch(`http://127.0.0.1:5001/ev-registration-system/us-central1/getEmissionsData`, {
-                        method: 'GET',
-                        headers: {
-                            'Authorization': `Bearer ${idToken}`,
-                        },
-                    });
-
-                    if (response.ok) {
-                        const result = await response.json();
-                        setEmissionData(result);
-                    } else {
-                        const error = await response.json();
-                        console.error("Error fetching emissions: ", error.error);
-                    }
-                } else {
-                    console.error("User is not authenticated.");
-                }
-            } catch (error) {
-                console.error("Error calling Cloud Function: ", error);
-            }
+			const data = await fetchEmissionsData();
+            setEmissionData(data);
         };
 
         fetchEmissions();
