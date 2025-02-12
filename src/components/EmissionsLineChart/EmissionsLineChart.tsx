@@ -29,14 +29,11 @@ const EmissionsLineChart: React.FC = () => {
 		const currentDay = now.toISOString().split("T")[0];
 		setCurrentDay(currentDay);
 
-		const emissionRecord = emissionData.find(
-			(record) => record.date === currentDay && record.hour === currentHour
-		);
-
-		if (emissionRecord) {
-			setCurrentEmission(emissionRecord.emissionFactor);
-		} else {
-			setCurrentEmission(null);
+		if (emissionData.length > 0) { 
+			const emissionRecord = emissionData.find(
+				(record) => record.date === currentDay && record.hour === currentHour
+			);
+			setCurrentEmission(emissionRecord ? emissionRecord.emissionFactor : null);
 		}
 	}, [currentHour, emissionData]);
 
@@ -82,101 +79,106 @@ const EmissionsLineChart: React.FC = () => {
 				    </Typography>
 			    )}
             </Box>
-
-			{/* Line Chart */}
-			<ResponsiveLine
-				data={chartData}
-				theme={{
-					axis: {
-						domain: {
-							line: {
-								stroke: colors.grey[100],
+			
+			{(!chartData || chartData.length === 0 || chartData[0].data.length === 0) ? (
+            	<Typography variant="h6" color={colors.grey[100]} sx={{ mt: 3 }}>
+                	No emissions data available to display.
+            	</Typography>
+        	) : (
+				<ResponsiveLine
+					data={chartData}
+					theme={{
+						axis: {
+							domain: {
+								line: {
+									stroke: colors.grey[100],
+								},
+							},
+							legend: {
+								text: {
+									fill: colors.grey[100],
+								},
+							},
+							ticks: {
+								line: {
+									stroke: colors.grey[100],
+									strokeWidth: 1,
+								},
+								text: {
+									fill: colors.grey[100],
+								},
 							},
 						},
-						legend: {
+						legends: {
 							text: {
 								fill: colors.grey[100],
 							},
 						},
-						ticks: {
-							line: {
-								stroke: colors.grey[100],
-								strokeWidth: 1,
-							},
-							text: {
-								fill: colors.grey[100],
+						tooltip: {
+							container: {
+								color: colors.accent[400],
 							},
 						},
-					},
-					legends: {
-						text: {
-							fill: colors.grey[100],
-						},
-					},
-					tooltip: {
-						container: {
-							color: colors.accent[400],
-						},
-					},
-				}}
-				colors={colors.accent[400]}
-				margin={{ top: 50, right: 60, bottom: 110, left: 60 }}
-				xScale={{ type: 'point' }}
-				yScale={{
-					type: 'linear',
-					min: 0.5,
-					max: 'auto',
-					stacked: false,
-				}}
-				axisTop={null}
-				axisRight={null}
-				axisBottom={{
-					tickSize: 0,
-					tickPadding: 5,
-					tickRotation: 0,
-					legend: 'Hour of the Day',
-					legendOffset: 36,
-					legendPosition: 'middle',
-				}}
-				axisLeft={{
-					tickValues: 5,
-					tickSize: 3,
-					tickPadding: 5,
-					tickRotation: 0,
-					legend: 'Emission Factor (kg CO₂ per kWh)',
-					legendOffset: -50,
-					legendPosition: 'middle',
-				}}
-				enableGridX={false}
-				enableGridY={false}
-				pointSize={6}
-				pointColor={colors.accent[400]}
-				pointBorderWidth={1}
-				pointBorderColor={{ from: 'serieColor' }}
-				pointLabelYOffset={-12}
-				useMesh={true}
-				tooltip={({ point }) => (
-					<div
-						style={{
-							background: colors.accent[200],
-							padding: '5px 10px',
-							borderRadius: '3px',
-                            maxWidth: '150px',  
-                            overflow: 'hidden', 
-                            wordWrap: 'break-word', 
-						}}
-					>
-						<strong style={{ color: colors.grey[300] }}>
-							Hour: {point.data.xFormatted}
-						</strong>
-						<br />
-						<strong style={{ color: colors.grey[300] }}>
-							Emission Factor: {point.data.yFormatted} kg CO₂/kWh
-						</strong>
-					</div>
-				)}
-				enableCrosshair={false}
-			/>
+					}}
+					colors={colors.accent[400]}
+					margin={{ top: 50, right: 60, bottom: 110, left: 60 }}
+					xScale={{ type: 'point' }}
+					yScale={{
+						type: 'linear',
+						min: 0.5,
+						max: 'auto',
+						stacked: false,
+					}}
+					axisTop={null}
+					axisRight={null}
+					axisBottom={{
+						tickSize: 0,
+						tickPadding: 5,
+						tickRotation: 0,
+						legend: 'Hour of the Day',
+						legendOffset: 36,
+						legendPosition: 'middle',
+					}}
+					axisLeft={{
+						tickValues: 5,
+						tickSize: 3,
+						tickPadding: 5,
+						tickRotation: 0,
+						legend: 'Emission Factor (kg CO₂ per kWh)',
+						legendOffset: -50,
+						legendPosition: 'middle',
+					}}
+					enableGridX={false}
+					enableGridY={false}
+					pointSize={6}
+					pointColor={colors.accent[400]}
+					pointBorderWidth={1}
+					pointBorderColor={{ from: 'serieColor' }}
+					pointLabelYOffset={-12}
+					useMesh={true}
+					tooltip={({ point }) => (
+						<div
+							style={{
+								background: colors.accent[200],
+								padding: '5px 10px',
+								borderRadius: '3px',
+								maxWidth: '150px',  
+								overflow: 'hidden', 
+								wordWrap: 'break-word', 
+							}}
+						>
+							<strong style={{ color: colors.grey[300] }}>
+								Hour: {point.data.xFormatted}
+							</strong>
+							<br />
+							<strong style={{ color: colors.grey[300] }}>
+								Emission Factor: {point.data.yFormatted} kg CO₂/kWh
+							</strong>
+						</div>
+					)}
+					enableCrosshair={false}
+				/>
+			)}
 		</Box>
 	);
 };
