@@ -1,18 +1,11 @@
-import { getAuth } from "firebase/auth";
+import { getAuthToken } from "./authUtils";
 import { EmissionsData } from "../types/types";
 
 // This function uses the getEmissionsData cloud function to return an array of the emissions data
 export const fetchEmissionsData = async () => {
     try {
-        const auth = getAuth();
-        const currentUser = auth.currentUser;
-
-        if (!currentUser) {
-            console.error("User is not authenticated.");
-            return [];
-        }
-
-        const idToken = await currentUser.getIdToken(true);
+        const idToken = await getAuthToken();
+        if (!idToken) return [];
 
         const response = await fetch(
             `http://127.0.0.1:5001/ev-registration-system/us-central1/getEmissionsData`,
