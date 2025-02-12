@@ -1,5 +1,7 @@
 import { getAuth } from "firebase/auth";
+import { EmissionsData } from "../types/types";
 
+// This function uses the getEmissionsData cloud function to return an array of the emissions data
 export const fetchEmissionsData = async () => {
     try {
         const auth = getAuth();
@@ -23,7 +25,7 @@ export const fetchEmissionsData = async () => {
         );
 
         if (response.ok) {
-            return await response.json(); // Return data directly
+            return await response.json() as EmissionsData[];
         } else {
             const error = await response.json();
             console.error("Error fetching emissions:", error.error);

@@ -1,41 +1,14 @@
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { db } from '../../../firebase';
-import React, { useState, useEffect, useMemo } from 'react';
-import { getAuth } from 'firebase/auth';
-
+import { fetchEmissionsData } from "./fetchEmissionsData";
+import { EmissionsData } from "../types/types";
 
 const BASE_PRICE_PER_HOUR = 1.50;
 
-const emissionData = [
-    { date: "2024-01-01", hour: 1, emissionFactor: 0.52096844 },
-    { date: "2024-01-01", hour: 2, emissionFactor: 0.54082056 },
-    { date: "2024-01-01", hour: 3, emissionFactor: 0.5501421 },
-    { date: "2024-01-01", hour: 4, emissionFactor: 0.56156863 },
-    { date: "2024-01-01", hour: 5, emissionFactor: 0.56156863 },
-    { date: "2024-01-01", hour: 6, emissionFactor: 0.53037037 },
-    { date: "2024-01-01", hour: 7, emissionFactor: 0.50758621 },
-    { date: "2024-01-01", hour: 8, emissionFactor: 0.50709677 },
-    { date: "2024-01-01", hour: 9, emissionFactor: 0.52196721 },
-    { date: "2024-01-01", hour: 10, emissionFactor: 0.53754386 },
-    { date: "2024-01-01", hour: 11, emissionFactor: 0.54037736 },
-    { date: "2024-01-01", hour: 12, emissionFactor: 0.54552381 },
-    { date: "2024-01-01", hour: 13, emissionFactor: 0.54552381 },
-    { date: "2024-01-01", hour: 14, emissionFactor: 0.54552381 },
-    { date: "2024-01-01", hour: 15, emissionFactor: 0.53037037 },
-    { date: "2024-01-01", hour: 16, emissionFactor: 0.51448276 },
-    { date: "2024-01-01", hour: 17, emissionFactor: 0.50885246 },
-    { date: "2024-01-01", hour: 18, emissionFactor: 0.50885246 },
-    { date: "2024-01-01", hour: 19, emissionFactor: 0.51733333 },
-    { date: "2024-01-01", hour: 20, emissionFactor: 0.52660152 },
-    { date: "2024-01-01", hour: 21, emissionFactor: 0.52477565 },
-    { date: "2024-01-01", hour: 22, emissionFactor: 0.50954121 },
-    { date: "2024-01-01", hour: 23, emissionFactor: 0.52096844 },
-    { date: "2024-01-01", hour: 24, emissionFactor: 0.52096844 },
-];
-
-
 export const calculateDynamicPrice = async (startTime: string, endTime: string): Promise<number> => {
     try {
+        const emissionData: EmissionsData[] = await fetchEmissionsData();
+        if (!emissionData || emissionData.length === 0) {
+            throw new Error("Failed to fetch emissions data");
+        }
         // Convert startTime and endTime to hours
         const startHour = new Date(startTime).getHours();
         const endHour = new Date(endTime).getHours();

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
 import { getAuth } from 'firebase/auth';
-import { calculateDynamicPrice } from './priceCalc';
+import { calculateDynamicPrice } from '../../utils/calculateDynamicPrice';
 interface ReservationModalProps {
     isOpen: boolean;
     onClose: () => void;
