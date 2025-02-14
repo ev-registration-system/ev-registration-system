@@ -24,6 +24,12 @@ if (!admin.apps.length) {
 export const addBooking = onRequest(async (req, res) => {
     try {
         const { startTime, endTime, userId } = req.body;
+        console.log("📥 Received booking request:", req.body);
+
+        console.log("🔍 Extracted Fields:");
+        console.log("  - startTime:", startTime);
+        console.log("  - endTime:", endTime);
+        console.log("  - userId:", userId);
 
         if (req.headers.authorization) {
             const idToken = req.headers.authorization.split('Bearer ')[1];
@@ -38,7 +44,7 @@ export const addBooking = onRequest(async (req, res) => {
             return;
         }
 
-        if (!startTime || !endTime) {
+        if (!startTime || !endTime || !userId) {
             res.status(400).send({ error: "Invalid input. Missing required fields." });
             return;
         }
