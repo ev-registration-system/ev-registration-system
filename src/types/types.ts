@@ -12,3 +12,9 @@ export interface Vehicle {
     year: number,
     color: string
 }
+
+export interface EmissionsData {
+    date: string;
+    hour: number;
+    emissionFactor: number;
+}
