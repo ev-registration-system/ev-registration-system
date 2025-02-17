@@ -1,6 +1,5 @@
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../../firebase'; // adjust the relative path as needed
-import { Booking } from '../../types/types';
 
 const ref = collection(db, 'bookings')
 const GRACE_PERIOD = 5 * 60 * 1000; // 5 minutes measured in ms
@@ -23,8 +22,9 @@ export async function checkForValidReservation() {
 
     let foundValid = {state: false, id: ""}
     bookings.forEach(booking => {
-        //const now = new Date().getTime();
-        const now = new Date("2025-02-16T06:00:00").getTime(); 
+        const now = new Date().getTime();
+        //these are for testing:
+        //const now = new Date("2025-02-16T06:00:00").getTime(); 
         //const now = new Date("2025-02-14T20:30:00").getTime(); 
 
         const start = booking.start.getTime();
@@ -61,7 +61,7 @@ export async function handleCheckInCheckOut(isCheckedIn: boolean,
         setIsDisabled(true);
     }
     else {
-        let booking = await checkForValidReservation();
+        const booking = await checkForValidReservation();
         const isValid = booking.state;
         const id = booking.id;
 

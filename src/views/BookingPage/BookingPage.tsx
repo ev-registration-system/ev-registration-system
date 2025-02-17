@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
-import { collection, getDocs, updateDoc, doc } from 'firebase/firestore'
+import { collection, getDocs} from 'firebase/firestore'
 import { db } from '../../../firebase'
 import { Booking } from '../../types/types'
 import { tokens } from '../../Theme'
