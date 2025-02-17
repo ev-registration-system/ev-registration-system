@@ -23,7 +23,10 @@ export async function checkForValidReservation() {
 
     let foundValid = {state: false, id: ""}
     bookings.forEach(booking => {
-        const now = new Date().getTime();
+        //const now = new Date().getTime();
+        const now = new Date("2025-02-16T06:00:00").getTime(); 
+        //const now = new Date("2025-02-14T20:30:00").getTime(); 
+
         const start = booking.start.getTime();
         const end = booking.end.getTime();
         const checkedIn = booking.checkedIn;
@@ -55,7 +58,7 @@ export async function handleCheckInCheckOut(isCheckedIn: boolean,
     if (isCheckedIn) {
         console.log('Checking out')
         setIsCheckedIn(false);
-
+        setIsDisabled(true);
     }
     else {
         let booking = await checkForValidReservation();
@@ -66,17 +69,13 @@ export async function handleCheckInCheckOut(isCheckedIn: boolean,
             console.log('no reservation found');
         }
         else {
-            console.log('valid time found'); // turn ev charger on
-
             setIsCheckedIn(true);
-            console.log('Checking in');
-
             updateBookingCheckedInStatus(id, isValid);
-            
+
             setIsDisabled(true);
             setTimeout(() => {
               setIsDisabled(false);
-            }, 5000);
+            }, 3000);
         }
     }		
 }
