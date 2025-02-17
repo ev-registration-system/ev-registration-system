@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
 import { getAuth } from 'firebase/auth';
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../../firebase";
 
 interface NotificationModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
+
 
 const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState('');
@@ -19,30 +22,12 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                 const currentUser = auth.currentUser;
 
                 if (currentUser) {
-                    const idToken = await currentUser.getIdToken(true);
-
-                    const data = {
-                        email,
-                        phone,
-                        userId: currentUser.uid
-                    };
-/*
-                    const response = await fetch('https://', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${idToken}`,
-                        },
-                        body: JSON.stringify(data),
-                    });
-
-                    if (response.ok) {
-                        console.log("Notification preferences updated successfully!");
-                        onClose(); // Close modal after successful submission
-                    } else {
-                        const error = await response.json();
-                        console.error("Error updating notification preferences:", error.error);
-                    }*/
+                    const userRef = doc(db, "users", currentUser.uid);
+                    await updateDoc(userRef, {
+                        email: email,
+                        phoneNumber: phone,
+                    })
+                    onClose();               
                 } else {
                     console.error("User is not authenticated.");
                 }

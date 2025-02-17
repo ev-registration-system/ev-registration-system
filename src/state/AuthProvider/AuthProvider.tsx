@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut, User } from 'firebase/auth';
-import { auth } from '../../../firebase';
+import { auth, db } from '../../../firebase';
+import { doc, getDoc, setDoc} from "firebase/firestore";
 
 interface AuthContextType {
   user: User | null;
@@ -28,9 +29,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-    } finally {
-      setLoading(false);
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      
+      const userRef = doc(db, "users", user.uid);
+      const userSnap = await getDoc(userRef);
+      
+      if (!userSnap.exists()) {
+        await setDoc(userRef, {
+          uid: user.uid,
+          displayName: user.displayName,
+          email: "",
+          phoneNumber: "",
+        });
+      }
+
+    }finally {
+        setLoading(false);
     }
   };
 
