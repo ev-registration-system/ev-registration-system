@@ -26,7 +26,7 @@ interface ReservationModalProps {
 
 dayjs.extend(utc);
 
-// Generate time slots (every 30 minutes)
+// Generate time slots (every 30 minutes for now, this can be easily changed)
 const generateTimeSlots = () => {
     const times: string[] = [];
     for (let hour = 0; hour < 24; hour++) {
@@ -47,10 +47,20 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
     const colors = tokens(theme.palette.mode);
 
     const handleTimeChange = async () => {
-        if (startTime && endTime) {
-            const price = await calculateDynamicPrice(`${selectedDate}T${startTime}`, `${selectedDate}T${endTime}`);
-            setDynamicPrice(price);
+        if (!startTime || !endTime) return;
+    
+        //Combines date with time
+        const formattedStartTime = dayjs(`${selectedDate} ${startTime}`).utc().toISOString();
+        const formattedEndTime = dayjs(`${selectedDate} ${endTime}`).utc().toISOString();
+    
+        //Ensures that the start time is before end time
+        if (dayjs(formattedStartTime).isAfter(dayjs(formattedEndTime))) {
+            console.error("Start time must be before end time!");
+            return;
         }
+    
+        const price = await calculateDynamicPrice(formattedStartTime, formattedEndTime);
+        setDynamicPrice(price);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -62,7 +72,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
                 return;
             }
 
-            // Combines date with time
+            //Combines date with time
             const formattedStartTime = dayjs(`${selectedDate} ${startTime}`).utc().toISOString();
             const formattedEndTime = dayjs(`${selectedDate} ${endTime}`).utc().toISOString();
 
