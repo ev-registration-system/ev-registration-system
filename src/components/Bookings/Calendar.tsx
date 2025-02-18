@@ -35,8 +35,8 @@ const Calendar: React.FC<CalendarProps> = ({ bookings, getBookings }) => {
           localizer={localizer}
           events={bookings} // Replace with your events array when ready
           defaultView={Views.WEEK}
-          startAccessor="start"
-          endAccessor="end"
+          startAccessor="startTime"
+          endAccessor="endTime"
           style={{ height: '100%', width: '100%' }}
           onSelectEvent={(booking: Booking) => onSelectBooking(booking)} // when a booking is selected, trigger 'onSelectBooking'
       />

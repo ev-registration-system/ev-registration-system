@@ -23,8 +23,9 @@ const BookingPage = () => {
 			console.log(data)
 			return {
 				id: doc.id,
-				start: data.startTime.toDate(),
-				end: data.endTime.toDate(),
+				startTime: data.startTime.toDate(),
+				endTime: data.endTime.toDate(),
+                userId: data.userId,
 			}
 		})
 		console.log(bookings)
