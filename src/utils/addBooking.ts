@@ -12,12 +12,7 @@ export const addBooking = async (startTime: string, endTime: string, userId: str
             userId,
         };
 
-        console.log("📤 Preparing to send request:");
-        console.log("  - startTime:", startTime);
-        console.log("  - endTime:", endTime);
-        console.log("  - userId:", userId);
-
-        //Selects based on if local or deployed
+        //Selects URL based on if local or deployed
         const BASE_URL =
             import.meta.env.MODE === "development"
                 ? "http://127.0.0.1:5001/ev-registration-system/us-central1"
