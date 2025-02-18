@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs} from 'firebase/firestore'
 import { db } from '../../../firebase'
 import { Booking } from '../../types/types'
 import { tokens } from '../../Theme'
 import { Box, Button, useTheme } from '@mui/material'
+import { checkForValidReservation, handleCheckInCheckOut } from '../../components/Bookings/CheckInCheckOut';
+
 
 const ref = collection(db, 'bookings')
 
@@ -15,6 +17,8 @@ const BookingPage = () => {
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const theme = useTheme()
 	const colors = tokens(theme.palette.mode)
+	const [isCheckedIn, setIsCheckedIn] = useState(false);
+	const [isDisabled, setIsDisabled] = useState(false);
 
 	const getBookings = async () => {
 		const querySnapshot = await getDocs(ref)
@@ -45,6 +49,16 @@ const BookingPage = () => {
 		getBookings()
 		setIsModalOpen(false)
 	}
+
+	useEffect(() => {
+		async function runCheck() {
+			const hasValidReservation = (await checkForValidReservation()).state;
+			setIsDisabled(!hasValidReservation);
+		  }
+		  runCheck();
+	  }, []);
+	
+	
 
 	return (
         <Box
@@ -138,6 +152,25 @@ const BookingPage = () => {
                     onClick={() => console.log('Past Bookings clicked')}
                 >
                     Past Bookings
+                </Button>
+
+				{/* Check-In Check-Out Button*/}
+				<Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: "bold",
+						width: '80%',
+                        height: '50px', 
+                        '&:hover': {
+                            backgroundColor: colors.accent[400]
+                        },
+                    }}
+                    onClick={() => handleCheckInCheckOut(isCheckedIn, setIsCheckedIn, setIsDisabled)}
+					disabled={isDisabled}
+                >
+                    {isCheckedIn ? 'Check out' : 'Check in'}
                 </Button>
             </Box>
 
