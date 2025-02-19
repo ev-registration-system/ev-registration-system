@@ -5,10 +5,8 @@ const ref = collection(db, 'bookings')
 const GRACE_PERIOD = 5 * 60 * 1000; // 5 minutes measured in ms
 
 
-export async function checkForValidReservation() {
-    console.log("getting docs");
-    const querySnapshot = await getDocs(ref)
-    console.log("snapshot" + querySnapshot)
+export async function checkForValidReservation(forCheckOut = false) {
+    const querySnapshot = await getDocs(ref);
     const bookings = querySnapshot.docs.map(doc => {
         const data = doc.data()
         return {
@@ -18,11 +16,10 @@ export async function checkForValidReservation() {
             checkedIn: data.checkedIn,
         }
     });
-    console.log("docs: " + bookings);
 
     let foundValid = {state: false, id: ""}
+    const now = new Date().getTime();
     bookings.forEach(booking => {
-        const now = new Date().getTime();
         //these are for testing:
         //const now = new Date("2025-02-16T06:00:00").getTime(); 
         //const now = new Date("2025-02-14T20:30:00").getTime(); 
@@ -32,8 +29,13 @@ export async function checkForValidReservation() {
         const checkedIn = booking.checkedIn;
         const graceStart = start - GRACE_PERIOD;
 
+        //Looks for a booking that isn't checked in
+        if (!forCheckOut && now >= graceStart && now <= end && checkedIn === false) {
+            foundValid = { state: true, id: booking.id };
+        }
         
-        if (now >= graceStart && now <= end && checkedIn === false) {
+        //Looks for a booking that's already checked in
+        if (forCheckOut && checkedIn === true) {
             foundValid = { state: true, id: booking.id };
         }
     });
@@ -57,6 +59,8 @@ export async function handleCheckInCheckOut(isCheckedIn: boolean,
                                             setIsDisabled: (value: boolean) => void) {
     if (isCheckedIn) {
         console.log('Checking out')
+        const booking = await checkForValidReservation(true); 
+        await updateBookingCheckedInStatus(booking.id, false);
         setIsCheckedIn(false);
         setIsDisabled(true);
     }
@@ -69,9 +73,8 @@ export async function handleCheckInCheckOut(isCheckedIn: boolean,
             console.log('no reservation found');
         }
         else {
+            await updateBookingCheckedInStatus(id, isValid);
             setIsCheckedIn(true);
-            updateBookingCheckedInStatus(id, isValid);
-
             setIsDisabled(true);
             setTimeout(() => {
               setIsDisabled(false);

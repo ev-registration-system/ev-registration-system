@@ -96,7 +96,9 @@ export const addBooking = onRequest(async (req, res) => {
 
         const booking = {
             startTime: startTs,
-            endTime: endTs
+            endTime: endTs,
+            userId,
+            checkedIn: false,
         };
 
         const result = await db.collection('bookings').add(booking);

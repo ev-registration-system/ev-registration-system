@@ -10,6 +10,7 @@ export const addBooking = async (startTime: string, endTime: string, userId: str
             startTime: new Date(startTime),
             endTime: new Date(endTime),
             userId,
+            checkedIn: false,
         };
 
         //Selects URL based on if local or deployed

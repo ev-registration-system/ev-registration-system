@@ -3,6 +3,7 @@ export interface Booking {
     startTime: Date;
     endTime: Date;
     userId: string;
+    checkedIn: boolean;
 }
 
 export interface Vehicle {

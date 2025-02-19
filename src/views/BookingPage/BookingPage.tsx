@@ -30,6 +30,7 @@ const BookingPage = () => {
 				startTime: data.startTime.toDate(),
 				endTime: data.endTime.toDate(),
                 userId: data.userId,
+                checkedIn: isCheckedIn,
 			}
 		})
 		console.log(bookings)
