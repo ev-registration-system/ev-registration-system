@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
     Box,
     Button,
@@ -45,6 +45,26 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
     const [endTime, setEndTime] = useState('');
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+
+    //This useEffect is used to update/display the estimated price
+    useEffect(() => {
+        const calculatePrice = async () => {
+            if (!startTime || !endTime) return;
+
+            const formattedStartTime = dayjs(`${selectedDate} ${startTime}`).utc().toISOString();
+            const formattedEndTime = dayjs(`${selectedDate} ${endTime}`).utc().toISOString();
+
+            if (dayjs(formattedStartTime).isAfter(dayjs(formattedEndTime))) {
+                console.error("Start time must be before end time!");
+                return;
+            }
+
+            const price = await calculateDynamicPrice(formattedStartTime, formattedEndTime);
+            setDynamicPrice(price);
+        };
+
+        calculatePrice();
+    }, [startTime, endTime, selectedDate]);
 
     const handleTimeChange = async () => {
         if (!startTime || !endTime) return;

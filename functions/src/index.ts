@@ -358,9 +358,9 @@ export const getEmissionsData = onRequest(async (req, res) => {
       }
       //For Debugging
       const emissionsData = emissionsDoc.data();
-      console.log("Fetched emissions document data:", emissionsData);
+      //console.log("Fetched emissions document data:", emissionsData);
       const emissionsArray = emissionsData?.emissions_data || [];
-      console.log("Emissions array:", emissionsArray, "with length:", emissionsArray.length);
+      //console.log("Emissions array:", emissionsArray, "with length:", emissionsArray.length);
     
       if (!Array.isArray(emissionsArray) || emissionsArray.length !== 24) {
           res.status(400).json({ error: "Invalid emissions data format" });

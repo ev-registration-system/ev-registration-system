@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
 import { collection, getDocs} from 'firebase/firestore'
@@ -20,7 +20,7 @@ const BookingPage = () => {
 	const [isCheckedIn, setIsCheckedIn] = useState(false);
 	const [isDisabled, setIsDisabled] = useState(false);
 
-	const getBookings = async () => {
+	const getBookings = useCallback (async () => {
 		const querySnapshot = await getDocs(ref)
 		const bookings = querySnapshot.docs.map(doc => {
 			const data = doc.data()
@@ -36,11 +36,11 @@ const BookingPage = () => {
 		console.log(bookings)
 		setBookings(bookings) // Update state with the fetched bookings
 		setLoading(false) // Indicate loading is done
-	}
+	}, [setBookings, isCheckedIn]);
 
 	useEffect(() => {
 		getBookings() // Fetch bookings when the component mounts
-	}, [])
+	}, [getBookings]);
 
 	const openModal = () => {
 		setIsModalOpen(true)
