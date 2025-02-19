@@ -1,8 +1,11 @@
 import { getAuth } from 'firebase/auth';
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import Modal from 'react-modal';
-import { Box, Button, TextField, Typography, useTheme } from '@mui/material'
+import { Box, Button, MenuItem, Select, TextField, Typography, useTheme } from '@mui/material'
 import { tokens } from '../../Theme'
+import { VehicleView } from 'src/types/types';
+import Papa from 'papaparse';
+import { Label, Menu } from '@mui/icons-material';
 
 
 interface AddVehicleProps{
@@ -12,18 +15,59 @@ interface AddVehicleProps{
 
 const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
     const [vehcicleLicense, setVehicleLicense] = useState('');
-    // const [vehicleUser, setVehicleUser] = useState('');
-    const [vehicleMake, setVehicleMake] = useState('');
+    const [vehicleMake, setVehicleMake] = useState("");
     const [vehicleModel, setVehicleModel] = useState('');
     const [vehicleYear, setVehicleYear] = useState('');
     const [vehicleColor, setVehicleColor] = useState('');
+    const [makes, setMakes] = useState<string[]>([]);
+    const [filteredModels, setFilteredModels] = useState<string[]>([]);
+    const [vehiclesDeclared, setVehiclesDeclared] = useState<VehicleView[]>([])
+    const dialogRef = useRef<HTMLDialogElement | null>(null)
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
 
+    const loadCSV = async (): Promise<VehicleView[]> => {
+            try{
+                const response = await fetch('/ElectricVehicles.csv');
+                const csvData = await response.text()
+                return new Promise((resolve, reject) => {
+                    Papa.parse<VehicleView>(csvData, {
+                        header: true,
+                        skipEmptyLines: true,
+                        delimiter: ',',
+                        dynamicTyping:true,
+                        complete: (result) => {
+                            const data = result.data as  VehicleView[]
+                            setVehiclesDeclared(data)
     
+                            const uniqueMakes = Array.from(
+                                new Set(
+                                  data
+                                    .filter((item) => item.Make) // Remove rows without a Make field
+                                    .map((item) => item.Make.trim()) // Clean up whitespace
+                                )
+                              );                        
+                              setMakes(uniqueMakes);
+    
+                        },
+                        error: (error: any) => {
+                            reject(error);
+                        },
+                    });
+                });
+            } catch (error) {
+                console.error('Error reading or pasing the CSV file:', error);
+                throw error;
+            }
+        };
+
     //getAuth().currentUser
     
     const handleVehicle = async(e: React.FormEvent) => {
+      const link =
+        import.meta.env.MODE === "development"
+          ? "http://127.0.0.1:5001/ev-registration-system/us-central1/addVehicle"
+          : "https://addvehicle-w2ytv3mava-uc.a.run.app";
         e.preventDefault();
         if(vehcicleLicense && vehicleMake && vehicleModel && vehicleYear && vehicleColor){
             try{
@@ -43,7 +87,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
                     console.log(data);
                     console.log("Created data")
                     //add the right url
-                    const response = await fetch('https://addvehicle-w2ytv3mava-uc.a.run.app', {
+                    const response = await fetch(link, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -70,146 +114,88 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
         }
         onClose()
     };
+
+    useEffect(() => {
+      loadCSV()
+      if(isOpen){
+        dialogRef.current?.showModal()
+      } else {
+        dialogRef.current?.close()
+      }
+
+      if(vehicleMake){
+        const models = vehiclesDeclared.filter((vehicle) => vehicle.Make.trim() === vehicleMake)
+        .map((vehicle) => vehicle.Model.trim());
+
+        setFilteredModels([...new Set(models)]) 
+      } else {
+        setFilteredModels([]);
+      }
+
+    }, [isOpen, vehicleMake, vehiclesDeclared]);
+
     return (
-        <Modal
-          isOpen={isOpen}
-          onRequestClose={onClose}
-          style={{
-            overlay: { zIndex: 2000, backgroundColor: 'rgba(0,0,0,0.5)' },
-            content: {
-              position: 'fixed',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              maxWidth: '500px',
-              width: '90%',
-              height: '500px',
-              padding: '20px',
-              borderRadius: '8px',
-              backgroundColor: colors.grey[900],
-              zIndex: 2001,
-            },
-          }}
-        >
-          <Box sx={{ textAlign: 'center' }}>
+        <dialog ref={dialogRef} className='p-4 rounded-md shadow-lg max-w-md w-11/12 bg-gray-900 text-white'>
+          <Box sx={{textAlign: 'center'}}>
             <Typography variant="h5" color={colors.grey[100]} mb={2}>
               Add a Vehicle
             </Typography>
-    
+
             <form onSubmit={handleVehicle}>
+            <Box mb={2}>
+                <TextField label="Vehicle License Plate" variant="outlined" fullWidth type="text" value={vehcicleLicense} onChange={(e) => setVehicleLicense(e.target.value)} required />
+              </Box>
+
               <Box mb={2}>
-                <TextField
-                  label="Vehicle License Plate"
-                  variant="outlined"
-                  fullWidth
-                  value={vehcicleLicense}
-                  onChange={(e) => setVehicleLicense(e.target.value)}
-                  required
-                  sx={{
-                    backgroundColor: colors.grey[900],
-                    '& .MuiInputBase-root': {
-                      color: colors.grey[100],
-                    },
-                  }}
-                />
-              </Box>
-    
-              <Box mb={2}>
-                <TextField
-                  label="Vehicle Make"
-                  variant="outlined"
-                  fullWidth
-                  value={vehicleMake}
-                  onChange={(e) => setVehicleMake(e.target.value)}
-                  required
-                  sx={{
-                    backgroundColor: colors.grey[900],
-                    '& .MuiInputBase-root': {
-                      color: colors.grey[100],
-                    },
-                  }}
-                />
-              </Box>
-    
-              <Box mb={2}>
-                <TextField
-                  label="Vehicle Model"
-                  variant="outlined"
-                  fullWidth
-                  value={vehicleModel}
-                  onChange={(e) => setVehicleModel(e.target.value)}
-                  required
-                  sx={{
-                    backgroundColor: colors.grey[900],
-                    '& .MuiInputBase-root': {
-                      color: colors.grey[100],
-                    },
-                  }}
-                />
-              </Box>
-    
-              <Box mb={2}>
-                <TextField
-                  label="Vehicle Year"
-                  variant="outlined"
-                  fullWidth
-                  type="number"
-                  value={vehicleYear}
-                  onChange={(e) => setVehicleYear(e.target.value)}
-                  required
-                  sx={{
-                    backgroundColor: colors.grey[900],
-                    '& .MuiInputBase-root': {
-                      color: colors.grey[100],
-                    },
-                  }}
-                />
-              </Box>
-    
-              <Box mb={3}>
-                <TextField
-                  label="Vehicle Color"
-                  variant="outlined"
-                  fullWidth
-                  value={vehicleColor}
-                  onChange={(e) => setVehicleColor(e.target.value)}
-                  required
-                  sx={{
-                    backgroundColor: colors.grey[900],
-                    '& .MuiInputBase-root': {
-                      color: colors.grey[100],
-                    },
-                  }}
-                />
-              </Box>
-    
-              <Box sx={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  sx={{
-                    backgroundColor: colors.accent[500],
-                    '&:hover': { backgroundColor: colors.accent[600] },
-                  }}
+                <Select fullWidth value={vehicleMake || ''} onChange={(e) => setVehicleMake(e.target.value as string)} 
+                displayEmpty
+                MenuProps={{ disablePortal: true }}
                 >
+                  <MenuItem value="" disabled>
+                    Select Vehicle Make
+                  </MenuItem>
+                  {makes.map((make) => (
+                    <MenuItem key={make} value={make}>
+                      {make}
+                     </MenuItem>
+                    ))}
+                </Select>
+              </Box>
+              
+              <Box mb={2}>
+                <Select fullWidth value={vehicleModel || ''} 
+                  onChange={(e) => setVehicleModel(e.target.value as string)} 
+                  displayEmpty 
+                  disabled={!vehicleMake} // Disable if no make selected
+                  MenuProps={{ disablePortal: true }}
+                >
+                  <MenuItem value="" disabled>Select Vehicle Model</MenuItem>
+                  {filteredModels.map((model) => (
+                    <MenuItem key={model} value={model}>{model}</MenuItem>
+                  ))}
+                </Select>
+              </Box>
+
+              <Box mb={2}>
+                <TextField label="Vehicle Year" variant="outlined" fullWidth type="number" value={vehicleYear} onChange={(e) => setVehicleYear(e.target.value)} required />
+              </Box>
+
+              <Box mb={3}>
+                <TextField label="Vehicle Color" variant="outlined" fullWidth value={vehicleColor} onChange={(e) => setVehicleColor(e.target.value)} required />
+              </Box>
+
+              <Box sx={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
+                <Button type="submit" variant="contained" onClick={handleVehicle}>
                   Submit
                 </Button>
-                <Button
-                  type="button"
-                  variant="outlined"
-                  onClick={onClose}
-                  sx={{
-                    color: colors.accent[500],
-                    borderColor: colors.accent[500],
-                    '&:hover': { borderColor: colors.accent[600], color: colors.accent[600] },
-                  }}
-                >
+                <Button type="button" variant="outlined" onClick={onClose}>
                   Close
                 </Button>
               </Box>
+
             </form>
           </Box>
-        </Modal>
+        </dialog>
       )
 }
 

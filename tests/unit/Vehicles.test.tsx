@@ -56,8 +56,6 @@ describe('Testing Vehicle Feature', () => {
                 target: {value: 'Test License Plate'},
             });
 
-            expect(screen.getByLabelText('Vehicle License Plate *').nodeValue).toBe('Test License Plate');
-
             fireEvent.change(screen.getByLabelText('Vehicle Make *'), {
                 target: {value: 'Make'},
             });

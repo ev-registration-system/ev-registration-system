@@ -5,8 +5,10 @@ import { db } from '../../../firebase'
 import {Box, Button, Table, TableBody, TableCell, TableHead, TableRow, Typography, useTheme} from '@mui/material'
 import { useEffect, useState } from 'react'
 import { getAuth } from 'firebase/auth'
-import { Vehicle } from 'src/types/types'
+import { Vehicle, VehicleView } from 'src/types/types'
 import DeleteVehicle from '../../components/Vehicles/DeleteVehicle'
+import fs from 'fs'
+import Papa from 'papaparse'
 
 const ref = collection(db, 'vehicles')
 
@@ -19,22 +21,20 @@ const ref = collection(db, 'vehicles')
 ]*/
 
 const VehiclesPage = () => {
-    const [isModalOpen, setIsModalOpen] = useState(false)
-    const [vehicles, setVehicles] = useState<Vehicle[]>([])
-    //const [vehicles, setVehicles] = useState(mockVehicles)
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    const [vehicleToDelete, setVehicleToDelete] = useState<string | null>(null)
+    const [vehicleToDelete, setVehicleToDelete] = useState<string | null>(null);
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
 
+
     const getVehicles = async () => {
         const uid = getAuth().currentUser?.uid;
-        console.log(uid)
         if(uid){
             try{
                 const vehicleQuery = query(ref, where('user_id', '==', uid))
                 const querySnapshot = await getDocs(vehicleQuery)
-                console.log(querySnapshot)
                 const vehicles: Vehicle[] = querySnapshot.docs.map(doc => {
                     const data = doc.data()
                     return{
@@ -47,7 +47,6 @@ const VehiclesPage = () => {
                     }
                 })
                 setVehicles(vehicles)
-                console.log(vehicles)
             } catch(error){
                 console.log("Error retrieving vehicles: ", error);
             }
@@ -78,6 +77,8 @@ const VehiclesPage = () => {
         getVehicles();
         setVehicleToDelete(null);
     };
+
+    
 
     useEffect(() => {
         getVehicles()

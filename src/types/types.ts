@@ -12,3 +12,8 @@ export interface Vehicle {
     year: number,
     color: string
 }
+
+export interface VehicleView{
+    Make: string,
+    Model: string
+}
