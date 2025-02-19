@@ -1,13 +1,13 @@
 import { useEffect, useState, useCallback } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
-import { collection, getDocs} from 'firebase/firestore'
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../../firebase'
 import { Booking } from '../../types/types'
 import { tokens } from '../../Theme'
 import { Box, Button, useTheme } from '@mui/material'
 import { checkForValidReservation, handleCheckInCheckOut } from '../../components/Bookings/CheckInCheckOut';
-
+import { getUserId } from '../../utils/getUserId';
 
 const ref = collection(db, 'bookings')
 
@@ -21,22 +21,28 @@ const BookingPage = () => {
 	const [isDisabled, setIsDisabled] = useState(false);
 
 	const getBookings = useCallback (async () => {
-		const querySnapshot = await getDocs(ref)
-		const bookings = querySnapshot.docs.map(doc => {
-			const data = doc.data()
+        const userId = getUserId();
+        if (!userId) {
+            console.error("User not authenticated");
+            return [];
+        }
+		const bookingsQuery = query(ref, where("userId", "==", userId)); 
+        const querySnapshot = await getDocs(bookingsQuery);
+        const userBookings = querySnapshot.docs.map(doc => {
+            const data = doc.data();
 			console.log(data)
 			return {
 				id: doc.id,
 				startTime: data.startTime.toDate(),
 				endTime: data.endTime.toDate(),
                 userId: data.userId,
-                checkedIn: isCheckedIn,
+                checkedIn: data.checkedIn || false,
 			}
 		})
-		console.log(bookings)
-		setBookings(bookings) // Update state with the fetched bookings
+		console.log(userBookings)
+		setBookings(userBookings) // Update state with the fetched bookings
 		setLoading(false) // Indicate loading is done
-	}, [setBookings, isCheckedIn]);
+	}, [setBookings]);
 
 	useEffect(() => {
 		getBookings() // Fetch bookings when the component mounts
@@ -57,10 +63,8 @@ const BookingPage = () => {
 			setIsDisabled(!hasValidReservation);
 		  }
 		  runCheck();
-	  }, []);
+	}, []);
 	
-	
-
 	return (
         <Box
             display="flex"
