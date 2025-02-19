@@ -26,12 +26,17 @@ interface ReservationModalProps {
 
 dayjs.extend(utc);
 
-// Generate time slots (every 30 minutes for now, this can be easily changed)
+//Generate time slots (every 30 minutes for now, this can be easily changed)
 const generateTimeSlots = () => {
     const times: string[] = [];
     for (let hour = 0; hour < 24; hour++) {
-        times.push(`${hour.toString().padStart(2, '0')}:00`);
-        times.push(`${hour.toString().padStart(2, '0')}:30`);
+        for (const minute of [0, 30]) {
+            //This converts to time to 12 hour AM and PM format, I think this is better for usability
+            const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+            const suffix = hour < 12 ? 'AM' : 'PM';
+            const timeString = `${formattedHour}:${minute.toString().padStart(2, '0')} ${suffix}`;
+            times.push(timeString);
+        }
     }
     return times;
 };
