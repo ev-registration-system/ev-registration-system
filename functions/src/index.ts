@@ -38,7 +38,7 @@ export const addBooking = onRequest(async (req, res) => {
             return;
         }
 
-        if (!startTime || !endTime) {
+        if (!startTime || !endTime || !userId) {
             res.status(400).send({ error: "Invalid input. Missing required fields." });
             return;
         }
@@ -96,7 +96,9 @@ export const addBooking = onRequest(async (req, res) => {
 
         const booking = {
             startTime: startTs,
-            endTime: endTs
+            endTime: endTs,
+            userId,
+            checkedIn: false,
         };
 
         const result = await db.collection('bookings').add(booking);
@@ -356,9 +358,9 @@ export const getEmissionsData = onRequest(async (req, res) => {
       }
       //For Debugging
       const emissionsData = emissionsDoc.data();
-      console.log("Fetched emissions document data:", emissionsData);
+      //console.log("Fetched emissions document data:", emissionsData);
       const emissionsArray = emissionsData?.emissions_data || [];
-      console.log("Emissions array:", emissionsArray, "with length:", emissionsArray.length);
+      //console.log("Emissions array:", emissionsArray, "with length:", emissionsArray.length);
     
       if (!Array.isArray(emissionsArray) || emissionsArray.length !== 24) {
           res.status(400).json({ error: "Invalid emissions data format" });
