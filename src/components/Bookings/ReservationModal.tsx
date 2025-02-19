@@ -119,7 +119,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
                 }
             }}
         >
-            <DialogTitle sx={{ color: colors.grey[100], textAlign: 'center' }}>
+            <DialogTitle sx={{ color: colors.grey[100], textAlign: 'center', fontWeight: 'bold'}}>
                 Make a Reservation
             </DialogTitle>
 
