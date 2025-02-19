@@ -4,9 +4,12 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Booking } from '../../types/types'
 import DeleteBooking from './DeleteBooking';
 import { useState } from 'react';
+import { useTheme } from '@mui/material/styles';
+import { tokens } from '../../Theme';
+import { getUserId } from '../../utils/getUserId';
 
 interface CalendarProps {
-  bookings: Booking[];
+  bookings: { userBookings: Booking[], otherBookings: Booking[] };
   getBookings: () => void;
 }
 
@@ -16,12 +19,19 @@ const Calendar: React.FC<CalendarProps> = ({ bookings, getBookings }) => {
 
   const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null); // Keep track of the currently selected booking's ID. If none is selected then equal to NULL
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);  // To control the visibility of the delete confirmation modal. True when open, False when closed.
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
+  const userId = getUserId();
 
   //select booking function 
   const onSelectBooking = (booking: Booking) => {  
-    console.log('Selected booking:', booking);
-    setSelectedBookingId(booking.id); // Set the selected booking id to the one that is selected
-    setDeleteModalOpen(true); // Open the delete modal
+    if (booking.userId === userId) {
+      console.log('Selected booking:', booking);
+      setSelectedBookingId(booking.id);
+      setDeleteModalOpen(true);
+    } else {
+      console.log('You cannot delete this booking.');
+    }
   }
 
   const handleDeleteModalClose = () => {
@@ -33,12 +43,24 @@ const Calendar: React.FC<CalendarProps> = ({ bookings, getBookings }) => {
     <div>
       <BigCalendar
           localizer={localizer}
-          events={bookings} // Replace with your events array when ready
+          events={[...bookings.userBookings, ...bookings.otherBookings]} // Replace with your events array when ready
           defaultView={Views.WEEK}
           startAccessor="startTime"
           endAccessor="endTime"
           style={{ height: '100%', width: '100%' }}
           onSelectEvent={(booking: Booking) => onSelectBooking(booking)} // when a booking is selected, trigger 'onSelectBooking'
+          eventPropGetter={(event) => {
+            return {
+                style: {
+                    backgroundColor: bookings.userBookings.some(b => b.id === event.id) 
+                        ? colors.accent[500]
+                        : colors.grey[500], 
+                    color: "#FFF",
+                    borderRadius: "4px",
+                    padding: "5px",
+                },
+            };
+        }}
       />
 
       <DeleteBooking 

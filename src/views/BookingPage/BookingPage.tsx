@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebase'
 import { Booking } from '../../types/types'
 import { tokens } from '../../Theme'
@@ -12,7 +12,10 @@ import { getUserId } from '../../utils/getUserId';
 const ref = collection(db, 'bookings')
 
 const BookingPage = () => {
-	const [bookings, setBookings] = useState<Booking[]>([])
+	const [bookings, setBookings] = useState<{ userBookings: Booking[], otherBookings: Booking[] }>({
+        userBookings: [],
+        otherBookings: [],
+    });
 	const [loading, setLoading] = useState(true)
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const theme = useTheme()
@@ -26,9 +29,9 @@ const BookingPage = () => {
             console.error("User not authenticated");
             return [];
         }
-		const bookingsQuery = query(ref, where("userId", "==", userId)); 
-        const querySnapshot = await getDocs(bookingsQuery);
-        const userBookings = querySnapshot.docs.map(doc => {
+		
+        const querySnapshot = await getDocs(ref);
+        const allBookings = querySnapshot.docs.map(doc => {
             const data = doc.data();
 			console.log(data)
 			return {
@@ -39,8 +42,11 @@ const BookingPage = () => {
                 checkedIn: data.checkedIn || false,
 			}
 		})
+
+        const userBookings = allBookings.filter(booking => booking.userId === userId);
+        const otherBookings = allBookings.filter(booking => booking.userId !== userId);
 		console.log(userBookings)
-		setBookings(userBookings) // Update state with the fetched bookings
+		setBookings({userBookings, otherBookings}) // Update state with the fetched bookings
 		setLoading(false) // Indicate loading is done
 	}, [setBookings]);
 
@@ -90,7 +96,7 @@ const BookingPage = () => {
                 {loading ? (
                     <p>Loading bookings...</p>
                 ) : (
-                    <Calendar bookings={bookings} getBookings={getBookings} />
+                    <Calendar bookings={{ userBookings: bookings.userBookings, otherBookings: bookings.otherBookings }} getBookings={getBookings} />
                 )}
             </Box>
 
