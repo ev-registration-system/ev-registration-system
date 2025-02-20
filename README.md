@@ -21,4 +21,4 @@ EVantage is a system created to manage EV charging bookings and handle illegal p
 
 ## System Architecture
 
-![System Diagram]()
+![System Diagram](https://github.com/ev-registration-system/ev-registration-system/blob/adding-docs/docs/system-diagram.png)
