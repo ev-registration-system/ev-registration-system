@@ -38,7 +38,7 @@ export const addBooking = onRequest(async (req, res) => {
             return;
         }
 
-        if (!startTime || !endTime) {
+        if (!startTime || !endTime || !userId) {
             res.status(400).send({ error: "Invalid input. Missing required fields." });
             return;
         }
@@ -96,7 +96,9 @@ export const addBooking = onRequest(async (req, res) => {
 
         const booking = {
             startTime: startTs,
-            endTime: endTs
+            endTime: endTs,
+            userId,
+            checkedIn: false,
         };
 
         const result = await db.collection('bookings').add(booking);
@@ -329,4 +331,51 @@ export const retrieveHistoricalData = onRequest(async (request, response) => {
 		logger.error("Error calling function RetrieveHistoricalData", error);
 		response.status(500).send("Error calling function RetrieveHistoricalData")
 	}
+});
+
+export const getEmissionsData = onRequest(async (req, res) => {
+  try {
+      if (!req.headers.authorization) {
+          res.status(401).json({ error: "Authentication required." });
+          return;
+      }
+
+      const idToken = req.headers.authorization.split('Bearer ')[1];
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+
+      if (!decodedToken) {
+          res.status(403).json({ error: "Unauthorized access." });
+          return;
+      }
+
+      console.log("User authenticated:", decodedToken.uid);
+
+      const emissionsDoc = await db.collection("emissions").doc("3TN6YbkHSKEw4VeSL8Ur").get();
+
+      if (!emissionsDoc.exists) {
+          res.status(404).json({ error: "Emissions data not found" });
+          return;
+      }
+      //For Debugging
+      const emissionsData = emissionsDoc.data();
+      //console.log("Fetched emissions document data:", emissionsData);
+      const emissionsArray = emissionsData?.emissions_data || [];
+      //console.log("Emissions array:", emissionsArray, "with length:", emissionsArray.length);
+    
+      if (!Array.isArray(emissionsArray) || emissionsArray.length !== 24) {
+          res.status(400).json({ error: "Invalid emissions data format" });
+          return;
+      }
+
+      const formattedData = emissionsArray.map((emissionFactor: number, hour: number) => ({
+          date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
+          hour: hour + 1,
+          emissionFactor,
+      }));
+
+      res.status(200).json(formattedData);
+  } catch (error) {
+      console.error("Error fetching emissions data:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
 });

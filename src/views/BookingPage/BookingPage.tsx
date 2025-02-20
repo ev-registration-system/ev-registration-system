@@ -1,40 +1,58 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import Calendar from '../../components/Bookings/Calendar'
 import ReservationModal from '../../components/Bookings/ReservationModal'
-import { collection, getDocs } from 'firebase/firestore'
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebase'
 import { Booking } from '../../types/types'
 import { tokens } from '../../Theme'
 import { Box, Button, useTheme } from '@mui/material'
+import { checkForValidReservation, handleCheckInCheckOut } from '../../components/Bookings/CheckInCheckOut';
+import { getUserId } from '../../utils/getUserId';
 
 const ref = collection(db, 'bookings')
 
 const BookingPage = () => {
-	const [bookings, setBookings] = useState<Booking[]>([])
+	const [bookings, setBookings] = useState<{ userBookings: Booking[], otherBookings: Booking[] }>({
+        userBookings: [],
+        otherBookings: [],
+    });
 	const [loading, setLoading] = useState(true)
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	const theme = useTheme()
 	const colors = tokens(theme.palette.mode)
+	const [isCheckedIn, setIsCheckedIn] = useState(false);
+	const [isDisabled, setIsDisabled] = useState(false);
 
-	const getBookings = async () => {
-		const querySnapshot = await getDocs(ref)
-		const bookings = querySnapshot.docs.map(doc => {
-			const data = doc.data()
+	const getBookings = useCallback (async () => {
+        const userId = getUserId();
+        if (!userId) {
+            console.error("User not authenticated");
+            return [];
+        }
+		
+        const querySnapshot = await getDocs(ref);
+        const allBookings = querySnapshot.docs.map(doc => {
+            const data = doc.data();
 			console.log(data)
 			return {
 				id: doc.id,
-				start: data.startTime.toDate(),
-				end: data.endTime.toDate(),
+				startTime: data.startTime.toDate(),
+				endTime: data.endTime.toDate(),
+                userId: data.userId,
+                checkedIn: data.checkedIn || false,
 			}
 		})
-		console.log(bookings)
-		setBookings(bookings) // Update state with the fetched bookings
+
+        const userBookings = allBookings.filter(booking => booking.userId === userId);
+        const otherBookings = allBookings.filter(booking => booking.userId !== userId);
+		console.log(userBookings)
+		setBookings({userBookings, otherBookings}) // Update state with the fetched bookings
 		setLoading(false) // Indicate loading is done
-	}
+	}, [setBookings]);
 
 	useEffect(() => {
 		getBookings() // Fetch bookings when the component mounts
-	}, [])
+	}, [getBookings]);
 
 	const openModal = () => {
 		setIsModalOpen(true)
@@ -45,6 +63,14 @@ const BookingPage = () => {
 		setIsModalOpen(false)
 	}
 
+	useEffect(() => {
+		async function runCheck() {
+			const hasValidReservation = (await checkForValidReservation()).state;
+			setIsDisabled(!hasValidReservation);
+		  }
+		  runCheck();
+	}, []);
+	
 	return (
         <Box
             display="flex"
@@ -70,7 +96,7 @@ const BookingPage = () => {
                 {loading ? (
                     <p>Loading bookings...</p>
                 ) : (
-                    <Calendar bookings={bookings} getBookings={getBookings} />
+                    <Calendar bookings={{ userBookings: bookings.userBookings, otherBookings: bookings.otherBookings }} getBookings={getBookings} />
                 )}
             </Box>
 
@@ -137,6 +163,25 @@ const BookingPage = () => {
                     onClick={() => console.log('Past Bookings clicked')}
                 >
                     Past Bookings
+                </Button>
+
+				{/* Check-In Check-Out Button*/}
+				<Button
+                    variant="contained"
+                    sx={{
+                        color: colors.grey[100],
+                        backgroundColor: colors.primary[400],
+                        fontWeight: "bold",
+						width: '80%',
+                        height: '50px', 
+                        '&:hover': {
+                            backgroundColor: colors.accent[400]
+                        },
+                    }}
+                    onClick={() => handleCheckInCheckOut(isCheckedIn, setIsCheckedIn, setIsDisabled)}
+					disabled={isDisabled}
+                >
+                    {isCheckedIn ? 'Check out' : 'Check in'}
                 </Button>
             </Box>
 
