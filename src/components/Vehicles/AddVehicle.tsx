@@ -1,11 +1,9 @@
 import { getAuth } from 'firebase/auth';
 import React, {useEffect, useRef, useState} from 'react';
-import Modal from 'react-modal';
 import { Box, Button, MenuItem, Select, TextField, Typography, useTheme } from '@mui/material'
 import { tokens } from '../../Theme'
 import { VehicleView } from 'src/types/types';
 import Papa from 'papaparse';
-import { Label, Menu } from '@mui/icons-material';
 
 
 interface AddVehicleProps{
@@ -50,7 +48,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
                               setMakes(uniqueMakes);
     
                         },
-                        error: (error: any) => {
+                        error: (error: Papa.ParseError) => {
                             reject(error);
                         },
                     });
@@ -68,7 +66,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
         import.meta.env.MODE === "development"
           ? "http://127.0.0.1:5001/ev-registration-system/us-central1/addVehicle"
           : "https://addvehicle-w2ytv3mava-uc.a.run.app";
-        e.preventDefault();
+        e.preventDefault(); 
         if(vehcicleLicense && vehicleMake && vehicleModel && vehicleYear && vehicleColor){
             try{
                 const uid = getAuth().currentUser?.uid

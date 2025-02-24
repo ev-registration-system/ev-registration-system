@@ -5,10 +5,8 @@ import { db } from '../../../firebase'
 import {Box, Button, Table, TableBody, TableCell, TableHead, TableRow, Typography, useTheme} from '@mui/material'
 import { useEffect, useState } from 'react'
 import { getAuth } from 'firebase/auth'
-import { Vehicle, VehicleView } from 'src/types/types'
+import { Vehicle } from 'src/types/types'
 import DeleteVehicle from '../../components/Vehicles/DeleteVehicle'
-import fs from 'fs'
-import Papa from 'papaparse'
 
 const ref = collection(db, 'vehicles')
 

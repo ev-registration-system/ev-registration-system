@@ -1,7 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import DeleteVehicle from '../../src/components/Vehicles/DeleteVehicle'
 import AddVehicle from '../../src/components/Vehicles/AddVehicle'
-import { deleteDoc } from 'firebase/firestore';
 
 jest.mock('firebase/firestore', () => ({
     collection: jest.fn(),
@@ -12,7 +11,6 @@ jest.mock('firebase/firestore', () => ({
 describe('Testing Vehicle Feature', () => {
     describe('AddVehicle Component', () => {
         const mockOnClose =  jest.fn();
-        const mockOnDelete = jest.fn();
 
         beforeAll(() => {
             global.fetch = jest.fn(() =>
