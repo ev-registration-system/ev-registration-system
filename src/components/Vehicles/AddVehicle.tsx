@@ -48,7 +48,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
                               setMakes(uniqueMakes);
     
                         },
-                        error: (error: Papa.ParseError) => {
+                        error: (error: Error) => {
                             reject(error);
                         },
                     });
