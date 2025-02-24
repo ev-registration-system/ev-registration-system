@@ -11,6 +11,9 @@ const Dashboard = () => {
 	const colors = tokens(theme.palette.mode)
 	const { user } = useAuth();
 	const [showModal, setShowModal] = useState(false);
+	const [hasSeenModal, setHasSeenModal] = useState(
+		sessionStorage.getItem("hasSeenModal") === "true"
+	  );
   
 	useEffect(() => {
 	  const checkUserData = async () => {
@@ -24,14 +27,16 @@ const Dashboard = () => {
 		  const email = userData?.email || "";
 		  const phoneNumber = userData?.phoneNumber || "";
   
-		  if (email === "" || phoneNumber === "") {
+		  if ((email === "" || phoneNumber === "") && !hasSeenModal && !(userData.optedOut)) {
 			setShowModal(true);
+			sessionStorage.setItem("hasSeenModal", "true");
+			setHasSeenModal(true);
 		  }
 		}
 	  };
   
 	  checkUserData();
-	}, []);
+	}, [hasSeenModal]);
 
 
 	return (

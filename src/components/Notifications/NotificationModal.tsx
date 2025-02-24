@@ -13,6 +13,7 @@ interface NotificationModalProps {
 const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }) => {
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
+    const [optedOut, setOptedOut] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -26,6 +27,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                     await updateDoc(userRef, {
                         email: email,
                         phoneNumber: phone,
+                        optedOut: optedOut,
                     })
                     onClose();               
                 } else {
@@ -82,6 +84,16 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                         />
                     </label>
                     <br /><br />
+                    
+                    <label>
+                        <input
+                            type="checkbox"
+                            checked={optedOut}
+                            onChange={() => setOptedOut(true)}
+                        />
+                        Don't show this again (Notifications can be changed on the Home page)
+                    </label>
+                    
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
                         <button type="submit">Submit</button>
                         <button type="button" onClick={onClose}>Later</button>

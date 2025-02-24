@@ -41,8 +41,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           displayName: user.displayName,
           email: "",
           phoneNumber: "",
+          optedOut: false,
         });
       }
+      sessionStorage.setItem("hasSeenModal", "false");
 
     }finally {
         setLoading(false);
