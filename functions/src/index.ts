@@ -15,38 +15,134 @@ import * as admin from "firebase-admin"
 import * as data from "./dataHandler";
 //import * as messaging from "./MessagingSystem";
 import * as functions from "firebase-functions";
+import { getFirestore, Timestamp } from "firebase-admin/firestore";
+
+const db = getFirestore()
 
 if (!admin.apps.length) {
     admin.initializeApp();
 }
 
-// export const sendMessage = onRequest(async (req, res) => {
-//     try {
-//         // Extract 'to' and 'body' fields from the request body
-//         const { to, body } = req.body;
+export const addBooking = onRequest(async (req, res) => {
+  try {
+      const { startTime, endTime, userId } = req.body;
 
-//         // Basic validation to ensure required fields are provided
-//         if (!to || !body) {
-//             res.status(400).send({ error: "Invalid input. 'to' and 'body' fields are required." });
-//             return;
-//         }
+      if (req.headers.authorization) {
+          const idToken = req.headers.authorization.split('Bearer ')[1];
+          const decodedToken = await admin.auth().verifyIdToken(idToken);
+    
+          if (decodedToken.uid !== userId) {
+              res.status(403).send({ error: "Unauthorized access." });
+              return;
+          }
+      } else {
+          res.status(401).send({ error: "Authentication required." });
+          return;
+      }
 
-//         // Create a new message object
-//         const message = {
-//             to,
-//             body
-//         };
+        if (!startTime || !endTime || !userId) {
+            res.status(400).send({ error: "Invalid input. Missing required fields." });
+            return;
+        }
 
-//         // Add the message to the 'messages' collection in Firestore
-//         const result = await db.collection('messages').add(message);
-//         res.status(201).send({ message: "Message added successfully.", messageId: result.id });
-//     } catch (error) {
-//         console.error("Error adding message:", error);
-//         res.status(500).send({ error: "Internal Server Error. Please try again later." });
-//     }
-// });
 
-exports.onNewArrival = functions.firestore
+        const start = new Date(startTime);
+        const end = new Date(endTime);
+        const now = new Date();
+
+        // Validation logic
+
+        // Booking cannot be made in the past
+        if (start < now) {
+            res.status(400).send({ error: "Invalid input. Start time cannot be in the past." });
+            return;
+        }
+
+        // Booking cannot be more than a week into the future
+        const oneWeekFromNow = new Date(now);
+        oneWeekFromNow.setDate(now.getDate() + 7);
+        if (start > oneWeekFromNow) {
+            res.status(400).send({ error: "Invalid input. Start time cannot be more than a week into the future." });
+            return;
+        }
+
+        // End time must be at least an hour after start time
+        const minimumEndTime = new Date(start);
+        minimumEndTime.setHours(start.getHours() + 1);
+        if (end < minimumEndTime) {
+            res.status(400).send({ error: "Invalid input. End time must be at least one hour after start time." });
+            return;
+        }
+
+        // End time must not be longer than 6 hours after start time
+        const maximumEndTime = new Date(start);
+        maximumEndTime.setHours(start.getHours() + 6);
+        if (end > maximumEndTime) {
+            res.status(400).send({ error: "Invalid input. End time cannot be more than six hours after start time." });
+            return;
+        }
+
+        const startTs = Timestamp.fromDate(start);
+        const endTs = Timestamp.fromDate(end);
+
+        // Query Firestore for overlapping bookings
+        const overlappingBookings = await db.collection('bookings')
+            .where('startTime', '<', endTs)
+            .where('endTime', '>', startTs)
+            .get();
+
+        // If any bookings exist in this range then send 409 errorr
+        if (!overlappingBookings.empty) {
+            res.status(409).send({ error: "Booking conflict. Another booking overlaps with the requested time." });
+            return;
+        }
+
+        const booking = {
+            startTime: startTs,
+            endTime: endTs,
+            userId,
+            checkedIn: false,
+        };
+
+        const result = await db.collection('bookings').add(booking);
+        logger.info("Successfully added booking.", { result })
+        res.status(201).send({ message: "Booking added successfully.", booking: result });
+    } catch (error) {
+        logger.error("Error adding booking:", error);
+        res.status(500).send({ error: "Internal Server Error. Please try again later." });
+    }
+});
+
+export const sendMessage = onRequest(async (req, res) => {
+    try {
+        // Extract 'to' and 'body' fields from the request body
+        const { to, body } = req.body;
+
+        // Basic validation to ensure required fields are provided
+        if (!to || !body) {
+            res.status(400).send({ error: "Invalid input. 'to' and 'body' fields are required." });
+            return;
+        }
+
+        // Create a new message object
+        const message = {
+            to,
+            body
+        };
+
+        // Add the message to the 'messages' collection in Firestore
+        const result = await db.collection('messages').add(message);
+        res.status(201).send({ message: "Message added successfully.", messageId: result.id });
+    } catch (error) {
+        console.error("Error adding message:", error);
+        res.status(500).send({ error: "Internal Server Error. Please try again later." });
+    }
+});
+
+export const helloWorld = onRequest((request, response) => {
+  logger.info("Hello logs!", {structuredData: true});
+  response.send("Hello from Firebase!");
+});
 
 
 // export const sendAlertToCampusSecurity = onRequest(async (request, response) => {
@@ -313,3 +409,50 @@ export const onNewSensorEntry = functions.firestore.onDocumentCreated(
       // }
     }
  })
+ 
+export const getEmissionsData = onRequest(async (req, res) => {
+  try {
+      if (!req.headers.authorization) {
+          res.status(401).json({ error: "Authentication required." });
+          return;
+      }
+
+      const idToken = req.headers.authorization.split('Bearer ')[1];
+      const decodedToken = await admin.auth().verifyIdToken(idToken);
+
+      if (!decodedToken) {
+          res.status(403).json({ error: "Unauthorized access." });
+          return;
+      }
+
+      console.log("User authenticated:", decodedToken.uid);
+
+      const emissionsDoc = await db.collection("emissions").doc("3TN6YbkHSKEw4VeSL8Ur").get();
+
+      if (!emissionsDoc.exists) {
+          res.status(404).json({ error: "Emissions data not found" });
+          return;
+      }
+      //For Debugging
+      const emissionsData = emissionsDoc.data();
+      //console.log("Fetched emissions document data:", emissionsData);
+      const emissionsArray = emissionsData?.emissions_data || [];
+      //console.log("Emissions array:", emissionsArray, "with length:", emissionsArray.length);
+    
+      if (!Array.isArray(emissionsArray) || emissionsArray.length !== 24) {
+          res.status(400).json({ error: "Invalid emissions data format" });
+          return;
+      }
+
+      const formattedData = emissionsArray.map((emissionFactor: number, hour: number) => ({
+          date: new Date().toISOString().split("T")[0], // Current date in YYYY-MM-DD format
+          hour: hour + 1,
+          emissionFactor,
+      }));
+
+      res.status(200).json(formattedData);
+  } catch (error) {
+      console.error("Error fetching emissions data:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});

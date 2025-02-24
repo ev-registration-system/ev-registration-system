@@ -1,7 +1,9 @@
 export interface Booking {
     id: string
-    start: Date;
-    end: Date;
+    startTime: Date;
+    endTime: Date;
+    userId: string;
+    checkedIn: boolean;
 }
 
 export interface Vehicle {
@@ -16,4 +18,10 @@ export interface Vehicle {
 export interface VehicleView{
     Make: string,
     Model: string
+}
+
+export interface EmissionsData {
+    date: string;
+    hour: number;
+    emissionFactor: number;
 }
