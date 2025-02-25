@@ -4,6 +4,7 @@ export interface Booking {
     endTime: Date;
     userId: string;
     checkedIn: boolean;
+    vehicleId: string;
 }
 
 export interface Vehicle {

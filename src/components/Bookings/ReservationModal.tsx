@@ -18,6 +18,8 @@ import { addBooking } from '../../utils/addBooking';
 import { getUserId } from '../../utils/getUserId';
 import dayjs from 'dayjs';
 import utc from "dayjs/plugin/utc";
+import { getUserVehicles } from '../../utils/vehicles';
+import { Vehicle } from '../../types/types';
 
 interface ReservationModalProps {
     isOpen: boolean;
@@ -48,8 +50,19 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
     const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD')); 
     const [startTime, setStartTime] = useState('');
     const [endTime, setEndTime] = useState('');
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+    const [selectedVehicle, setSelectedVehicle] = useState<string>('');
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+
+    //This useEffect fetchs the user's vehicles
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            const userVehicles = await getUserVehicles();
+            setVehicles(userVehicles);
+        };
+        fetchVehicles();
+    }, []);
 
     //This useEffect is used to update/display the estimated price
     useEffect(() => {
@@ -90,7 +103,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (selectedDate && startTime && endTime) {
+        if (selectedDate && startTime && endTime && selectedVehicle) {
             const userId = getUserId();
             if (!userId) {
                 console.error("Error: User is not authenticated.");
@@ -101,7 +114,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
             const formattedStartTime = dayjs(`${selectedDate} ${startTime}`).utc().toISOString();
             const formattedEndTime = dayjs(`${selectedDate} ${endTime}`).utc().toISOString();
 
-            await addBooking(formattedStartTime, formattedEndTime, userId);
+            await addBooking(formattedStartTime, formattedEndTime, userId, selectedVehicle);
             onClose();
         } else {
             console.error("All fields are required.");
@@ -216,6 +229,33 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
                             {timeOptions.map((time) => (
                                 <MenuItem key={time} value={time}>
                                     {time}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Box>
+
+                    {/* Select Vehicle */}
+                    <Box mb={2}>
+                        <Typography variant="h6" color={colors.grey[100]} fontWeight="bold">
+                            Vehicle: 
+                        </Typography>
+                        <Select
+                            fullWidth
+                            value={selectedVehicle}
+                            onChange={(e) => setSelectedVehicle(e.target.value)}
+                            displayEmpty
+                            MenuProps={{ disablePortal: false }}
+                            sx={{
+                                backgroundColor: colors.grey[900],
+                                color: colors.grey[100],
+                                '& .MuiOutlinedInput-notchedOutline': { borderColor: colors.grey[500] },
+                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: colors.accent[500] },
+                            }}
+                        >
+                            <MenuItem value="" disabled>Please Select Vehicle</MenuItem>
+                            {vehicles.map((vehicle) => (
+                                <MenuItem key={vehicle.id} value={vehicle.id}>
+                                    {vehicle.make} {vehicle.model} ({vehicle.license})
                                 </MenuItem>
                             ))}
                         </Select>

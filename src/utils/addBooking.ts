@@ -1,7 +1,7 @@
 import { getAuthToken } from "./getAuthToken";
 import { Booking } from "../types/types";
 
-export const addBooking = async (startTime: string, endTime: string, userId: string): Promise<void> => {
+export const addBooking = async (startTime: string, endTime: string, userId: string, vehicleId: string): Promise<void> => {
     try {
         const idToken = await getAuthToken();
         if (!idToken) return;
@@ -11,6 +11,7 @@ export const addBooking = async (startTime: string, endTime: string, userId: str
             endTime: new Date(endTime),
             userId,
             checkedIn: false,
+            vehicleId, 
         };
 
         //Selects URL based on if local or deployed
