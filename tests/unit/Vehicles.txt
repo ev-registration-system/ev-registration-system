@@ -1,43 +1,43 @@
-// import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-// import DeleteVehicle from '../../src/components/Vehicles/DeleteVehicle'
-// import AddVehicle from '../../src/components/Vehicles/AddVehicle'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import DeleteVehicle from '../../src/components/Vehicles/DeleteVehicle'
+import AddVehicle from '../../src/components/Vehicles/AddVehicle'
 
-// jest.mock('firebase/firestore', () => ({
-//     collection: jest.fn(),
-//     doc: jest.fn(() => ({})),
-//     deleteDoc: jest.fn(() => Promise.resolve()),
-// }));
+jest.mock('firebase/firestore', () => ({
+    collection: jest.fn(),
+    doc: jest.fn(() => ({})),
+    deleteDoc: jest.fn(() => Promise.resolve()),
+}));
 
-// describe('Testing Vehicle Feature', () => {
-//     describe('AddVehicle Component', () => {
-//         const mockOnClose =  jest.fn();
+describe('Testing Vehicle Feature', () => {
+    describe('AddVehicle Component', () => {
+        const mockOnClose =  jest.fn();
 
-//         beforeAll(() => {
-//             global.fetch = jest.fn(() =>
-//                 Promise.resolve({
-//                     ok: true,
-//                     json: () => Promise.resolve({ message: 'Vehicle Added Successfully!' }),
-//                 } as Response)
-//             );
-//         });
+        beforeAll(() => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ message: 'Vehicle Added Successfully!' }),
+                } as Response)
+            );
+        });
 
-//         afterAll(() => {
-//             jest.restoreAllMocks();
-//         });
+        afterAll(() => {
+            jest.restoreAllMocks();
+        });
 
-//         test('Renders Add Modal When Open', () => {
-//             render(
-//                 <AddVehicle isOpen={true} onClose={mockOnClose} />
-//             );
+        test('Renders Add Modal When Open', () => {
+            render(
+                <AddVehicle isOpen={true} onClose={mockOnClose} />
+            );
 
-//             expect(screen.getByText('Add a Vehicle'));
-//             expect(screen.getByText('Vehicle License Plate')).toBeInTheDocument();
-//             expect(screen.getByText('Vehicle Make')).toBeInTheDocument();
-//             expect(screen.getByText('Vehicle Model')).toBeInTheDocument();
-//             expect(screen.getByText('Vehicle Year')).toBeInTheDocument();
-//             expect(screen.getByText('Vehicle Color')).toBeInTheDocument();
+            expect(screen.getByText('Add a Vehicle'));
+            expect(screen.getByText('Vehicle License Plate')).toBeInTheDocument();
+            expect(screen.getByText('Vehicle Make')).toBeInTheDocument();
+            expect(screen.getByText('Vehicle Model')).toBeInTheDocument();
+            expect(screen.getByText('Vehicle Year')).toBeInTheDocument();
+            expect(screen.getByText('Vehicle Color')).toBeInTheDocument();
 
-//         });
+        });
 
 //         test('Close the modal when the close button is clicked', () => {
 //             render(<AddVehicle isOpen={true} onClose={mockOnClose}/>);
@@ -126,5 +126,5 @@
 //         //     expect(mockOnDelete).toHaveBeenCalled();
 //         //     expect(mockOnClose).toHaveBeenCalled();
 //         // });
-//     });
-// });
+    });
+});
