@@ -1,0 +1,130 @@
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import DeleteVehicle from '../../src/components/Vehicles/DeleteVehicle'
+import AddVehicle from '../../src/components/Vehicles/AddVehicle'
+
+jest.mock('firebase/firestore', () => ({
+    collection: jest.fn(),
+    doc: jest.fn(() => ({})),
+    deleteDoc: jest.fn(() => Promise.resolve()),
+}));
+
+describe('Testing Vehicle Feature', () => {
+    describe('AddVehicle Component', () => {
+        const mockOnClose =  jest.fn();
+
+        beforeAll(() => {
+            global.fetch = jest.fn(() =>
+                Promise.resolve({
+                    ok: true,
+                    json: () => Promise.resolve({ message: 'Vehicle Added Successfully!' }),
+                } as Response)
+            );
+        });
+
+        afterAll(() => {
+            jest.restoreAllMocks();
+        });
+
+        test('Renders Add Modal When Open', () => {
+            render(
+                <AddVehicle isOpen={true} onClose={mockOnClose} />
+            );
+
+            expect(screen.getByText('Add a Vehicle'));
+            expect(screen.getByText('Vehicle License Plate')).toBeInTheDocument();
+            expect(screen.getByText('Vehicle Make')).toBeInTheDocument();
+            expect(screen.getByText('Vehicle Model')).toBeInTheDocument();
+            expect(screen.getByText('Vehicle Year')).toBeInTheDocument();
+            expect(screen.getByText('Vehicle Color')).toBeInTheDocument();
+
+        });
+
+//         test('Close the modal when the close button is clicked', () => {
+//             render(<AddVehicle isOpen={true} onClose={mockOnClose}/>);
+//             fireEvent.click(screen.getByText('Close'));
+//             expect(mockOnClose).toHaveBeenCalled();
+//         })
+
+
+//         test('Add a Vehicle', async () => {
+
+//             render(<AddVehicle isOpen={true} onClose={mockOnClose}/>);
+
+//             fireEvent.change(screen.getByLabelText('Vehicle License Plate *'), {
+//                 target: {value: 'Test License Plate'},
+//             });
+
+//             fireEvent.change(screen.getByLabelText('Vehicle Make *'), {
+//                 target: {value: 'Make'},
+//             });
+
+//             fireEvent.change(screen.getByLabelText('Vehicle Model *'), {
+//                 target: {value: 'Model'},
+//             });
+
+
+//             fireEvent.change(screen.getByLabelText('Vehicle Year *'), {
+//                 target: {value: '1234'},
+//             });
+
+//             fireEvent.change(screen.getByLabelText('Vehicle Color *'), {
+//                 target: {value: 'Color'},
+//             });
+
+//             fireEvent.click(screen.getByText('Submit'));
+
+//             await waitFor(() => {
+//                 expect(global.fetch).toHaveBeenCalledTimes(1)
+//                 expect(global.fetch).toHaveBeenCalledWith(
+//                     expect.objectContaining({
+//                         method: 'POST',
+//                         headers: {
+//                             'Content-Type': 'application/json',
+//                             Authorization: `bearer mock-id-token`,
+//                         },
+//                         body: JSON.stringify({
+//                             license: 'Test License Plate',
+//                             user_id: '123',
+//                             make: 'Make',
+//                             model: 'Model',
+//                             year: '1234',
+//                             color: 'Color'
+//                         }),
+//                     })
+//                 );
+//             });
+
+//             expect(mockOnClose).toHaveBeenCalled();
+//         })
+//     })
+
+//     describe('DeleteVehicle Component', () => {
+//         const mockOnClose = jest.fn();
+//         const mockOnDelete = jest.fn();
+
+//         test('Renders Delete Modal When Open', () => {
+//             render(
+//                 <DeleteVehicle isOpen={true} onClose={mockOnClose} vehicleId="123" onDelete={mockOnDelete}/>
+//             );
+
+//             expect(screen.getByText('Are you sure you want to delete this vehicle?'));
+//             expect(screen.getByText('Yes')).toBeInTheDocument();
+//             expect(screen.getByText('Cancel')).toBeInTheDocument();
+//         });
+
+//         // test('Delete Booking', async () => {
+//         //     render(
+//         //         <DeleteVehicle isOpen={true} onClose={mockOnClose} vehicleId="..." onDelete={mockOnDelete}/>
+//         //     );
+
+//         //     const yesButton = screen.getByText('Yes');
+//         //     fireEvent.click(yesButton);
+
+//         //     await screen.findByText('Yes');
+
+//         //     expect(deleteDoc).toHaveBeenCalledWith(expect.any(Object));
+//         //     expect(mockOnDelete).toHaveBeenCalled();
+//         //     expect(mockOnClose).toHaveBeenCalled();
+//         // });
+    });
+});

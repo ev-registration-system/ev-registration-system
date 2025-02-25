@@ -15,6 +15,11 @@ export interface Vehicle {
     color: string
 }
 
+export interface VehicleView{
+    Make: string,
+    Model: string
+}
+
 export interface EmissionsData {
     date: string;
     hour: number;
