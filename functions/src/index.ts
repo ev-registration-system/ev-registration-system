@@ -23,7 +23,7 @@ if (!admin.apps.length) {
     admin.initializeApp();
 }
 
-export const addBooking = onRequest(async (req, res) => {
+export const addBooking = onRequest({ cors: true }, async (req, res) => {
   try {
       //use this for debugging
       //console.log("Incoming request body:", req.body);
@@ -317,7 +317,7 @@ export const addVehicle = onRequest(async (request, response) => {
 
 
 export const deleteVehicle = onRequest(async (request, response) => {
-	const vehicle_id = request.body.id;
+  const {vehicle_id} = request.body
 	if(!vehicle_id){
 		logger.error("Missing required fields", {vehicle_id});
 		response.status(400).send("Missing required fields");
