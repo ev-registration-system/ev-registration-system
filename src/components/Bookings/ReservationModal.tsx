@@ -20,6 +20,7 @@ import dayjs from 'dayjs';
 import utc from "dayjs/plugin/utc";
 import { getUserVehicles } from '../../utils/vehicles';
 import { Vehicle } from '../../types/types';
+import AddVehicle from '../Vehicles/AddVehicle';
 
 interface ReservationModalProps {
     isOpen: boolean;
@@ -52,6 +53,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
     const [endTime, setEndTime] = useState('');
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [selectedVehicle, setSelectedVehicle] = useState<string>('');
+    const [isAddVehicleModalOpen, setIsAddVehicleModalOpen] = useState(false);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
@@ -258,6 +260,25 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
                                     {vehicle.make} {vehicle.model} ({vehicle.license})
                                 </MenuItem>
                             ))}
+                            {/* Option to Add New Vehicle */}
+                            <MenuItem 
+                                value="" //This makes sure its not the selected value
+                                onMouseDown={(e) => {
+                                    e.preventDefault(); 
+                                    setIsAddVehicleModalOpen(true);
+                                }}
+                                sx={{
+                                    fontWeight: "bold",
+                                    color: colors.grey[100],
+                                    justifyContent: "center",
+                                    textAlign: "center",
+                                    "&:hover": {
+                                        backgroundColor: colors.accent[400], 
+                                    },
+                                }}
+                            >
+                                Add New Vehicle
+                            </MenuItem>
                         </Select>
                     </Box>
 
@@ -298,6 +319,18 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
                     Close
                 </Button>
             </DialogActions>
+
+            {/* Add Vehicle Modal */}
+            {isAddVehicleModalOpen && (
+                <AddVehicle
+                    isOpen={isAddVehicleModalOpen}
+                    onClose={() => {
+                        setIsAddVehicleModalOpen(false);
+                        //This updates vehicle list after adding new vehicle
+                        getUserVehicles().then(setVehicles);
+                    }}
+                />
+            )}
         </Dialog>
     );
 };

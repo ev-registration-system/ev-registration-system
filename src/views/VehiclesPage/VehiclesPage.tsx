@@ -4,19 +4,11 @@ import { getDocs, collection, query, where } from 'firebase/firestore'
 import { db } from '../../../firebase'
 import {Box, Button, Table, TableBody, TableCell, TableHead, TableRow, Typography, useTheme} from '@mui/material'
 import { useEffect, useState } from 'react'
-import { getAuth } from 'firebase/auth'
 import { Vehicle } from 'src/types/types'
+import { getUserVehicles } from '../../utils/vehicles';
 import DeleteVehicle from '../../components/Vehicles/DeleteVehicle'
 
 const ref = collection(db, 'vehicles')
-
-/*const mockVehicles = [
-    { id: '1', license: 'ABC123', make: 'Toyota', model: 'Corolla', year: '2020', color: 'Red' },
-    { id: '2', license: 'XYZ456', make: 'Honda', model: 'Civic', year: '2021', color: 'Blue' },
-    { id: '3', license: 'LMN789', make: 'Ford', model: 'Focus', year: '2019', color: 'Black' },
-    { id: '4', license: 'DEF234', make: 'Chevrolet', model: 'Malibu', year: '2022', color: 'White' },
-    { id: '5', license: 'GHI567', make: 'Tesla', model: 'Model 3', year: '2023', color: 'Silver' },
-]*/
 
 const VehiclesPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -26,32 +18,10 @@ const VehiclesPage = () => {
     const theme = useTheme()
     const colors = tokens(theme.palette.mode)
 
-
-    const getVehicles = async () => {
-        const uid = getAuth().currentUser?.uid;
-        if(uid){
-            try{
-                const vehicleQuery = query(ref, where('user_id', '==', uid))
-                const querySnapshot = await getDocs(vehicleQuery)
-                const vehicles: Vehicle[] = querySnapshot.docs.map(doc => {
-                    const data = doc.data()
-                    return{
-                        id: doc.id,
-                        license: data.license,
-                        make: data.make,
-                        model: data.model,
-                        year: data.year,
-                        color: data.color
-                    }
-                })
-                setVehicles(vehicles)
-            } catch(error){
-                console.log("Error retrieving vehicles: ", error);
-            }
-        } else {
-            console.error("User not autheticated");
-        }
-    }
+    const fetchVehicles = async () => {
+        const userVehicles = await getUserVehicles();
+        setVehicles(userVehicles);
+    };
 
     const openModal = () => {
         setIsModalOpen(true)
@@ -72,14 +42,14 @@ const VehiclesPage = () => {
     };
 
     const handleDeleteSuccess = () => {
-        getVehicles();
+        fetchVehicles();
         setVehicleToDelete(null);
     };
 
     
 
     useEffect(() => {
-        getVehicles()
+        fetchVehicles()
     }, [])
 
     return (
