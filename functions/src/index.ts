@@ -313,7 +313,7 @@ export const addVehicle = onRequest(async (request, response) => {
 
 
 export const deleteVehicle = onRequest(async (request, response) => {
-	const vehicle_id = request.body.id;
+	const {vehicle_id} = request.body
 	if(!vehicle_id){
 		logger.error("Missing required fields", {vehicle_id});
 		response.status(400).send("Missing required fields");
