@@ -7,7 +7,7 @@ import { Booking } from '../../types/types'
 import { tokens } from '../../Theme'
 import { Box, Button, useTheme } from '@mui/material'
 import { checkForValidReservation, handleCheckInCheckOut } from '../../components/Bookings/CheckInCheckOut';
-import { getUserId } from '../../utils/getUserId';
+import { getUserId } from '../../utils/users';
 
 const ref = collection(db, 'bookings')
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../state/AuthProvider/AuthProvider';
 import { Box, Button, CircularProgress, Typography, useTheme } from '@mui/material';
+import { addUser } from "../../utils/users";
 
 function LoginPage() {
     const [error, setError] = useState<string | null>(null);
@@ -16,6 +17,7 @@ function LoginPage() {
         try {
             setLoading(true); // updates loading state
             await loginWithGoogle(); // Open Google sign-in popup
+            await addUser();
             navigate('/'); // Redirect to booking page on success
         } catch (err) {
             console.error(err)

@@ -11,17 +11,19 @@ import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as vehicle from "./vehicleHandler";
 import * as admin from "firebase-admin"
-//import * as user from "./userHandler";
 import * as data from "./dataHandler";
-//import * as messaging from "./MessagingSystem";
 import * as functions from "firebase-functions";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { addUser, getUser } from "./userHandler";
 
 const db = getFirestore()
 
 if (!admin.apps.length) {
     admin.initializeApp();
 }
+
+//This exports userHandler functions for deployement
+export { addUser, getUser };
 
 export const addBooking = onRequest({ cors: true }, async (req, res) => {
   try {
@@ -148,111 +150,6 @@ export const helloWorld = onRequest((request, response) => {
   response.send("Hello from Firebase!");
 });
 
-
-// export const sendAlertToCampusSecurity = onRequest(async (request, response) => {
-//     const {body, subject, method} = request.body;
-//     if(!body || !subject){
-//         logger.error("Missing required fields");
-//         response.status(400).send("Missing required fields")
-//     }
-
-//     const data: messaging.Data = {
-//       text: body,
-//       subject: subject
-//     }
-
-//     try{
-//         const result = await messaging.sendAlertToCampusSecurity(data, method);
-//         response.status(201).json({message: "Alert successfully sent to Campus Security", id: result});
-//     } catch (error){
-//         logger.error("Error sending message to campus security", error);
-//         response.status(500).send("Internal Server Error. Please Try Again Later");
-//     }
-// });
-
-// export const sendAlertToOwner = onRequest(async (request, response) => {
-//     const {body} = request.body;
-//     if(!body){
-//         logger.error("Missing required fields");
-//         response.status(400).send("Missing required fields")
-//     }
-//     try{
-//         const result = await messaging.sendAlertToOwner(body);
-//         response.status(201).json({message: "Alert successfully sent to Campus Security", id: result});
-//     } catch (error){
-//         logger.error("Error sending message to Owner", error);
-//         response.status(500).send("Internal Server Error. Please Try Again Later");
-//     }
-// });
-
-// export const sendAlertToSystem = onRequest(async (request, response) => {
-//     const {body} = request.body;
-//     if(!body){
-//         logger.error("Missing required fields");
-//         response.status(400).send("Missing required fields")
-//     }
-//     try{
-//         const result = await messaging.sendAlertToSystem(body);
-//         response.status(201).json({message: "Alert successfully sent to System Administration", id: result});
-//     } catch (error){
-//         logger.error("Error sending message to campus security", error);
-//         response.status(500).send("Internal Server Error. Please Try Again Later");
-//     }
-// });
-
-// export const addUser = onRequest(async (request, response) => {
-//   const {username, email, phone} = request.body;
-//   if(!username || !email || !phone){
-//     logger.error("Missing required fields", {username, email, phone});
-//     response.status(404).send("Missing required fields");
-//   }
-
-//   const newUser: user.User = {
-//     username: username,
-//     email: email,
-//     phone: phone
-//   }
-
-//     try{
-//         const userAdded: user.User = await user.addUser(newUser);
-//         response.status(201).json({message: "User has been created", 
-//           id: userAdded.id,
-//           username: userAdded.username,
-//           email: userAdded.email,
-//           phone: userAdded.phone});
-//     } catch(error){
-//         logger.error("Error calling function addUser", error);
-//         response.status(500).send("Error calling function addUser");
-//     }
-// });
-
-
-// export const getUser = onRequest(async (request, response) => {
-//   const {username, password} = request.body;
-//   if(!username || !password){
-//     logger.error("Missing required fields", {username, password});
-//     response.status(404).send("Missing required fields");
-//   }
-//     try{
-//       const getUser = await user.getUser(username);
-//       if(!getUser){
-//         logger.info("User not found");
-//         response.status(200).send("User Not Found");
-//         return;
-//       }
-//       response.status(200).json({
-//         message: "User has been retrieved",
-//         username: getUser?.username,
-//         email: getUser?.email,
-//         phone: getUser?.phone
-//       });
-//     } catch (error) {
-//         logger.error("Error calling function getUser", error);
-//         response.status(500).send("Error calling function getUser");
-//     }
-// });
-
-
 export const addVehicle = onRequest(async (request, response) => {
   const {license, user_id, make, model, year, color} = request.body
   
@@ -288,34 +185,6 @@ export const addVehicle = onRequest(async (request, response) => {
   }
 });
 
-
-// export const getVehicle = onRequest(async (request, response) => {
-//     const user_id = request.body.id as string;
-//     if(!user_id){
-//       logger.error("Missing required fields", {user_id});
-//       response.status(400).send("Missing required fields");
-//       return;
-//     }
-//     try{
-//         const vehicleRetrieved = await vehicle.getVehicle(user_id);
-//         if(!vehicleRetrieved){
-//           logger.info("vehicles not found");
-//           response.status(200).send("vehicles not found");
-//           return;
-//         }
-
-//         response.status(200).json({
-//           message: "Vehicles has been retrieved",
-//           vehicleRetrieved
-//         });
-
-//     } catch(error) {
-//         logger.error("Error calling function getVehicle", error);
-//         response.status(500).send("Error calling function getVehicle");
-//     }
-// });
-
-
 export const deleteVehicle = onRequest(async (request, response) => {
   const {vehicle_id} = request.body
 	if(!vehicle_id){
@@ -332,7 +201,6 @@ export const deleteVehicle = onRequest(async (request, response) => {
 		response.status(500).send("Error calling function deleteVehicle");
 	}
 })
-
 
 export const receiveData = onRequest(async (request, response ) => {
 	const {usage, user_id, vehicle_id} = request.body
@@ -414,8 +282,18 @@ export const onNewSensorEntry = functions.firestore.onDocumentCreated(
     }
  })
  
-export const getEmissionsData = onRequest(async (req, res) => {
+ export const getEmissionsData = onRequest(async (req, res) => {
   try {
+      // Manually set CORS headers
+      res.set("Access-Control-Allow-Origin", "https://ev-registration-system.web.app");
+      res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+      res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+      if (req.method === "OPTIONS") {
+          res.status(204).send("");
+          return;
+      }
+
       if (!req.headers.authorization) {
           res.status(401).json({ error: "Authentication required." });
           return;
@@ -437,12 +315,10 @@ export const getEmissionsData = onRequest(async (req, res) => {
           res.status(404).json({ error: "Emissions data not found" });
           return;
       }
-      //For Debugging
+
       const emissionsData = emissionsDoc.data();
-      //console.log("Fetched emissions document data:", emissionsData);
       const emissionsArray = emissionsData?.emissions_data || [];
-      //console.log("Emissions array:", emissionsArray, "with length:", emissionsArray.length);
-    
+
       if (!Array.isArray(emissionsArray) || emissionsArray.length !== 24) {
           res.status(400).json({ error: "Invalid emissions data format" });
           return;
@@ -455,8 +331,11 @@ export const getEmissionsData = onRequest(async (req, res) => {
       }));
 
       res.status(200).json(formattedData);
+      return;
+
   } catch (error) {
       console.error("Error fetching emissions data:", error);
       res.status(500).json({ error: "Internal Server Error" });
+      return; 
   }
 });

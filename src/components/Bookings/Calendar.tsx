@@ -6,7 +6,7 @@ import DeleteBooking from './DeleteBooking';
 import { useState } from 'react';
 import { useTheme } from '@mui/material/styles';
 import { tokens } from '../../Theme';
-import { getUserId } from '../../utils/getUserId';
+import { getUserId } from '../../utils/users';
 
 interface CalendarProps {
   bookings: { userBookings: Booking[], otherBookings: Booking[] };

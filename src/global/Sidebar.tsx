@@ -8,7 +8,9 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import EventIcon from "@mui/icons-material/Event";
 import CarIcon from "@mui/icons-material/DirectionsCar";
 import { useNavigate } from "react-router-dom";
-import { getAuth } from "firebase/auth"; 
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { db } from "../../firebase";
+import { doc, getDoc } from "firebase/firestore"; 
 
 interface SideBarProps {
     initialSelected?: string;
@@ -21,13 +23,30 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
     const navigate = useNavigate();
     const [selected, setSelected] = useState(initialSelected);
     const [userName, setUserName] = useState("Guest User");
+    const [userRole, setUserRole] = useState("Loading...");
     
     useEffect(() => {
         const auth = getAuth();
-        const user = auth.currentUser;
-        if (user) {
-            setUserName(auth.currentUser.displayName || "Guest User");
-        }
+        const currentUser = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                setUserName(user.displayName || "User");
+
+                // Fetch role from Firestore
+                const userRef = doc(db, "users", user.uid);
+                const userSnap = await getDoc(userRef);
+
+                if (userSnap.exists()) {
+                    setUserRole(userSnap.data().role || "User");
+                } else {
+                    setUserRole("User"); // Default role if not found
+                }
+            } else {
+                setUserName("Guest User");
+                setUserRole("Not Logged In");
+            }
+        });
+
+        return () => currentUser();
     }, []);
 
     const handleNavigation = (route: string) => {
@@ -50,6 +69,7 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                 },
                 "& .pro-inner-item": {
                     padding: "5px 35px 5px 20px !important",
+                    fontSize: ".5rem",
                 },
                 "& .pro-inner-item:hover": {
                     color: theme.palette.secondary.main,
@@ -70,9 +90,13 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                         }}
                     >
                         {!isCollapsed && (
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="h6" fontWeight="bold">
+                            <Box display="flex" flexDirection="column" alignItems="center">
+                                <Typography variant="h4" fontWeight="bold">
                                     {userName}
+                                </Typography>
+                                <Typography variant="subtitle1" fontWeight="bold" color="lightgray">
+                                    {/* This capitalizes the first letter of the user role*/}
+                                    {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
                                 </Typography>
                                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                                     <MenuOutlinedIcon />

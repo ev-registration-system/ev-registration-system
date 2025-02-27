@@ -1,7 +1,7 @@
 import { Dialog, colors, DialogContent, Typography, DialogActions, Button, useTheme } from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import { tokens } from '../../Theme';
-import { getUserId } from '../../utils/getUserId';
+import { getUserId } from '../../utils/users';
 import { getAuthToken } from '../../utils/getAuthToken';
 
 interface DeleteBookingProps {

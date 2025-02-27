@@ -1,7 +1,7 @@
 import { getDocs, collection, query, where } from "firebase/firestore";
 import { db } from "../../firebase"; 
 import { Vehicle } from "../types/types";
-import { getUserId } from "./getUserId";
+import { getUserId } from "./users";
 
 export const getUserVehicles = async (): Promise<Vehicle[]> => {
   const userId = getUserId();

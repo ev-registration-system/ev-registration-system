@@ -15,7 +15,7 @@ import {
 import { tokens } from '../../Theme';
 import { calculateDynamicPrice } from '../../utils/calculateDynamicPrice';
 import { addBooking } from '../../utils/addBooking';
-import { getUserId } from '../../utils/getUserId';
+import { getUserId } from '../../utils/users';
 import dayjs from 'dayjs';
 import utc from "dayjs/plugin/utc";
 import { getUserVehicles } from '../../utils/vehicles';

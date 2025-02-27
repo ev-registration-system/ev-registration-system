@@ -1,137 +1,78 @@
-import * as admin from "firebase-admin"
-import * as logger from "firebase-functions/logger"
+import { onRequest } from "firebase-functions/v2/https";
+import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 
 if (!admin.apps.length) {
     admin.initializeApp();
 }
 
-const db = admin.firestore()
+const db = admin.firestore();
 
-export interface User{
+export interface User {
     id?: string;
     username: string;
     email: string;
-    phone: number;
+    phone?: string;
+    role: string;
 }
 
-class userHandler{
-    private static COLLECTION_NAME = "users"
+//Cloud function to add a user to Firestore, this function runs when a new user signs in.
+export const addUser = onRequest({ cors: true }, async (req, res) => {
+    try {
+        const { userId, username, email, role, phone} = req.body;
 
-    
-    // static addUser = onRequest(async (request, response) => {
-    //     logger.info("add User function triggered", {structuredData: true});
-
-    //     const {username, password, email, phone} = request.body
-
-    //     if(!username || !password || !email || !phone){
-    //         logger.error("Missing required fields", {username, password, email, phone});
-    //         response.status(404).send("Missing required fields")
-    //         return;
-    //     }
-
-    //     try{
-    //         const ref = db.collection(userHandler.COLLECTION_NAME);
-    //         await ref.add({
-    //             username: username,
-    //             password: password,
-    //             email: email,
-    //             phone: phone
-    //         });
-    //         logger.info("User added successfully", {username, password, email, phone});
-    //         response.status(200).send("User added successfully");
-    //     } catch(error){
-    //         logger.error("Error adding user", error);
-    //         response.status(500).send("Error adding user");
-    //     }
-    // });
-
-    static async addUser(user: User){
-        try{
-            const ref = db.collection(userHandler.COLLECTION_NAME);
-            const docRef = await ref.add({
-                username: user.username,
-                email: user.email,
-                phone: user.phone
-            });
-
-            const querySnapshot = await docRef.get()
-            const newUser: User = {
-                id: querySnapshot.id,
-                ...querySnapshot.data()
-            } as User;
-
-            logger.info("User added successfully", {newUser});
-            return newUser
-        } catch (error) {
-            logger.error("Error adding user", error);
-            throw new Error("Error adding user");
+        if (!userId || !username || !email) {
+            console.error("Missing required fields:", { userId, username, email, role });
+            res.status(400).json({ error: "Missing required fields." });
+            return;
         }
+
+        const userRef = db.collection("users").doc(userId);
+        const userDoc = await userRef.get();
+
+        if (userDoc.exists) {
+            console.log("User already exists in Firestore:", userDoc.data());
+            res.status(200).json({ message: "User already exists" });
+            return;
+        }
+
+        const userData = {
+            username,
+            email,
+            role: "user", //Deafualt role
+            phone: phone ?? null,
+        };
+
+        await userRef.set(userData);
+
+        res.status(201).json({ message: "User added successfully." });
+    } catch (error) {
+        logger.error("Error adding user:", error);
+        res.status(500).json({ error: "Internal Server Error." });
     }
+});
 
-    
-    // static getUser = onRequest(async (request, response) => {
-    //     const user_id = request.query.id as string;
-    //     if(!user_id){
-    //         logger.error("Missing user ID in query parameters");
-    //         response.status(400).send("Missing user ID");
-    //         return;
-    //     }
-    //     try{
-    //         const ref = db.collection(userHandler.COLLECTION_NAME);
-    //         const query = ref.where("user_id", "==", user_id);
-    //         const querySnapchot = await query.get();
+//Cloud function to fetch user details by userId.
+export const getUser = onRequest({ cors: true }, async (req, res) => {
+    try {
+        const { userId } = req.query;
 
-    //         logger.info("User retrived", {user_id, querySnapchot});
-    //         response.status(200).json(querySnapchot);
-    //     } catch(error){
-    //         logger.error("Error retrieving user", error);
-    //         response.status(500).send("Error retrieving users");
-    //     }
-    // });
-
-    static async getUser(username: string): Promise<User | null>{
-        if(!username){
-            throw new Error("Missing username or password");
-        }
-        try{
-            const ref = db.collection(userHandler.COLLECTION_NAME);
-            const query = ref.where("username", "==", username);
-            const querySnapshot = await query.get();
-            if(querySnapshot.empty){
-                return null;
-            }
-            const doc = querySnapshot.docs[0];
-            const userRetrieved: User = {
-                id: doc.id, ...doc.data()
-            } as User;
-
-            logger.info("User retrieved", {userRetrieved});
-            return userRetrieved
-        } catch (error){
-            logger.error("Error retrieving user", error);
-            throw new Error("Error retrieving user");
+        if (!userId) {
+            res.status(400).json({ error: "Missing userId parameter." });
+            return;
         }
 
+        const userRef = db.collection("users").doc(userId as string);
+        const userDoc = await userRef.get();
+
+        if (!userDoc.exists) {
+            res.status(404).json({ error: "User not found." });
+            return;
+        }
+
+        res.status(200).json(userDoc.data());
+    } catch (error) {
+        logger.error("Error retrieving user:", error);
+        res.status(500).json({ error: "Internal Server Error." });
     }
-
-    // static checkIfUserElseAdd = onRequest(async (request, response) => {
-    //     const user_id = request.query.id as string;
-    //     if(!user_id){
-    //         logger.error("Missing user ID in query parameters");
-    //         response.status(400).send("Missing user ID");
-    //         return;
-    //     }
-    //     try{
-    //         const ref = db.collection(userHandler.COLLECTION_NAME);
-    //         const query = ref.where("user_id", "==", user_id);
-    //         const querySnapchot = await query.get();
-    //         if(querySnapchot.empty){
-    //             logger.info("User not found. Adding user");
-                
-    //         }
-    //     }
-    // });
-}
-
-export const addUser = userHandler.addUser;
-export const getUser = userHandler.getUser;
+});
