@@ -115,35 +115,40 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                         <Typography>Home</Typography>
                     </MenuItem>
 
-                    {/* Bookings Page */}
-                    <MenuItem
-                        active={selected === ""}
-                        onClick={() => handleNavigation("/bookings")} 
-                        icon={<EventIcon />}
-                        style={{ color: theme.palette.common.white }}
-                    >
-                        <Typography>Bookings</Typography>
-                    </MenuItem>
+                    {/* Show other pages only if the user is not security */}
+                    {userRole !== "security" && (
+                        <>
+                            {/* Bookings Page */}
+                            <MenuItem
+                                active={selected === ""}
+                                onClick={() => handleNavigation("/bookings")} 
+                                icon={<EventIcon />}
+                                style={{ color: theme.palette.common.white }}
+                            >
+                                <Typography>Bookings</Typography>
+                            </MenuItem>
 
-                    {/* Emissions Page */}
-                    <MenuItem
-                        active={selected === "Home"}
-                        onClick={() => handleNavigation("/emissions")}
-                        icon={<TrendingUpIcon />}
-                        style={{ color: theme.palette.common.white }}
-                    >
-                        <Typography>Emissions</Typography>
-                    </MenuItem>
+                            {/* Emissions Page */}
+                            <MenuItem
+                                active={selected === "Home"}
+                                onClick={() => handleNavigation("/emissions")}
+                                icon={<TrendingUpIcon />}
+                                style={{ color: theme.palette.common.white }}
+                            >
+                                <Typography>Emissions</Typography>
+                            </MenuItem>
 
-                    {/* Vehicles Page */}
-                    <MenuItem
-                        active={selected === "Home"}
-                        onClick={() => handleNavigation("/vehicles")}
-                        icon={<CarIcon />}
-                        style={{ color: theme.palette.common.white }}
-                    >
-                        <Typography>Vehicles</Typography>
-                    </MenuItem>
+                            {/* Vehicles Page */}
+                            <MenuItem
+                                active={selected === "Home"}
+                                onClick={() => handleNavigation("/vehicles")}
+                                icon={<CarIcon />}
+                                style={{ color: theme.palette.common.white }}
+                            >
+                                <Typography>Vehicles</Typography>
+                            </MenuItem>
+                        </>
+                    )}
                 </Menu>
             </ProSidebar>
         </Box>

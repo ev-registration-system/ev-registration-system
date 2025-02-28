@@ -10,8 +10,12 @@ import { CssBaseline, Box } from "@mui/material";
 import Dashboard from "./views/dashboard/Dashboard";
 import BookingPage from "./views/BookingPage/BookingPage";
 import EmissionsPage from "./views/EmissionsPage/EmissionsPage";
-import VehiclesPage from "./views/VehiclesPage/VehiclesPage"
-import { useState } from 'react';
+import VehiclesPage from "./views/VehiclesPage/VehiclesPage";
+import SecurityDashboard from "./views/Security/SecurityDashboard";
+import { useEffect, useState } from 'react';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { db } from '../firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 const App: React.FC = () => {
     const [theme, colorMode] = useMode() as [
@@ -25,8 +29,38 @@ const App: React.FC = () => {
     const showSidebar = location.pathname !== "/login";
     const showTopbar = location.pathname !== "/login";
 
+    //Tracks Role
+    const [userRole, setUserRole] = useState<string | null>(null);
+    const [loading, setLoading] = useState(true);
+
     //Tracks sidebar state, collapsed or open
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    // Fetch user role when logged in
+    useEffect(() => {
+        const auth = getAuth();
+        const unsubscribe = onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const userRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userRef);
+
+                if (userDoc.exists()) {
+                    setUserRole(userDoc.data().role || "user"); //Default to "user" if no role
+                } else {
+                    setUserRole("user"); 
+                }
+            } else {
+                setUserRole(null);
+            }
+            setLoading(false);
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <AuthProvider>
@@ -62,13 +96,21 @@ const App: React.FC = () => {
                                 <Routes>
                                     <Route path="/login" element={<LoginPage />} />
 
-                                    {/* Protected Routes */}
                                     <Route element={<ProtectedRoutes />}>
-                                        <Route path="/dashboard" element={<Dashboard />} />
-                                        <Route path="/" element={<Dashboard />} />
-                                        <Route path="/bookings" element={<BookingPage />} /> 
-                                        <Route path="/emissions" element={<EmissionsPage />} /> 
-                                        <Route path="/vehicles" element={<VehiclesPage />} />
+                                        {userRole === "security" ? (
+                                            <>
+                                                <Route path="/dashboard" element={<SecurityDashboard />} />
+                                                <Route path="/" element={<SecurityDashboard />} />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Route path="/dashboard" element={<Dashboard />} />
+                                                <Route path="/" element={<Dashboard />} />
+                                                <Route path="/bookings" element={<BookingPage />} />
+                                                <Route path="/emissions" element={<EmissionsPage />} />
+                                                <Route path="/vehicles" element={<VehiclesPage />} />
+                                            </>
+                                        )}
                                     </Route>
 
                                     {/* Catch-all Route */}
