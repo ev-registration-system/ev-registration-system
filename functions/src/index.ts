@@ -284,16 +284,6 @@ export const onNewSensorEntry = functions.firestore.onDocumentCreated(
  
  export const getEmissionsData = onRequest(async (req, res) => {
   try {
-      // Manually set CORS headers
-      res.set("Access-Control-Allow-Origin", "https://ev-registration-system.web.app");
-      res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-      res.set("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
-      if (req.method === "OPTIONS") {
-          res.status(204).send("");
-          return;
-      }
-
       if (!req.headers.authorization) {
           res.status(401).json({ error: "Authentication required." });
           return;
@@ -315,10 +305,12 @@ export const onNewSensorEntry = functions.firestore.onDocumentCreated(
           res.status(404).json({ error: "Emissions data not found" });
           return;
       }
-
+      //For Debugging
       const emissionsData = emissionsDoc.data();
+      //console.log("Fetched emissions document data:", emissionsData);
       const emissionsArray = emissionsData?.emissions_data || [];
-
+      //console.log("Emissions array:", emissionsArray, "with length:", emissionsArray.length);
+    
       if (!Array.isArray(emissionsArray) || emissionsArray.length !== 24) {
           res.status(400).json({ error: "Invalid emissions data format" });
           return;
@@ -331,11 +323,8 @@ export const onNewSensorEntry = functions.firestore.onDocumentCreated(
       }));
 
       res.status(200).json(formattedData);
-      return;
-
   } catch (error) {
       console.error("Error fetching emissions data:", error);
       res.status(500).json({ error: "Internal Server Error" });
-      return; 
   }
 });
