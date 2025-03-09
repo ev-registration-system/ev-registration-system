@@ -41,6 +41,25 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
         }
     };
 
+    const handleLater = async () => {
+        if (optedOut) {
+            try {
+                const auth = getAuth();
+                const currentUser = auth.currentUser;
+
+                if (currentUser) {
+                    const userRef = doc(db, "users", currentUser.uid);
+                    await updateDoc(userRef, {optedOut: optedOut});
+                } else {
+                    console.error("User is not authenticated.");
+                }
+            } catch (error) {
+                console.error("Error calling notification endpoint: ", error);
+            }
+        }
+        onClose();
+    }
+
     return (
         <Modal
             isOpen={isOpen}
@@ -96,7 +115,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                     
                     <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
                         <button type="submit">Submit</button>
-                        <button type="button" onClick={onClose}>Later</button>
+                        <button type="button" onClick={handleLater}>Later</button>
                     </div>
                 </form>
             </div>
