@@ -1,14 +1,10 @@
 import AddVehicle from '../../components/Vehicles/AddVehicle'
 import {tokens} from '../../Theme'
-import { getDocs, collection, query, where } from 'firebase/firestore'
-import { db } from '../../../firebase'
 import {Box, Button, Table, TableBody, TableCell, TableHead, TableRow, Typography, useTheme} from '@mui/material'
 import { useEffect, useState } from 'react'
 import { Vehicle } from 'src/types/types'
 import { getUserVehicles } from '../../utils/vehicles';
 import DeleteVehicle from '../../components/Vehicles/DeleteVehicle'
-
-const ref = collection(db, 'vehicles')
 
 const VehiclesPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);

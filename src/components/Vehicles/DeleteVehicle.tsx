@@ -1,4 +1,4 @@
-import { Dialog, colors, DialogContent, Typography, DialogActions, Button, useTheme } from '@mui/material';
+import { Dialog, DialogContent, Typography, DialogActions, Button, useTheme } from '@mui/material';
 import React, {useEffect, useState} from 'react';
 import { tokens } from '../../Theme';
 import { getUserId } from '../../utils/getUserId';
