@@ -22,6 +22,8 @@ const Topbar: React.FC<TopBarProps> = ({ isSidebarCollapsed }) => {
                 return 'Emissions';
             case '/vehicles':
                 return 'Vehicles';
+            case '/notifications':
+                return 'Notifications'
             default:
                 return 'Dashboard';
         }

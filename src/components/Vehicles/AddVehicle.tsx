@@ -68,6 +68,11 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
           // : "https://addvehicle-w2ytv3mava-uc.a.run.app";
         e.preventDefault(); 
         if(vehcicleLicense && vehicleMake && vehicleModel && vehicleYear && vehicleColor){
+          if(Number(vehicleYear) > 2025 || Number(vehicleYear) < 1900){
+            return(
+              console.log("Invalid Year")
+            )
+          }
             try{
                 const uid = getAuth().currentUser?.uid
                 if(uid){
@@ -175,6 +180,7 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
               </Box>
 
               <Box mb={2}>
+                
                 <TextField label="Vehicle Year" variant="outlined" fullWidth type="number" value={vehicleYear} onChange={(e) => setVehicleYear(e.target.value)} required />
               </Box>
 

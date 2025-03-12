@@ -3,8 +3,8 @@ export interface Booking {
     startTime: Date;
     endTime: Date;
     userId: string;
-    checkedIn: boolean;
     vehicleId: string;
+    checkedIn: boolean;
 }
 
 export interface Vehicle {
