@@ -110,7 +110,7 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                         <Typography>Bookings</Typography>
                     </MenuItem>
 
-                    {/* Notification Dialog*/}
+                    {/* Notification Dialog
                     <MenuItem
                         active={selected === "Notifications"}
                         onClick={() => handleNavigation("/notifications")}
@@ -120,7 +120,7 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                         <Typography>
                             Notifications
                         </Typography>
-                    </MenuItem>
+                    </MenuItem> */}
 
                     {/* Emissions Page */}
                     <MenuItem

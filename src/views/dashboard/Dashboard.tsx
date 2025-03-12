@@ -98,7 +98,7 @@ const Dashboard = () => {
 					<Grid2 container justifyContent="center" alignItems="center" spacing={2}>
 						{mergedBookings?.map((booking) => (
 						<Grid2 size={{xs:12, sm:6, md:4}} key={booking.id}>
-							<Card variant='outlined'>
+							<Card variant='outlined' sx={{ backgroundColor: '#f0f0f0' }}>
 								<CardContent>
 									<Typography variant='h5' fontWeight="bold">
 										Date: {booking.startTime.toLocaleDateString('en-US', {
@@ -126,7 +126,7 @@ const Dashboard = () => {
 				(<Typography variant="h6">No Vehicles Registered</Typography>) : 
 				
 				(vehicles?.map((vehicle) => (
-					<Accordion key={vehicle.id}>
+					<Accordion key={vehicle.id} sx={{ backgroundColor: '#f0f0f0' }}>
 						<AccordionSummary
 							expandIcon={<ExpandMore/>}
 							aria-controls={`panel${vehicle.id}-content`}
