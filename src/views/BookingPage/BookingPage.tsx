@@ -40,7 +40,7 @@ const BookingPage = () => {
 				endTime: data.endTime.toDate(),
                 userId: data.userId,
                 checkedIn: data.checkedIn || false,
-                vehicleId: "" //FIX THIS LATER
+                vehicleId: data.vehicleId,
 			}
 		})
 

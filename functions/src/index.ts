@@ -23,9 +23,11 @@ if (!admin.apps.length) {
     admin.initializeApp();
 }
 
-export const addBooking = onRequest(async (req, res) => {
+export const addBooking = onRequest({ cors: true }, async (req, res) => {
   try {
-      const { startTime, endTime, userId } = req.body;
+      //use this for debugging
+      //console.log("Incoming request body:", req.body);
+      const { startTime, endTime, userId, vehicleId } = req.body;
 
       if (req.headers.authorization) {
           const idToken = req.headers.authorization.split('Bearer ')[1];
@@ -40,7 +42,7 @@ export const addBooking = onRequest(async (req, res) => {
           return;
       }
 
-        if (!startTime || !endTime || !userId) {
+        if (!startTime || !endTime || !userId || !vehicleId) {
             res.status(400).send({ error: "Invalid input. Missing required fields." });
             return;
         }
@@ -89,6 +91,7 @@ export const addBooking = onRequest(async (req, res) => {
         const overlappingBookings = await db.collection('bookings')
             .where('startTime', '<', endTs)
             .where('endTime', '>', startTs)
+            .where('vehicleId', '==', vehicleId)
             .get();
 
         // If any bookings exist in this range then send 409 errorr
@@ -102,6 +105,7 @@ export const addBooking = onRequest(async (req, res) => {
             endTime: endTs,
             userId,
             checkedIn: false,
+            vehicleId,
         };
 
         const result = await db.collection('bookings').add(booking);
