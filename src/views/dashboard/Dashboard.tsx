@@ -1,4 +1,4 @@
-import { Accordion, AccordionSummary, Box, Card, CardContent, Grid2, MenuItem, Stack, Typography, useTheme } from '@mui/material'
+import { Accordion, AccordionSummary, Box, Card, CardContent, Grid2, Stack, Typography, useTheme } from '@mui/material'
 import { tokens } from '../../Theme'
 import { Booking, Vehicle } from 'src/types/types'
 import { useEffect, useState } from 'react'
@@ -38,7 +38,7 @@ const Dashboard = () => {
 				setBookings(bookingsData)
 				console.log(getAuth().currentUser?.uid)
 			} catch (error){
-				
+				console.log(error)
 			}
 		}
 	}
@@ -62,7 +62,7 @@ const Dashboard = () => {
 				setVehicles(vehiclesData)
 				console.log(vehiclesData)
 			} catch(error){
-
+				console.log(error)
 			}
 		}
 	}
