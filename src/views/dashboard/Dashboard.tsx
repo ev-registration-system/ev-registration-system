@@ -7,6 +7,7 @@ import { collection, getDocs, query, where } from 'firebase/firestore'
 import { db } from '../../../firebase'
 import { Timestamp } from 'firebase-admin/firestore'
 import { ExpandMore } from '@mui/icons-material'
+import EmissionsLineChart from '../../components/EmissionsLineChart/EmissionsLineChart'
 
 
 const Dashboard = () => {
@@ -94,7 +95,7 @@ const Dashboard = () => {
 					<Typography variant='h3'>
 						Upcoming Bookings
 					</Typography><br/>
-					<Grid2 container spacing={2}>
+					<Grid2 container justifyContent="center" alignItems="center" spacing={2}>
 						{mergedBookings?.map((booking) => (
 						<Grid2 size={{xs:12, sm:6, md:4}} key={booking.id}>
 							<Card variant='outlined'>
@@ -108,8 +109,8 @@ const Dashboard = () => {
 												})}
 									</Typography>
 									<Typography variant='h6'>
-										Start Time: {booking.startTime.toLocaleTimeString()} <br/>
-										End Time: {booking.endTime.toLocaleTimeString()}<br/>
+										Start Time: {booking.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} <br/>
+										End Time: {booking.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}<br/>
 										Vehicle Booked: {booking.vehicle?.make} {booking.vehicle?.model} {booking.vehicle?.license}
 									</Typography>
 								</CardContent>
@@ -119,9 +120,11 @@ const Dashboard = () => {
 					</Grid2>
 				</div>
 				<div>
-				<Typography variant="h4">Vehicle Information</Typography>
+				<Typography variant="h3">Vehicles Registered</Typography>
+				<Grid2 container justifyContent="center" alignItems="center" spacing={2}>
 				{vehicles?.length === 0 ? 
 				(<Typography variant="h6">No Vehicles Registered</Typography>) : 
+				
 				(vehicles?.map((vehicle) => (
 					<Accordion key={vehicle.id}>
 						<AccordionSummary
@@ -139,19 +142,23 @@ const Dashboard = () => {
 						</AccordionSummary>
 					</Accordion>
 				)))}
+			</Grid2>
 					
 				</div>
 				<div>
-					<MenuItem>
-						Current Charging Price
-					</MenuItem>
+					<Typography variant='h3'>
+						Hourly Emissions Price
+					</Typography>
+					<div>
+						<EmissionsLineChart/>
+					</div>
 				</div>
 
-				<div>
-					<MenuItem>
+				{/* <div>
+					<Typography variant='h3'>
 						Notifications
-					</MenuItem>
-				</div>
+					</Typography>
+				</div> */}
 			</Stack>
 		</Box>
 	)

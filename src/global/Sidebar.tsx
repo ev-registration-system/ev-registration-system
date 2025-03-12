@@ -110,6 +110,18 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                         <Typography>Bookings</Typography>
                     </MenuItem>
 
+                    {/* Notification Dialog*/}
+                    <MenuItem
+                        active={selected === "Notifications"}
+                        onClick={() => handleNavigation("/notifications")}
+                        icon={<IconButton/>}
+                        style={{ color: theme.palette.common.white }}
+                    >
+                        <Typography>
+                            Notifications
+                        </Typography>
+                    </MenuItem>
+
                     {/* Emissions Page */}
                     <MenuItem
                         active={selected === "Home"}
