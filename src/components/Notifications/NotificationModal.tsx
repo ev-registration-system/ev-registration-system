@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
 import { getAuth } from 'firebase/auth';
-import { doc, updateDoc } from "firebase/firestore";
+import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
 import { db } from "../../../firebase";
 
 interface NotificationModalProps {
@@ -57,6 +57,24 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                 console.error("Error calling notification endpoint: ", error);
             }
         }
+
+        //test code, delete later
+
+        const sessionStart = '2025-03-09T10:00:00.000Z'
+        const sessionEnd = '2025-03-09T10:15:00.000Z'
+        const price = 15.00   
+
+        const testPhone = "+15068382586"
+        const to  = testPhone;
+        const body = "Your session from " + sessionStart + " to " + sessionEnd + " has ended.\n Amount due: $" + price + " CAD\n Proceed to pay at XYZ Location";
+        const message = {
+            to,
+            body
+          }
+
+        const ref = collection(db, "messages");
+        const result = await addDoc(ref, message);
+        
         onClose();
     }
 
