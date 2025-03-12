@@ -10,11 +10,11 @@ export const fetchEmissionsData = async () => {
         //This uses the appropriate address depending on if being called locally/emulator or deployed
         const BASE_URL =
             import.meta.env.MODE === "development"
-                ? "http://127.0.0.1:5001/ev-registration-system/us-central1"
-                : "https://us-central1-ev-registration-system.cloudfunctions.net";
+                ? "http://127.0.0.1:5001/ev-registration-system/us-central1/getEmissionsData"
+                : "https://getemissionsdata-w2ytv3mava-uc.a.run.app";
 
         const response = await fetch(
-            `${BASE_URL}/getEmissionsData`,
+            BASE_URL,
             {
                 method: "GET",
                 headers: {
