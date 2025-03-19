@@ -111,7 +111,7 @@ const Dashboard = () => {
 									<Typography variant='h6'>
 										Start Time: {booking.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} <br/>
 										End Time: {booking.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}<br/>
-										Vehicle Booked: {booking.vehicle?.make} {booking.vehicle?.model} {booking.vehicle?.license}
+										Vehicle To Charge: {booking.vehicle?.make} {booking.vehicle?.model} {booking.vehicle?.license}
 									</Typography>
 								</CardContent>
 							</Card>
