@@ -3,8 +3,9 @@ import { Buffer } from 'buffer';
 import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
-import { collection, addDoc} from 'firebase/firestore';
-import { db } from '../../firebase';
+//import { collection, addDoc} from 'firebase/firestore';
+import * as admin from "firebase-admin"
+const db = admin.firestore();
 
 
 
@@ -17,7 +18,9 @@ const testPhone = "15068382586"
 
 const tasksClient = new CloudTasksClient();
 
-export const onBookingCreated = onDocumentCreated('bookings/{bookingId}', async (event) => {
+export const onBookingCreated = onDocumentCreated(
+    {document: 'bookings/{bookingId}', region: location}, 
+    async (event) => {
   const dataSnap = event.data;
   
   if (!dataSnap) {
@@ -67,33 +70,7 @@ export const onBookingCreated = onDocumentCreated('bookings/{bookingId}', async 
 
 
 
-export const sendReminder = onRequest(async (req, res) => {
-  try {
-    const {sessionStart, sessionEnd, destNum} = req.body;
 
-    if (!sessionStart || !sessionEnd || !destNum) {
-      res.status(400).send({ error: "Invalid input. 'sessionStart', 'sessionEnd', and 'destNum' fields are required." });
-      return;
-    }
-
-    //const to = destNum;
-    const to  = testPhone;
-    const now = new Date().getTime();
-
-    const body = "REMINDER: Your reservation from " + sessionStart + " to " + sessionEnd +
-                 "Will begin in: " + (sessionStart - now) + " minutes."
-    const message = {
-      to,
-      body
-    }
-
-    const result = await addDoc(collection(db, 'messages'), message);
-    res.status(201).send({ message: "Message added successfully.", messageId: result.id });
-  }catch (error) {
-    console.error("Error adding message:", error);
-    res.status(500).send({ error: "Internal Server Error. Please try again later." });
-}
-}); 
 
 
 export const sendReceipt = onRequest(async (req, res) => {
@@ -112,8 +89,9 @@ export const sendReceipt = onRequest(async (req, res) => {
       to,
       body
     }
+    const result = await db.collection('messages').add(message);
 
-    const result = await addDoc(collection(db, 'messages'), message);
+    //const result = await addDoc(collection(db, 'messages'), message);
     res.status(201).send({ message: "Message added successfully.", messageId: result.id });
   }catch (error) {
     console.error("Error adding message:", error);
@@ -136,8 +114,9 @@ export const sendMessage = onRequest(async (req, res) => {
       to,
       body
     }
+    const result = await db.collection('messages').add(message);
 
-    const result = await addDoc(collection(db, 'messages'), message);
+    //const result = await addDoc(collection(db, 'messages'), message);
     res.status(201).send({ message: "Message added successfully.", messageId: result.id });
   }catch (error) {
     console.error("Error adding message:", error);
@@ -157,7 +136,9 @@ export const sendAlertToCampusSecurity = onRequest(async (request, response) => 
     }
 
     try{
-      const result = await addDoc(collection(db, 'messages'), message);
+      const result = await db.collection('messages').add(message);
+
+      //const result = await addDoc(collection(db, 'messages'), message);
       response.status(201).json({message: "Alert successfully sent to Campus Security", id: result});
     } catch (error){
         logger.error("Error sending message to campus security", error);
