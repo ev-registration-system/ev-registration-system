@@ -288,7 +288,7 @@ export const receiveData = onRequest(async (request, response ) => {
 	const {usage, user_id, vehicle_id} = request.body
 
 	if(!usage || !user_id || !vehicle_id){
-		logger.error("Missing required fields", {usage, user_id, vehicle});
+		logger.error("Missing required fields", {usage, user_id, vehicle_id});
 		response.status(404).send("Missing required fields")
 		return;
     }
