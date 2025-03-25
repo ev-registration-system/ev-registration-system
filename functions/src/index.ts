@@ -17,46 +17,10 @@ import * as logger from "firebase-functions/logger";
 import * as vehicle from "./vehicleHandler";
 //import * as user from "./userHandler";
 import * as data from "./dataHandler";
-//import * as messaging from "./MessagingSystem";
 import * as functions from "firebase-functions";
 import { Timestamp } from "firebase-admin/firestore";
-export { onBookingCreated, sendMessage, sendReceipt, sendAlertToCampusSecurity } from "./notificationHandler";
-
 
 const db = admin.firestore();
-
-
-const testPhone = "15068382586"
-
-export const sendReminder = onRequest(async (req, res) => {
-  try {
-    const {sessionStart, sessionEnd, destNum} = req.body;
-
-    if (!sessionStart || !sessionEnd || !destNum) {
-      res.status(400).send({ error: "Invalid input. 'sessionStart', 'sessionEnd', and 'destNum' fields are required." });
-      return;
-    }
-
-    //const to = destNum;
-    const to  = testPhone;
-    const now = new Date().getTime();
-
-    const body = "REMINDER: Your reservation from " + sessionStart + " to " + sessionEnd +
-                 "Will begin in: " + (sessionStart - now) + " minutes."
-    const message = {
-      to,
-      body
-    }
-    const result = await db.collection('messages').add(message);
-    //const result = await addDoc(collection(db, 'messages'), message);
-
-    res.status(201).send({ message: "Message added successfully.", messageId: result.id });
-  }catch (error) {
-    console.error("Error adding message:", error);
-    res.status(500).send({ error: "Internal Server Error. Please try again later." });
-}
-}); 
-
 
 export const addBooking = onRequest(async (req, res) => {
   try {
