@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Modal from 'react-modal';
 import { getAuth } from 'firebase/auth';
-import { doc, updateDoc, addDoc, collection } from "firebase/firestore";
+import { doc, updateDoc} from "firebase/firestore";
 import { db } from "../../../firebase";
 
 interface NotificationModalProps {

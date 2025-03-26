@@ -1,4 +1,3 @@
-import { useAuth } from "../../state/AuthProvider/AuthProvider";
 import { doc, getDoc } from "firebase/firestore";
 import NotificationModal from "../../components/Notifications/NotificationModal";
 import { Accordion, AccordionSummary, Box, Card, CardContent, Grid2, Stack, Typography, useTheme } from '@mui/material'
