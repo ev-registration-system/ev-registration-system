@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import "react-pro-sidebar/dist/css/styles.css";
@@ -7,7 +7,8 @@ import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import EventIcon from "@mui/icons-material/Event";
 import CarIcon from "@mui/icons-material/DirectionsCar";
-import { useNavigate } from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
+import { getAuth } from "firebase/auth"; 
 
 interface SideBarProps {
     initialSelected?: string;
@@ -19,8 +20,15 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
     const theme = useTheme();
     const navigate = useNavigate();
     const [selected, setSelected] = useState(initialSelected);
-
-    const userName = "Guest User";
+    const [userName, setUserName] = useState("Guest User");
+    
+    useEffect(() => {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+            setUserName(auth.currentUser.displayName || "Guest User");
+        }
+    }, []);
 
     const handleNavigation = (route: string) => {
         setSelected(route);  // Update selected state
@@ -62,33 +70,16 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                         }}
                     >
                         {!isCollapsed && (
-                            <Box
-                                display="flex"
-                                justifyContent="space-between"
-                                alignItems="center"
-                                ml="15px"
-                            >
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <Typography variant="h6" fontWeight="bold">
+                                    {userName}
+                                </Typography>
                                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                                     <MenuOutlinedIcon />
                                 </IconButton>
                             </Box>
                         )}
                     </MenuItem>
-
-                    {/* User Info */}
-                    {!isCollapsed && (
-                        <Box
-                            mb="25px"
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            flexDirection="column"
-                        >
-                            <Typography variant="h6" color="white" fontWeight="bold">
-                                {userName}
-                            </Typography>
-                        </Box>
-                    )}
 
                     {/* Home Page*/}
                     <MenuItem
@@ -109,6 +100,18 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
                     >
                         <Typography>Bookings</Typography>
                     </MenuItem>
+
+                    {/* Notification Dialog
+                    <MenuItem
+                        active={selected === "Notifications"}
+                        onClick={() => handleNavigation("/notifications")}
+                        icon={<IconButton/>}
+                        style={{ color: theme.palette.common.white }}
+                    >
+                        <Typography>
+                            Notifications
+                        </Typography>
+                    </MenuItem> */}
 
                     {/* Emissions Page */}
                     <MenuItem
@@ -136,4 +139,3 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
 }
 
 export default Sidebar;
-

@@ -11,6 +11,7 @@ import Dashboard from "./views/dashboard/Dashboard";
 import BookingPage from "./views/BookingPage/BookingPage";
 import EmissionsPage from "./views/EmissionsPage/EmissionsPage";
 import VehiclesPage from "./views/VehiclesPage/VehiclesPage"
+import Notifications from "./views/Notifications/Notifications"
 import { useState } from 'react';
 
 const App: React.FC = () => {
@@ -66,6 +67,7 @@ const App: React.FC = () => {
                                     <Route element={<ProtectedRoutes />}>
                                         <Route path="/dashboard" element={<Dashboard />} />
                                         <Route path="/" element={<Dashboard />} />
+                                        <Route path="/notifications" element={<Notifications/>}/>
                                         <Route path="/bookings" element={<BookingPage />} /> 
                                         <Route path="/emissions" element={<EmissionsPage />} /> 
                                         <Route path="/vehicles" element={<VehiclesPage />} />
