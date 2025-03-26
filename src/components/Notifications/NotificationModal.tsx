@@ -17,7 +17,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (email && phone) {
+        if (email || phone) {
             try {
                 const auth = getAuth();
                 const currentUser = auth.currentUser;
@@ -37,7 +37,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                 console.error("Error calling notification endpoint: ", error);
             }
         } else {
-            console.error("Both email and phone number are required.");
+            console.error("At least one contact field is required.");
         }
     };
 
@@ -57,24 +57,6 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                 console.error("Error calling notification endpoint: ", error);
             }
         }
-
-        //test code, delete later
-
-        const sessionStart = '2025-03-09T10:00:00.000Z'
-        const sessionEnd = '2025-03-09T10:15:00.000Z'
-        const price = 15.00   
-
-        const testPhone = "+15068382586"
-        const to  = testPhone;
-        const body = "Your session from " + sessionStart + " to " + sessionEnd + " has ended.\n Amount due: $" + price + " CAD\n Proceed to pay at XYZ Location";
-        const message = {
-            to,
-            body
-          }
-
-        const ref = collection(db, "messages");
-        const result = await addDoc(ref, message);
-        
         onClose();
     }
 
@@ -107,7 +89,6 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            required
                         />
                     </label>
                     <br /><br />
@@ -116,9 +97,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                         <input
                             type="tel"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            required
-                        />
+                            onChange={(e) => setPhone(e.target.value)}                        />
                     </label>
                     <br /><br />
                     
@@ -126,7 +105,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({ isOpen, onClose }
                         <input
                             type="checkbox"
                             checked={optedOut}
-                            onChange={() => setOptedOut(true)}
+                            onChange={() => setOptedOut(!optedOut)}
                         />
                         Don't show this again (Notifications can be changed on the Home page)
                     </label>

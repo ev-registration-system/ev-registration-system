@@ -24,10 +24,9 @@ const Dashboard = () => {
   
 	useEffect(() => {
 	  const checkUserData = async () => {
-		const { user } = useAuth();
 		if (!user) return; // Ensure the user is logged in
   
-		const userRef = doc(db, "users", user.uid);
+		const userRef = doc(db, "users", user);
 		const userSnap = await getDoc(userRef);
   
 		if (userSnap.exists()) {
@@ -35,7 +34,7 @@ const Dashboard = () => {
 		  const email = userData?.email || "";
 		  const phoneNumber = userData?.phoneNumber || "";
   
-		  if ((email === "" || phoneNumber === "") && !hasSeenModal && !(userData.optedOut)) {
+		  if ((email === "" && phoneNumber === "") && !hasSeenModal && !(userData.optedOut)) {
 			setShowModal(true);
 			sessionStorage.setItem("hasSeenModal", "true");
 			setHasSeenModal(true);
@@ -115,6 +114,9 @@ const Dashboard = () => {
 	
 	return (
 		<Box m="20px">
+			{/* Show notification modal when required */}
+			<NotificationModal isOpen={showModal} onClose={() => setShowModal(false)} />
+
 			{/* Header */}
 			<Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
 				<Typography variant="h2" fontWeight="bold" color={colors.grey[100]}>
