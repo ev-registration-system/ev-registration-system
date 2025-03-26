@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import { tokens } from '../../Theme';
 import { getUserId } from '../../utils/getUserId';
 import { getAuthToken } from '../../utils/getAuthToken';
+import { getAuth } from 'firebase/auth';
 
 interface DeleteBookingProps {
     isOpen: boolean;
@@ -29,6 +30,7 @@ const DeleteVehicle: React.FC<DeleteBookingProps> = ({isOpen, onClose, vehicleId
                 const idToken = getAuthToken();
                 const data = {
                     vehicle_id: inputVehicleId,
+                    user_id: getAuth().currentUser?.uid
                 };
                 const BASE_URL =
                 import.meta.env.MODE === "development"

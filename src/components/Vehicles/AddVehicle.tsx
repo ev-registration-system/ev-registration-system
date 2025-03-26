@@ -63,9 +63,9 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
     
     const handleVehicle = async(e: React.FormEvent) => {
       const link =
-        // import.meta.env.MODE === "development"? 
-        "http://127.0.0.1:5001/ev-registration-system/us-central1/addVehicle"
-          // : "https://addvehicle-w2ytv3mava-uc.a.run.app";
+        import.meta.env.MODE === "development"
+          ? "http://127.0.0.1:5001/ev-registration-system/us-central1/addVehicle"
+          : "https://addvehicle-w2ytv3mava-uc.a.run.app";
         e.preventDefault(); 
         if(vehcicleLicense && vehicleMake && vehicleModel && vehicleYear && vehicleColor){
           if(Number(vehicleYear) > 2025 || Number(vehicleYear) < 1900){
@@ -181,7 +181,14 @@ const AddVehicle: React.FC<AddVehicleProps> = ({isOpen, onClose}) => {
 
               <Box mb={2}>
                 
-                <TextField label="Vehicle Year" variant="outlined" fullWidth type="number" value={vehicleYear} onChange={(e) => setVehicleYear(e.target.value)} required />
+                <TextField
+                  label="Vehicle Year" 
+                  variant="outlined" 
+                  fullWidth 
+                  type="number"
+                  value={vehicleYear} 
+                  onChange={(e) => setVehicleYear(e.target.value)}
+                  required />
               </Box>
 
               <Box mb={3}>
