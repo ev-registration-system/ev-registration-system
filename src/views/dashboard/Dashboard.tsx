@@ -1,3 +1,5 @@
+import { doc, getDoc } from "firebase/firestore";
+import NotificationModal from "../../components/Notifications/NotificationModal";
 import { Accordion, AccordionSummary, Box, Card, CardContent, Grid2, Stack, Typography, useTheme } from '@mui/material'
 import { tokens } from '../../Theme'
 import { Booking, Vehicle } from 'src/types/types'
@@ -8,14 +10,42 @@ import { db } from '../../../firebase'
 import { ExpandMore } from '@mui/icons-material'
 import EmissionsLineChart from '../../components/EmissionsLineChart/EmissionsLineChart'
 
-
 const Dashboard = () => {
 	const theme = useTheme()
 	const colors = tokens(theme.palette.mode)
+
+	const user = getAuth().currentUser?.uid
+	const [showModal, setShowModal] = useState(false);
+	const [hasSeenModal, setHasSeenModal] = useState(
+		sessionStorage.getItem("hasSeenModal") === "true"
+	  );
+  
+	useEffect(() => {
+	  const checkUserData = async () => {
+		if (!user) return; // Ensure the user is logged in
+  
+		const userRef = doc(db, "users", user);
+		const userSnap = await getDoc(userRef);
+  
+		if (userSnap.exists()) {
+		  const userData = userSnap.data();
+		  const email = userData?.email || "";
+		  const phoneNumber = userData?.phoneNumber || "";
+  
+		  if ((email === "" && phoneNumber === "") && !hasSeenModal && !(userData.optedOut)) {
+			setShowModal(true);
+			sessionStorage.setItem("hasSeenModal", "true");
+			setHasSeenModal(true);
+		  }
+		}
+	  };
+  
+	  checkUserData();
+	}, [hasSeenModal]);
+
 	const [bookings, setBookings] = useState<Booking[] | null>(null);
 	const [vehicles, setVehicles] = useState<Vehicle[] | null>(null);
 
-	const user = getAuth().currentUser?.uid
 
 	const fetchBookings = async () => {
 		if(user){
@@ -80,9 +110,11 @@ const Dashboard = () => {
 		};
 	});
 	
-
 	return (
 		<Box m="20px">
+			{/* Show notification modal when required */}
+			<NotificationModal isOpen={showModal} onClose={() => setShowModal(false)} />
+
 			{/* Header */}
 			<Box display="flex" justifyContent="space-between" alignItems="center" mb="20px">
 				<Typography variant="h2" fontWeight="bold" color={colors.grey[100]}>

@@ -1,5 +1,5 @@
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
-import { db } from '../../../firebase'; // adjust the relative path as needed
+import { db } from '../../../firebase';
 
 const ref = collection(db, 'bookings')
 const GRACE_PERIOD = 5 * 60 * 1000; // 5 minutes measured in ms
