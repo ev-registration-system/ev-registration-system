@@ -116,64 +116,22 @@ export const addBooking = onRequest({ cors: true }, async (req, res) => {
     }
 });
 
-
-
-// export const addUser = onRequest(async (request, response) => {
-//   const {username, email, phone} = request.body;
-//   if(!username || !email || !phone){
-//     logger.error("Missing required fields", {username, email, phone});
-//     response.status(404).send("Missing required fields");
-//   }
-
-//   const newUser: user.User = {
-//     username: username,
-//     email: email,
-//     phone: phone
-//   }
-
-//     try{
-//         const userAdded: user.User = await user.addUser(newUser);
-//         response.status(201).json({message: "User has been created", 
-//           id: userAdded.id,
-//           username: userAdded.username,
-//           email: userAdded.email,
-//           phone: userAdded.phone});
-//     } catch(error){
-//         logger.error("Error calling function addUser", error);
-//         response.status(500).send("Error calling function addUser");
-//     }
-// });
-
-
-// export const getUser = onRequest(async (request, response) => {
-//   const {username, password} = request.body;
-//   if(!username || !password){
-//     logger.error("Missing required fields", {username, password});
-//     response.status(404).send("Missing required fields");
-//   }
-//     try{
-//       const getUser = await user.getUser(username);
-//       if(!getUser){
-//         logger.info("User not found");
-//         response.status(200).send("User Not Found");
-//         return;
-//       }
-//       response.status(200).json({
-//         message: "User has been retrieved",
-//         username: getUser?.username,
-//         email: getUser?.email,
-//         phone: getUser?.phone
-//       });
-//     } catch (error) {
-//         logger.error("Error calling function getUser", error);
-//         response.status(500).send("Error calling function getUser");
-//     }
-// });
-
-
 export const addVehicle = onRequest(async (request, response) => {
   const {license, user_id, make, model, year, color} = request.body
-  
+
+  if (request.headers.authorization) {
+    const idToken = request.headers.authorization.split('Bearer ')[1];
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+
+    if (decodedToken.uid !== user_id) {
+      response.status(403).send({ error: "Unauthorized access." });
+        return;
+    }
+  } else {
+    response.status(401).send({ error: "Authentication required." });
+      return;
+  }
+
   if(!license || !user_id || !make || !model || !year || !color){
     logger.error("Missing required fields", {license, user_id, make, model, year, color});
     response.status(404).send("Missing required fields")
@@ -207,35 +165,21 @@ export const addVehicle = onRequest(async (request, response) => {
 });
 
 
-// export const getVehicle = onRequest(async (request, response) => {
-//     const user_id = request.body.id as string;
-//     if(!user_id){
-//       logger.error("Missing required fields", {user_id});
-//       response.status(400).send("Missing required fields");
-//       return;
-//     }
-//     try{
-//         const vehicleRetrieved = await vehicle.getVehicle(user_id);
-//         if(!vehicleRetrieved){
-//           logger.info("vehicles not found");
-//           response.status(200).send("vehicles not found");
-//           return;
-//         }
-
-//         response.status(200).json({
-//           message: "Vehicles has been retrieved",
-//           vehicleRetrieved
-//         });
-
-//     } catch(error) {
-//         logger.error("Error calling function getVehicle", error);
-//         response.status(500).send("Error calling function getVehicle");
-//     }
-// });
-
-
 export const deleteVehicle = onRequest(async (request, response) => {
-	const {vehicle_id} = request.body
+	const {vehicle_id, user_id} = request.body
+
+  if (request.headers.authorization) {
+    const idToken = request.headers.authorization.split('Bearer ')[1];
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+    if (decodedToken.uid !== user_id) {
+      response.status(403).send({ error: "Unauthorized access." });
+      return;
+    }
+  } else {
+      response.status(401).send({ error: "Authentication required." });
+      return;
+  }
+
 	if(!vehicle_id){
 		logger.error("Missing required fields", {vehicle_id});
 		response.status(400).send("Missing required fields");

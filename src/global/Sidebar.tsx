@@ -125,7 +125,7 @@ function Sidebar({ initialSelected = "Home", isCollapsed, setIsCollapsed }: Side
 
                     {/* Vehicles Page */}
                     <MenuItem
-                        active={selected === "Home"}
+                        active={selected === "Vehicles"}
                         onClick={() => handleNavigation("/vehicles")}
                         icon={<CarIcon />}
                         style={{ color: theme.palette.common.white }}

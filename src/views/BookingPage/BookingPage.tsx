@@ -8,6 +8,8 @@ import { tokens } from '../../Theme'
 import { Box, Button, useTheme } from '@mui/material'
 import { checkForValidReservation, handleCheckInCheckOut } from '../../components/Bookings/CheckInCheckOut';
 import { getUserId } from '../../utils/getUserId';
+import PreviousBookings from '../../components/Bookings/PreviousBookings';
+import UpcomingBookings from '../../components/Bookings/UpcomingBookings';
 
 const ref = collection(db, 'bookings')
 
@@ -22,6 +24,8 @@ const BookingPage = () => {
 	const colors = tokens(theme.palette.mode)
 	const [isCheckedIn, setIsCheckedIn] = useState(false);
 	const [isDisabled, setIsDisabled] = useState(false);
+    const [PreviousBooking, setPreviousBookings] = useState(false)
+    const [UpcomingBooking, setUpcomingBookings] = useState(false)
 
 	const getBookings = useCallback (async () => {
         const userId = getUserId();
@@ -63,6 +67,24 @@ const BookingPage = () => {
 		getBookings()
 		setIsModalOpen(false)
 	}
+
+    const handlePreviousBookingsOpen = () => {
+        console.log("Here")
+        setPreviousBookings(true);
+    }
+
+    const handlePreviousBookingsClose = () => {
+        setPreviousBookings(false);
+    }
+    
+    const handleUpcomingBookingsOpen = () => {
+        console.log("Here")
+        setUpcomingBookings(true);
+    }
+
+    const handleUpcomingBookingsClose = () => {
+        setUpcomingBookings(false);
+    }
 
 	useEffect(() => {
 		async function runCheck() {
@@ -143,10 +165,11 @@ const BookingPage = () => {
                             backgroundColor: colors.accent[400],
                         },
                     }}
-                    onClick={() => console.log("Upcoming bookings clicked")}
+                    onClick={handleUpcomingBookingsOpen}
                 >
                     Upcoming Bookings
                 </Button>
+                <UpcomingBookings open={UpcomingBooking} onClose={handleUpcomingBookingsClose} />
 
                 {/* Past Bookings Button */}
                 <Button
@@ -161,10 +184,11 @@ const BookingPage = () => {
                             backgroundColor: colors.accent[400],
                         },
                     }}
-                    onClick={() => console.log('Past Bookings clicked')}
+                    onClick={handlePreviousBookingsOpen}
                 >
                     Past Bookings
                 </Button>
+                <PreviousBookings open={PreviousBooking} onClose={handlePreviousBookingsClose} />
 
 				{/* Check-In Check-Out Button*/}
 				<Button

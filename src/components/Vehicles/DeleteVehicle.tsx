@@ -3,6 +3,7 @@ import React, {useEffect, useState} from 'react';
 import { tokens } from '../../Theme';
 import { getUserId } from '../../utils/getUserId';
 import { getAuthToken } from '../../utils/getAuthToken';
+import { getAuth } from 'firebase/auth';
 
 interface DeleteBookingProps {
     isOpen: boolean;
@@ -26,9 +27,14 @@ const DeleteVehicle: React.FC<DeleteBookingProps> = ({isOpen, onClose, vehicleId
         if(inputVehicleId  && uid) {
             try{
                 //trigger delete function
-                const idToken = getAuthToken();
+                const idToken = await getAuthToken();
+                if(!idToken){
+                    console.error("ID Token Not Available")
+                    return;
+                }
                 const data = {
                     vehicle_id: inputVehicleId,
+                    user_id: getAuth().currentUser?.uid
                 };
                 const BASE_URL =
                 import.meta.env.MODE === "development"

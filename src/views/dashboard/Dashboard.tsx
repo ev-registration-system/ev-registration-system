@@ -5,9 +5,8 @@ import { tokens } from '../../Theme'
 import { Booking, Vehicle } from 'src/types/types'
 import { useEffect, useState } from 'react'
 import { getAuth } from 'firebase/auth'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore'
 import { db } from '../../../firebase'
-import { Timestamp } from 'firebase-admin/firestore'
 import { ExpandMore } from '@mui/icons-material'
 import EmissionsLineChart from '../../components/EmissionsLineChart/EmissionsLineChart'
 
@@ -51,7 +50,7 @@ const Dashboard = () => {
 	const fetchBookings = async () => {
 		if(user){
 			try{
-				const q = query(collection(db, "bookings"), where("userId", "==", user))
+				const q = query(collection(db, "bookings"), where("userId", "==", user), where('endTime', '>=', Timestamp.now()))
 				const querySnapshot = await getDocs(q)
 
 				const bookingsData: Booking[] = querySnapshot.docs.map((doc) => {
@@ -109,7 +108,7 @@ const Dashboard = () => {
 		  ...booking,
 		  vehicle,
 		};
-	  });
+	});
 	
 	return (
 		<Box m="20px">
@@ -143,7 +142,7 @@ const Dashboard = () => {
 									<Typography variant='h6'>
 										Start Time: {booking.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} <br/>
 										End Time: {booking.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}<br/>
-										Vehicle Booked: {booking.vehicle?.make} {booking.vehicle?.model} {booking.vehicle?.license}
+										Vehicle To Charge: {booking.vehicle?.make} {booking.vehicle?.model} {booking.vehicle?.license}
 									</Typography>
 								</CardContent>
 							</Card>
