@@ -6,22 +6,21 @@
  *
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
+//import { collection, addDoc} from 'firebase/firestore';
+import * as admin from "firebase-admin"
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 
 import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import * as vehicle from "./vehicleHandler";
-import * as admin from "firebase-admin"
 //import * as user from "./userHandler";
 import * as data from "./dataHandler";
-//import * as messaging from "./MessagingSystem";
 import * as functions from "firebase-functions";
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { Timestamp } from "firebase-admin/firestore";
 
-const db = getFirestore()
-
-if (!admin.apps.length) {
-    admin.initializeApp();
-}
+const db = admin.firestore();
 
 export const addBooking = onRequest({ cors: true }, async (req, res) => {
   try {
@@ -117,88 +116,7 @@ export const addBooking = onRequest({ cors: true }, async (req, res) => {
     }
 });
 
-export const sendMessage = onRequest(async (req, res) => {
-    try {
-        // Extract 'to' and 'body' fields from the request body
-        const { to, body } = req.body;
 
-        // Basic validation to ensure required fields are provided
-        if (!to || !body) {
-            res.status(400).send({ error: "Invalid input. 'to' and 'body' fields are required." });
-            return;
-        }
-
-        // Create a new message object
-        const message = {
-            to,
-            body
-        };
-
-        // Add the message to the 'messages' collection in Firestore
-        const result = await db.collection('messages').add(message);
-        res.status(201).send({ message: "Message added successfully.", messageId: result.id });
-    } catch (error) {
-        console.error("Error adding message:", error);
-        res.status(500).send({ error: "Internal Server Error. Please try again later." });
-    }
-});
-
-export const helloWorld = onRequest((request, response) => {
-  logger.info("Hello logs!", {structuredData: true});
-  response.send("Hello from Firebase!");
-});
-
-
-// export const sendAlertToCampusSecurity = onRequest(async (request, response) => {
-//     const {body, subject, method} = request.body;
-//     if(!body || !subject){
-//         logger.error("Missing required fields");
-//         response.status(400).send("Missing required fields")
-//     }
-
-//     const data: messaging.Data = {
-//       text: body,
-//       subject: subject
-//     }
-
-//     try{
-//         const result = await messaging.sendAlertToCampusSecurity(data, method);
-//         response.status(201).json({message: "Alert successfully sent to Campus Security", id: result});
-//     } catch (error){
-//         logger.error("Error sending message to campus security", error);
-//         response.status(500).send("Internal Server Error. Please Try Again Later");
-//     }
-// });
-
-// export const sendAlertToOwner = onRequest(async (request, response) => {
-//     const {body} = request.body;
-//     if(!body){
-//         logger.error("Missing required fields");
-//         response.status(400).send("Missing required fields")
-//     }
-//     try{
-//         const result = await messaging.sendAlertToOwner(body);
-//         response.status(201).json({message: "Alert successfully sent to Campus Security", id: result});
-//     } catch (error){
-//         logger.error("Error sending message to Owner", error);
-//         response.status(500).send("Internal Server Error. Please Try Again Later");
-//     }
-// });
-
-// export const sendAlertToSystem = onRequest(async (request, response) => {
-//     const {body} = request.body;
-//     if(!body){
-//         logger.error("Missing required fields");
-//         response.status(400).send("Missing required fields")
-//     }
-//     try{
-//         const result = await messaging.sendAlertToSystem(body);
-//         response.status(201).json({message: "Alert successfully sent to System Administration", id: result});
-//     } catch (error){
-//         logger.error("Error sending message to campus security", error);
-//         response.status(500).send("Internal Server Error. Please Try Again Later");
-//     }
-// });
 
 // export const addUser = onRequest(async (request, response) => {
 //   const {username, email, phone} = request.body;
@@ -338,7 +256,7 @@ export const receiveData = onRequest(async (request, response ) => {
 	const {usage, user_id, vehicle_id} = request.body
 
 	if(!usage || !user_id || !vehicle_id){
-		logger.error("Missing required fields", {usage, user_id, vehicle});
+		logger.error("Missing required fields", {usage, user_id, vehicle_id});
 		response.status(404).send("Missing required fields")
 		return;
     }

@@ -143,7 +143,7 @@ const BookingPage = () => {
                             backgroundColor: colors.accent[400],
                         },
                     }}
-                    onClick={() => console.log('Upcoming Bookings clicked')}
+                    onClick={() => console.log("Upcoming bookings clicked")}
                 >
                     Upcoming Bookings
                 </Button>
