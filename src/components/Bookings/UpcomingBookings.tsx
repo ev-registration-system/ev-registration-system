@@ -15,12 +15,11 @@ const UpcomingBookings: React.FC<UpcomingBookingsProps> = ({open, onClose}) => {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [vehiclesData, setVehicles] = useState<Vehicle[] | null>(null)
 
-    const uid = getAuth().currentUser?.uid
-
+    
     const handleVehicles = async () => {
-        if(uid){
+        if(getAuth().currentUser?.uid){
             try{
-                const q = query(collection(db, "vehicles"), where("user_id", "==", uid))
+                const q = query(collection(db, "vehicles"), where("user_id", "==", getAuth().currentUser?.uid))
                 const querySnapshot = await getDocs(q)
                 const vehiclesData: Vehicle[] = querySnapshot.docs.map((doc) => {
                 const data = doc.data();
@@ -47,13 +46,13 @@ const UpcomingBookings: React.FC<UpcomingBookingsProps> = ({open, onClose}) => {
         if(open){
             const fetchBookings = async () => {
                 
-                if(!uid){
+                if(!getAuth().currentUser?.uid){
                     console.log("User not Signed In")
                 }
                 const bookingsQuery = query(
                     collection(db, "bookings"),
                     where('endTime', '>=', Timestamp.now()),
-                    where('userId', "==", uid)
+                    where('userId', "==", getAuth().currentUser?.uid)
                 );
 
                 const querySnapshot = await getDocs(bookingsQuery);
