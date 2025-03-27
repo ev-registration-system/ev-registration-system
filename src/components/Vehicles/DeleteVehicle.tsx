@@ -27,7 +27,11 @@ const DeleteVehicle: React.FC<DeleteBookingProps> = ({isOpen, onClose, vehicleId
         if(inputVehicleId  && uid) {
             try{
                 //trigger delete function
-                const idToken = getAuthToken();
+                const idToken = await getAuthToken();
+                if(!idToken){
+                    console.error("ID Token Not Available")
+                    return;
+                }
                 const data = {
                     vehicle_id: inputVehicleId,
                     user_id: getAuth().currentUser?.uid

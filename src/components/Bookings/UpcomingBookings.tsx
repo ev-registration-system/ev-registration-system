@@ -6,12 +6,12 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useEffect, useState } from "react"
 import { Booking, Vehicle } from "src/types/types";
 
-interface PreviousBookingsProp{
+interface UpcomingBookingsProps{
     open: boolean;
     onClose: () => void;
 }
 
-const PreviousBookings: React.FC<PreviousBookingsProp> = ({open, onClose}) => {
+const UpcomingBookings: React.FC<UpcomingBookingsProps> = ({open, onClose}) => {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [vehiclesData, setVehicles] = useState<Vehicle[] | null>(null)
 
@@ -52,7 +52,7 @@ const PreviousBookings: React.FC<PreviousBookingsProp> = ({open, onClose}) => {
                 }
                 const bookingsQuery = query(
                     collection(db, "bookings"),
-                    where('endTime', '<', Timestamp.now()),
+                    where('endTime', '>=', Timestamp.now()),
                     where('userId', "==", uid)
                 );
 
@@ -79,19 +79,19 @@ const PreviousBookings: React.FC<PreviousBookingsProp> = ({open, onClose}) => {
 
 
     const mergedBookings = bookings?.map((booking) => {
-		const vehicle = vehiclesData?.find((v) => v.id === booking.vehicleId);
-		return {
-		  ...booking,
-		  vehicle,
-		};
-	});
+        const vehicle = vehiclesData?.find((v) => v.id === booking.vehicleId);
+        return {
+          ...booking,
+          vehicle,
+        };
+    });
 
     return (
         <Dialog open={open} onClose={onClose} fullWidth>
-            <DialogTitle><Typography variant="h3">Previous Bookings</Typography></DialogTitle>
+            <DialogTitle><Typography variant="h3">Upcoming Bookings</Typography></DialogTitle>
             <DialogContent>
                 {bookings.length === 0 ? (
-                    <Typography>No Previous Bookings Available</Typography>
+                    <Typography>No Upcoming Bookings Available</Typography>
                 ) : (
                     <TableContainer component={Paper}>
                         <Table>
@@ -128,4 +128,4 @@ const PreviousBookings: React.FC<PreviousBookingsProp> = ({open, onClose}) => {
     )
 }
 
-export default PreviousBookings
+export default UpcomingBookings

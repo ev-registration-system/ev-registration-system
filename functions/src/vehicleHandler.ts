@@ -49,7 +49,7 @@ class vehicleHandler{
 
     static async deleteVehicle(vehicle_id: string){
         try{
-            db.collection(vehicleHandler.COLLECTION_NAME).doc(vehicle_id).delete();
+            await db.collection(vehicleHandler.COLLECTION_NAME).doc(vehicle_id).delete();
             return true
         } catch (error){
             logger.info("Error delete vehicle", error);

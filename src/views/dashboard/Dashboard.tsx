@@ -3,9 +3,8 @@ import { tokens } from '../../Theme'
 import { Booking, Vehicle } from 'src/types/types'
 import { useEffect, useState } from 'react'
 import { getAuth } from 'firebase/auth'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+import { collection, getDocs, query, where, Timestamp } from 'firebase/firestore'
 import { db } from '../../../firebase'
-import { Timestamp } from 'firebase-admin/firestore'
 import { ExpandMore } from '@mui/icons-material'
 import EmissionsLineChart from '../../components/EmissionsLineChart/EmissionsLineChart'
 
@@ -21,7 +20,7 @@ const Dashboard = () => {
 	const fetchBookings = async () => {
 		if(user){
 			try{
-				const q = query(collection(db, "bookings"), where("userId", "==", user))
+				const q = query(collection(db, "bookings"), where("userId", "==", user), where('endTime', '>=', Timestamp.now()))
 				const querySnapshot = await getDocs(q)
 
 				const bookingsData: Booking[] = querySnapshot.docs.map((doc) => {
@@ -79,7 +78,7 @@ const Dashboard = () => {
 		  ...booking,
 		  vehicle,
 		};
-	  });
+	});
 	
 
 	return (
