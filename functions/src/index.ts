@@ -19,13 +19,11 @@ import * as vehicle from "./vehicleHandler";
 import * as data from "./dataHandler";
 import * as functions from "firebase-functions";
 import { Timestamp } from "firebase-admin/firestore";
-
+export * from "./NotificationHandler"
 const db = admin.firestore();
 
 export const addBooking = onRequest({ cors: true }, async (req, res) => {
   try {
-      //use this for debugging
-      //console.log("Incoming request body:", req.body);
       const { startTime, endTime, userId, vehicleId } = req.body;
 
       if (req.headers.authorization) {
