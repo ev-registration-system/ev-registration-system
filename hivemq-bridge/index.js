@@ -1,18 +1,21 @@
+require('dotenv').config();
+console.log("DEBUG ENV", process.env.HIVEMQ_HOST,"\nUsername: ", process.env.HIVEMQ_USERNAME, "\nPassword: ", process.env.HIVEMQ_PASSWORD);
 const express = require('express');
 const mqtt = require('mqtt');
+const { PubSub } = require('@google-cloud/pubsub');
 
 const {
-  HIVEMQ_HOST = '0a4d1c24e0a84a2c982410aa6a859838.s1.eu.hivemq.cloud',
-  HIVEMQ_PORT = '8883',
-  HIVEMQ_USERNAME = '',
-  HIVEMQ_PASSWORD = '',
-  MQTT_TOPIC = 'evantage/system/#',
-  PUBSUB_TOPIC = 'projects/ev-registration-system/topics/evantage',
+  HIVEMQ_HOST,
+  HIVEMQ_PORT,
+  HIVEMQ_USERNAME,
+  HIVEMQ_PASSWORD,
+  MQTT_TOPIC,
+  PUBSUB_TOPIC,
 } = process.env;
 
 const pubSubClient = new PubSub();
 
-const connectUrl = `mqtt://${HIVEMQ_HOST}:${HIVEMQ_PORT}`;
+const connectUrl = `mqtts://${HIVEMQ_HOST}:${HIVEMQ_PORT}`;
 console.log(`Connecting to HiveMQ broker at: ${connectUrl}`);
 
 const mqttOptions = {

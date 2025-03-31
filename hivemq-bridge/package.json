@@ -4,10 +4,11 @@
 	"description": "Bridge MQTT messages from HiveMQ",
 	"main": "index.js",
 	"scripts": {
-		"run": "node index.js"
+		"start": "node index.js"
 	},
 	"dependencies": {
 		"@google-cloud/pubsub": "^4.10.0",
+		"dotenv": "^16.4.7",
 		"express": "^4.21.2",
 		"mqtt": "^5.10.4"
 	}
