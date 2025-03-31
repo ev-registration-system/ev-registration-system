@@ -1,18 +1,18 @@
-//import { CloudTasksClient } from '@google-cloud/tasks';
-//import { Buffer } from 'buffer';
+import { CloudTasksClient } from '@google-cloud/tasks';
+import { Buffer } from 'buffer';
 import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
-//import { onDocumentCreated } from 'firebase-functions/v2/firestore';
+import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import * as admin from "firebase-admin"
 const db = admin.firestore();
-/*
+
 const projectId = 'ev-registration-system';
 const location = 'us-central1';        
 const queue = 'reminders';               
-const reminderUrl = 'https://sendReminder-w2ytv3mava-uc.a.run.app'; */
+const reminderUrl = 'https://sendReminder-w2ytv3mava-uc.a.run.app';
 const testPhone = "15068382586"
 
-/**
+
 const tasksClient = new CloudTasksClient();
 
 export const onBookingCreated = onDocumentCreated(
@@ -67,7 +67,7 @@ export const onBookingCreated = onDocumentCreated(
 
 
 
-*/
+
 
 
 export const sendReceipt = onRequest(async (req, res) => {
