@@ -116,7 +116,7 @@ export const addBooking = onRequest({ cors: true }, async (req, res) => {
     }
 });
 
-export const addVehicle = onRequest(async (request, response) => {
+export const addVehicle = onRequest({ cors: true }, async (request, response) => {
   const {license, user_id, make, model, year, color} = request.body
 
   if (request.headers.authorization) {
@@ -165,7 +165,7 @@ export const addVehicle = onRequest(async (request, response) => {
 });
 
 
-export const deleteVehicle = onRequest(async (request, response) => {
+export const deleteVehicle = onRequest({ cors: true }, async (request, response) => {
 	const {vehicle_id, user_id} = request.body
 
   if (request.headers.authorization) {

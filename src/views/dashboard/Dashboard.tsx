@@ -123,32 +123,38 @@ const Dashboard = () => {
 			</Box>
 			<Stack spacing={2}>
 				<div>
-					<Typography variant='h3'>
-						Upcoming Bookings
-					</Typography><br/>
-					<Grid2 container justifyContent="center" alignItems="center" spacing={2}>
-						{mergedBookings?.map((booking) => (
-						<Grid2 size={{xs:12, sm:6, md:4}} key={booking.id}>
-							<Card variant='outlined' sx={{ backgroundColor: '#f0f0f0' }}>
-								<CardContent>
-									<Typography variant='h5' fontWeight="bold">
-										Date: {booking.startTime.toLocaleDateString('en-US', {
-													weekday: 'long',
-													year: 'numeric',
-													month: 'long',
-													day: 'numeric',
-												})}
-									</Typography>
-									<Typography variant='h6'>
-										Start Time: {booking.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} <br/>
-										End Time: {booking.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}<br/>
-										Vehicle To Charge: {booking.vehicle?.make} {booking.vehicle?.model} {booking.vehicle?.license}
-									</Typography>
-								</CardContent>
-							</Card>
-						</Grid2>
-					))}
+				<Typography variant='h3'>Upcoming Bookings</Typography>
+				<br />
+				{mergedBookings?.length === 0 ? (
+				<Typography variant='h4' textAlign="center">
+					No upcoming bookings
+				</Typography>
+				) : (
+				<Grid2 container justifyContent="center" alignItems="center" spacing={2}>
+					{(mergedBookings || []).map((booking) => (
+					<Grid2  container justifyContent="center" alignItems="center" spacing={2} key={booking.id}>
+						<Card variant='outlined' sx={{ backgroundColor: '#f0f0f0' }}>
+						<CardContent>
+							<Typography variant='h5' fontWeight="bold">
+							Date: {booking.startTime.toLocaleDateString('en-US', {
+								weekday: 'long',
+								year: 'numeric',
+								month: 'long',
+								day: 'numeric',
+							})}
+							</Typography>
+							<Typography variant='h6'>
+							Start Time: {booking.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} <br />
+							End Time: {booking.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} <br />
+							Vehicle To Charge: {booking.vehicle?.make} {booking.vehicle?.model} {booking.vehicle?.license}
+							</Typography>
+						</CardContent>
+						</Card>
 					</Grid2>
+					))}
+				</Grid2>
+				)}
+
 				</div>
 				<div>
 				<Typography variant="h3">Vehicles Registered</Typography>
