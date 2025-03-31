@@ -25,8 +25,8 @@ jobs:
       - run: npm run lint
       - run: npx jest
       - run: npm run build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EV_REGISTRATION_SYSTEM }}
-          projectId: ev-registration-system
+      # - uses: FirebaseExtended/action-hosting-deploy@v0
+      #   with:
+      #     repoToken: ${{ secrets.GITHUB_TOKEN }}
+      #     firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EV_REGISTRATION_SYSTEM }}
+      #     projectId: ev-registration-system
