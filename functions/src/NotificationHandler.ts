@@ -9,7 +9,7 @@ const db = admin.firestore();
 const projectId = 'ev-registration-system';
 const location = 'us-central1';        
 const queue = 'reminders';               
-const reminderUrl = 'https://sendReminder-w2ytv3mava-uc.a.run.app';
+const reminderUrl = 'https://sendreminder-w2ytv3mava-uc.a.run.app';
 const testPhone = "15068382586"
 
 
