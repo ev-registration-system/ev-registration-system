@@ -14,6 +14,7 @@ export async function checkForValidReservation(forCheckOut = false) {
             start: data.startTime.toDate(),
             end: data.endTime.toDate(),
             checkedIn: data.checkedIn,
+            validVehicle: data.validVehicle,
         }
     });
 
@@ -31,7 +32,11 @@ export async function checkForValidReservation(forCheckOut = false) {
 
         //Looks for a booking that isn't checked in
         if (!forCheckOut && now >= graceStart && now <= end && checkedIn === false) {
-            foundValid = { state: true, id: booking.id };
+            if (booking.validVehicle) {
+                foundValid = { state: true, id: booking.id };
+            } else {
+                console.log("Vehicle has not arrived");
+            }
         }
         
         //Looks for a booking that's already checked in

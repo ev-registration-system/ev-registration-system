@@ -6,7 +6,7 @@ admin.initializeApp();
 
 const db = admin.firestore();
 
-export const evDetected = onMessagePublished("evantage", async (event) => {
+export const evDetected = onMessagePublished("/evantage/arrive", async (event) => {
   try {
     const msg = event.data.message.data; 
     if (!msg) {
@@ -42,10 +42,8 @@ export const evDetected = onMessagePublished("evantage", async (event) => {
     
     //Checks if next booking starts within 5 minutes
     if (nextBookingStart <= fiveMinsFromNow) {
-      logger.info("Booking within 5 min => Enable check-in button or handle logic here.");
-
-      // Example: store a flag in Firestore or call some function
-      // e.g. db.collection("someCollection").doc("UIState").set({ canCheckIn: true });
+      logger.info("Booking within 5 min");
+      await nextBookingDoc.ref.update({ validVehicle: true });
 
     } else {
       logger.info("Next booking is more than 5 minutes away => illegal vehicle");
