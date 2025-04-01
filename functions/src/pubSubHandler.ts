@@ -3,18 +3,12 @@ import { logger } from "firebase-functions";
 import * as admin from "firebase-admin";
 import { PubSub } from "@google-cloud/pubsub";
 
-if (!admin.apps.length) {
-  admin.initializeApp();
-}
-
 const db = admin.firestore();
-
-const PUB_BASE_TOPIC="projects/ev-registration-system/topics";
-//const SUB_BASE_TOPIC="projects/ev-registration-system";
 
 const pubSubClient = new PubSub();
 
 export const evDetected = onMessagePublished( { topic: "projects/ev-registration-system/topics/arrive", region: "us-central1", } , async (event) => {
+  logger.info("Full event object:", JSON.stringify(event, null, 2));
   try {
     const msg = event.data.message.data; 
     if (!msg) {
@@ -25,7 +19,12 @@ export const evDetected = onMessagePublished( { topic: "projects/ev-registration
     const decodedString = Buffer.from(msg, "base64").toString();
     const payload = JSON.parse(decodedString);
 
-    logger.info("Received MQTT→PubSub message:", payload);
+    logger.info("Decoded payload:", JSON.stringify(payload));
+
+    logger.info("Received MQTT PubSub message:", payload);
+
+    const deeper = JSON.parse(payload.message);
+    logger.info(deeper);
 
     const now = admin.firestore.Timestamp.now();
     const fiveMinsFromNow = new Date(now.toDate().getTime() + 5 * 60 * 1000);
@@ -38,11 +37,14 @@ export const evDetected = onMessagePublished( { topic: "projects/ev-registration
 
     //Checks if there are any upcoming bookings
     if (upcomingBooking.empty) {
-      logger.info("No upcoming bookings = Illegal vehicle.");
-      await pubSubClient.topic(PUB_BASE_TOPIC + "/illegal").publishMessage({
-        data: Buffer.from("No upcoming booking"),
-      });
-      return;
+      logger.info("No upcoming bookings, Illegal vehicle.");
+      try {
+        const pubsubTopic = pubSubClient.topic("projects/ev-registration-system/topics/illegal");
+        const messageId = await pubsubTopic.publishMessage({ data: Buffer.from("No upcoming booking") });
+        console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/subscriptions/illegal"} (ID: ${messageId})`);
+      } catch (error) {
+        console.error('Error publishing to Pub/Sub:', error);
+      }
     }
 
     const [nextBookingDoc] = upcomingBooking.docs;
@@ -56,10 +58,14 @@ export const evDetected = onMessagePublished( { topic: "projects/ev-registration
       await nextBookingDoc.ref.update({ validVehicle: true });
 
     } else {
-      logger.info("Next booking is more than 5 minutes away => illegal vehicle");
-      await pubSubClient.topic(PUB_BASE_TOPIC + "/illegal").publishMessage({
-        data: Buffer.from("No scheduled booking within 5 minutes"),
-      });
+      logger.info("Next booking is more than 5 minutes away, Illegal vehicle");
+      try {
+        const pubsubTopic = pubSubClient.topic("projects/ev-registration-system/topics/illegal");
+        const messageId = await pubsubTopic.publishMessage({ data: Buffer.from("Next booking is more than 5 minutes away") });
+        console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/subscriptions/illegal"} (ID: ${messageId})`);
+      } catch (error) {
+        console.error('Error publishing to Pub/Sub:', error);
+      }
     }
 
   } catch (error) {
