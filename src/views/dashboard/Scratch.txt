@@ -1,0 +1,26 @@
+<MenuItem>
+						Vehicles Information
+						<ul>
+							{vehicles?.map((vehicle) => (
+								<li key={vehicle.id}>
+									Vehicle Information for License Plate {vehicle.license}: <br/>
+									Make: {vehicle.make}<br/>
+									Model: {vehicle.model}<br/>
+									Year: {vehicle.year}<br/>
+									Color: {vehicle.color}
+								</li>
+							))}
+						</ul>
+					</MenuItem>
+
+<MenuItem>
+						Upcoming Bookings
+						<ul>
+							{bookings?.map((booking) => (
+								<li key={booking.id}>
+									{booking.endTime.toLocaleDateString()}: Bookings Start Time: {booking.startTime.toLocaleTimeString()}
+									<br/>Bookings End Time: {booking.endTime.toLocaleTimeString()}
+								</li>
+							))}
+						</ul>
+					</MenuItem>

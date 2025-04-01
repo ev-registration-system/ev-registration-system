@@ -14,6 +14,7 @@
     "@canvasjs/react-charts": "^1.0.2",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
+    "@google-cloud/tasks": "^5.5.2",
     "@mui/icons-material": "^6.4.1",
     "@mui/material": "^6.1.6",
     "@nivo/line": "^0.88.0",

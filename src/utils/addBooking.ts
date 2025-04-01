@@ -1,7 +1,7 @@
 import { getAuthToken } from "./getAuthToken";
 import { Booking } from "../types/types";
 
-export const addBooking = async (startTime: string, endTime: string, userId: string): Promise<void> => {
+export const addBooking = async (startTime: string, endTime: string, userId: string, vehicleId: string): Promise<void> => {
     try {
         const idToken = await getAuthToken();
         if (!idToken) return;
@@ -11,16 +11,17 @@ export const addBooking = async (startTime: string, endTime: string, userId: str
             endTime: new Date(endTime),
             userId,
             checkedIn: false,
+            vehicleId, 
         };
 
         //Selects URL based on if local or deployed
         const BASE_URL =
             import.meta.env.MODE === "development"
-                ? "http://127.0.0.1:5001/ev-registration-system/us-central1"
-                : "https://us-central1-ev-registration-system.cloudfunctions.net";
+                ? "http://127.0.0.1:5001/ev-registration-system/us-central1/addBooking"
+                : "https://addbooking-w2ytv3mava-uc.a.run.app";
 
         const response = await fetch(
-            `${BASE_URL}/addBooking`, 
+            BASE_URL, 
             {
                 method: "POST",
                 headers: {

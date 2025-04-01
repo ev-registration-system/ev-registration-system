@@ -3,6 +3,7 @@ export interface Booking {
     startTime: Date;
     endTime: Date;
     userId: string;
+    vehicleId: string;
     checkedIn: boolean;
 }
 
@@ -13,6 +14,11 @@ export interface Vehicle {
     model: string,
     year: number,
     color: string
+}
+
+export interface VehicleView{
+    Make: string,
+    Model: string
 }
 
 export interface EmissionsData {
