@@ -10,6 +10,7 @@ import { checkForValidReservation, handleCheckInCheckOut } from '../../component
 import { getUserId } from '../../utils/getUserId';
 import PreviousBookings from '../../components/Bookings/PreviousBookings';
 import UpcomingBookings from '../../components/Bookings/UpcomingBookings';
+import { subscribeToBookings } from '../../utils/subscribeToBookings';
 
 const ref = collection(db, 'bookings')
 
@@ -27,45 +28,35 @@ const BookingPage = () => {
     const [PreviousBooking, setPreviousBookings] = useState(false)
     const [UpcomingBooking, setUpcomingBookings] = useState(false)
 
-	const getBookings = useCallback (async () => {
-        const userId = getUserId();
-        if (!userId) {
+    useEffect(() => {
+        const unsubscribe = subscribeToBookings((allBookings: Booking[]) => {
+          const userId = getUserId();
+          if (!userId) {
             console.error("User not authenticated");
-            return [];
-        }
-		
-        const querySnapshot = await getDocs(ref);
-        const allBookings = querySnapshot.docs.map(doc => {
-            const data = doc.data();
-			console.log(data)
-			return {
-				id: doc.id,
-				startTime: data.startTime.toDate(),
-				endTime: data.endTime.toDate(),
-                userId: data.userId,
-                checkedIn: data.checkedIn || false,
-                vehicleId: data.vehicleId,
-                validVehicle: data.validVehicle || false,
-			}
-		})
+            return;
+          }
+          const userBookings = allBookings.filter((booking) => booking.userId === userId);
+          const otherBookings = allBookings.filter((booking) => booking.userId !== userId);
+    
+          setBookings({ userBookings, otherBookings });
+          setLoading(false);
+    
+          const validReservationExists = userBookings.some((booking) => booking.validVehicle);
+          setIsDisabled(!validReservationExists);
+        });
+    
+        return () => unsubscribe();
+    }, []);
 
-        const userBookings = allBookings.filter(booking => booking.userId === userId);
-        const otherBookings = allBookings.filter(booking => booking.userId !== userId);
-		console.log(userBookings)
-		setBookings({userBookings, otherBookings}) // Update state with the fetched bookings
-		setLoading(false) // Indicate loading is done
-	}, [setBookings]);
-
-	useEffect(() => {
-		getBookings() // Fetch bookings when the component mounts
-	}, [getBookings]);
+    const getBookings = () => {
+        //Dummy Function
+    };
 
 	const openModal = () => {
 		setIsModalOpen(true)
 	}
 
 	const closeModal = () => {
-		getBookings()
 		setIsModalOpen(false)
 	}
 
@@ -86,14 +77,6 @@ const BookingPage = () => {
     const handleUpcomingBookingsClose = () => {
         setUpcomingBookings(false);
     }
-
-	useEffect(() => {
-		async function runCheck() {
-			const hasValidReservation = (await checkForValidReservation()).state;
-			setIsDisabled(!hasValidReservation);
-		  }
-		  runCheck();
-	}, []);
 	
 	return (
         <Box

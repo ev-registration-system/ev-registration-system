@@ -1,12 +1,20 @@
 import { onMessagePublished } from "firebase-functions/v2/pubsub";
 import { logger } from "firebase-functions";
 import * as admin from "firebase-admin";
+import { PubSub } from "@google-cloud/pubsub";
 
-admin.initializeApp();
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 
 const db = admin.firestore();
 
-export const evDetected = onMessagePublished("/evantage/arrive", async (event) => {
+const PUB_BASE_TOPIC="projects/ev-registration-system/topics";
+//const SUB_BASE_TOPIC="projects/ev-registration-system";
+
+const pubSubClient = new PubSub();
+
+export const evDetected = onMessagePublished( { topic: "projects/ev-registration-system/topics/arrive", region: "us-central1", } , async (event) => {
   try {
     const msg = event.data.message.data; 
     if (!msg) {
@@ -31,7 +39,9 @@ export const evDetected = onMessagePublished("/evantage/arrive", async (event) =
     //Checks if there are any upcoming bookings
     if (upcomingBooking.empty) {
       logger.info("No upcoming bookings = Illegal vehicle.");
-      //client.publish("evantage/system/illegalvehicle", "No upcoming booking");
+      await pubSubClient.topic(PUB_BASE_TOPIC + "/illegal").publishMessage({
+        data: Buffer.from("No upcoming booking"),
+      });
       return;
     }
 
@@ -47,6 +57,9 @@ export const evDetected = onMessagePublished("/evantage/arrive", async (event) =
 
     } else {
       logger.info("Next booking is more than 5 minutes away => illegal vehicle");
+      await pubSubClient.topic(PUB_BASE_TOPIC + "/illegal").publishMessage({
+        data: Buffer.from("No scheduled booking within 5 minutes"),
+      });
     }
 
   } catch (error) {
