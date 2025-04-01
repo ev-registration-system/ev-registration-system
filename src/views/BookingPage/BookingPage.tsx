@@ -45,6 +45,7 @@ const BookingPage = () => {
                 userId: data.userId,
                 checkedIn: data.checkedIn || false,
                 vehicleId: data.vehicleId,
+                validVehicle: data.validVehicle || false,
 			}
 		})
 

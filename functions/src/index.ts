@@ -105,6 +105,7 @@ export const addBooking = onRequest({ cors: true }, async (req, res) => {
             userId,
             checkedIn: false,
             vehicleId,
+            validVehicle: false,
         };
 
         const result = await db.collection('bookings').add(booking);

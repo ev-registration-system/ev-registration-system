@@ -41,7 +41,7 @@ export const calculateDynamicPrice = async (startTime: string, endTime: string):
             let price = 0;
 
             if (hourData.emissionFactor < lowThreshold) {
-                price = BASE_PRICE_PER_HOUR * 0.80; // Low Emission results in a x0.80 multiplier
+                price = BASE_PRICE_PER_HOUR * 0.75; // Low Emission results in a x0.75 multiplier
                 console.log("Hour:", hour, ", multiplier applied: x0.80, price: $", price)
             } else if (hourData.emissionFactor < highThreshold) {
                 price = BASE_PRICE_PER_HOUR; // Medium Emission results in a x1.00 multiplier
