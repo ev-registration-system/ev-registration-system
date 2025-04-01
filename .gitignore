@@ -23,3 +23,4 @@ dist-ssr
 *.sln
 *.sw?
 *.env
+ev-registration-system-firebase.json
