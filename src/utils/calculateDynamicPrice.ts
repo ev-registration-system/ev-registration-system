@@ -34,7 +34,7 @@ export const calculateDynamicPrice = async (startTime: string, endTime: string):
         console.log("*****Dynamic Pricing Start*****")
 
         // Loop through the hours and sum the price based on emission category and the bins
-        for (let hour = startHour; hour <= endHour; hour++) {
+        for (let hour = startHour; hour < endHour; hour++) {
             const hourData = emissionData.find(d => d.hour === hour);
             if (!hourData) continue;
 

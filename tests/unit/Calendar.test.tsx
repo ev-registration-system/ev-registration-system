@@ -10,11 +10,11 @@ jest.mock('../../src/components/Bookings/DeleteBooking', () => ({
 
 describe('Calendar Component', () => {
   const mockUserBookings: Booking[] = [
-    { id: '1', startTime: new Date('2023-11-01T10:00:00Z'), endTime: new Date('2023-11-01T12:00:00Z'), userId: "mock-user-id", checkedIn: false, vehicleId: '1' },
+    { id: '1', startTime: new Date('2023-11-01T10:00:00Z'), endTime: new Date('2023-11-01T12:00:00Z'), userId: "mock-user-id", checkedIn: false, vehicleId: '1', validVehicle: false },
   ];
 
   const mockOtherBookings: Booking[] = [
-    { id: '2', startTime: new Date('2023-11-02T14:00:00Z'), endTime: new Date('2023-11-02T16:00:00Z'), userId: "other-user-id", checkedIn: false, vehicleId: '2' },
+    { id: '2', startTime: new Date('2023-11-02T14:00:00Z'), endTime: new Date('2023-11-02T16:00:00Z'), userId: "other-user-id", checkedIn: false, vehicleId: '2', validVehicle: false },
   ];
 
   test('Renders User and Other Bookings on Calendar', () => {
