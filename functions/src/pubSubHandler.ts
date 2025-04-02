@@ -19,13 +19,8 @@ export const evDetected = onMessagePublished( { topic: "projects/ev-registration
 
     const decodedString = Buffer.from(msg, "base64").toString();
     const payload = JSON.parse(decodedString);
-
-    logger.info("Decoded payload:", JSON.stringify(payload));
-
-    logger.info("Received MQTT PubSub message:", payload);
-
-    const deeper = JSON.parse(payload.message);
-    logger.info(deeper);
+    const parsedPayload = JSON.parse(payload.message);
+    logger.info(parsedPayload);
 
     const now = admin.firestore.Timestamp.now();
     const fiveMinsFromNow = new Date(now.toDate().getTime() + 5 * 60 * 1000);
@@ -101,5 +96,43 @@ export const checkInController = onRequest({ cors: true }, async (req, res) => {
   } catch (error) {
       console.error("Error fetching emissions data:", error);
       res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+export const checkOutController = onMessagePublished({ topic: "projects/ev-registration-system/topics/checkout", region: "us-central1", }, async (event) => {
+  logger.info("Received checkout Pub/Sub event:", JSON.stringify(event, null, 2));
+
+  try {
+    const msg = event.data.message.data; 
+    if (!msg) {
+      logger.warn("No data in this Pub/Sub message.");
+      return;
+    }
+
+    const decodedString = Buffer.from(msg, "base64").toString();
+    const payload = JSON.parse(decodedString);
+    const parsedPayload = JSON.parse(payload.message);
+    logger.info(parsedPayload);
+
+    const now = admin.firestore.Timestamp.now();
+    const snapshot = await db
+      .collection("bookings")
+      .where("checkedIn", "==", true)
+      .where("endTime", ">", now)
+      .orderBy("endTime", "asc")
+      .limit(1)
+      .get();
+
+    if (snapshot.empty) {
+      logger.info("No currently-checked-in booking found. Nothing to check out.");
+      return;
+    }
+
+    const [doc] = snapshot.docs;
+    await doc.ref.update({ checkedIn: false });
+    logger.info(`Booking ${doc.id} updated: checkedIn = false`);
+
+  } catch (error) {
+    logger.error("Error processing checkout Pub/Sub message:", error);
   }
 });

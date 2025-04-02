@@ -19,11 +19,11 @@ import * as vehicle from "./vehicleHandler";
 import * as data from "./dataHandler";
 import * as functions from "firebase-functions";
 import { Timestamp } from "firebase-admin/firestore";
-import { evDetected, checkInController} from "./pubSubHandler";
+import { evDetected, checkInController, checkOutController } from "./pubSubHandler";
 
 const db = admin.firestore();
 
-export { evDetected, checkInController };
+export { evDetected, checkInController, checkOutController };
 
 export const addBooking = onRequest({ cors: true }, async (req, res) => {
   try {
