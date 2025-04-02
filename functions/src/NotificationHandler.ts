@@ -4,13 +4,15 @@ import {onRequest} from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import * as admin from "firebase-admin"
+import * as functions from 'firebase-functions';
 const db = admin.firestore();
 
 const projectId = 'ev-registration-system';
 const location = 'us-central1';        
 const queue = 'reminders';               
 const reminderUrl = 'https://sendreminder-w2ytv3mava-uc.a.run.app';
-const testPhone = "15068382586"
+const testPhone = functions.config().twilio.test_phone;
+
 
 
 const tasksClient = new CloudTasksClient();
