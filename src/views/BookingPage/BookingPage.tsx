@@ -5,7 +5,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../firebase'
 import { Booking } from '../../types/types'
 import { tokens } from '../../Theme'
-import { Box, Button, useTheme } from '@mui/material'
+import { Box, Button, MenuItem, Select, useTheme } from '@mui/material'
 import { checkForValidReservation, handleCheckInCheckOut } from '../../components/Bookings/CheckInCheckOut';
 import { getUserId } from '../../utils/getUserId';
 import PreviousBookings from '../../components/Bookings/PreviousBookings';
@@ -26,6 +26,8 @@ const BookingPage = () => {
 	const [isDisabled, setIsDisabled] = useState(false);
     const [PreviousBooking, setPreviousBookings] = useState(false)
     const [UpcomingBooking, setUpcomingBookings] = useState(false)
+    const [chargerIDs, setChargersIDs] = useState<string[]>([]);
+    const [chargerSelected, setChargersSelected] = useState<string>();
 
 	const getBookings = useCallback (async () => {
         const userId = getUserId();
@@ -45,6 +47,7 @@ const BookingPage = () => {
                 userId: data.userId,
                 checkedIn: data.checkedIn || false,
                 vehicleId: data.vehicleId,
+                chargerID: data.chargerID
 			}
 		})
 
@@ -86,7 +89,20 @@ const BookingPage = () => {
         setUpcomingBookings(false);
     }
 
+    const fetchChargers = useCallback(async () => {
+        try {
+            const chargersRef = collection(db, "chargers");
+            const snapshot = await getDocs(chargersRef);
+            const chargerList = snapshot.docs.map(doc => doc.id);
+            setChargersIDs(chargerList);
+            console.log("Chargers:::::" + chargerIDs)
+        } catch (error) {
+            console.error("Error fetching chargers:", error);
+        }
+    }, []);
+
 	useEffect(() => {
+        fetchChargers();
 		async function runCheck() {
 			const hasValidReservation = (await checkForValidReservation()).state;
 			setIsDisabled(!hasValidReservation);
@@ -134,6 +150,21 @@ const BookingPage = () => {
                     gap: '20px', 
                 }}
             >
+                
+                <Select 
+                    value={chargerSelected || "Select Charger"}
+                    onChange={(e) => setChargersSelected(e.target.value)}
+                    sx={{ width: 155 }}
+                >
+                    <MenuItem value="Select Charger" disabled>Select Charger</MenuItem>
+                    {chargerIDs.map((charger) => (
+                        <MenuItem key={charger} value={charger}>
+                            {charger}
+                        </MenuItem>
+                    ))}
+                </Select>
+
+
                 {/* Make a Reservation Button */}
                 <Button
                     variant="contained"
@@ -211,7 +242,7 @@ const BookingPage = () => {
             </Box>
 
             {/* Reservation Modal */}
-            {isModalOpen && <ReservationModal isOpen={isModalOpen} onClose={closeModal} />}
+            {isModalOpen && <ReservationModal isOpen={isModalOpen} onClose={closeModal} chargerID={chargerSelected} />}
         </Box>
     );
 };

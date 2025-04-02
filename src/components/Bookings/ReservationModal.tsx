@@ -25,6 +25,7 @@ import AddVehicle from '../Vehicles/AddVehicle';
 interface ReservationModalProps {
     isOpen: boolean;
     onClose: () => void;
+    chargerID: string | undefined;
 }
 
 dayjs.extend(utc);
@@ -46,7 +47,7 @@ const generateTimeSlots = () => {
 
 const timeOptions = generateTimeSlots();
 
-const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) => {
+const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose, chargerID }) => {
     const [dynamicPrice, setDynamicPrice] = useState<number | null>(null);
     const [selectedDate, setSelectedDate] = useState(dayjs().format('YYYY-MM-DD')); 
     const [startTime, setStartTime] = useState('');
@@ -105,7 +106,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (selectedDate && startTime && endTime && selectedVehicle) {
+        if (selectedDate && startTime && endTime && selectedVehicle && chargerID) {
             const userId = getUserId();
             if (!userId) {
                 console.error("Error: User is not authenticated.");
@@ -116,7 +117,7 @@ const ReservationModal: React.FC<ReservationModalProps> = ({ isOpen, onClose }) 
             const formattedStartTime = dayjs(`${selectedDate} ${startTime}`).utc().toISOString();
             const formattedEndTime = dayjs(`${selectedDate} ${endTime}`).utc().toISOString();
 
-            await addBooking(formattedStartTime, formattedEndTime, userId, selectedVehicle);
+            await addBooking(formattedStartTime, formattedEndTime, userId, selectedVehicle, chargerID);
             onClose();
         } else {
             console.error("All fields are required.");

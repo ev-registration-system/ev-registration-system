@@ -61,7 +61,8 @@ const Dashboard = () => {
 						endTime: (data.endTime as Timestamp).toDate(),
 						userId: data.userId,
 						checkedIn: data.checkedIn,
-						vehicleId: data.vehicleId
+						vehicleId: data.vehicleId,
+						chargerID: data.chargerID
 					};
 				});
 				setBookings(bookingsData)

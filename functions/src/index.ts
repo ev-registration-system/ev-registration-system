@@ -26,7 +26,7 @@ export const addBooking = onRequest({ cors: true }, async (req, res) => {
   try {
       //use this for debugging
       //console.log("Incoming request body:", req.body);
-      const { startTime, endTime, userId, vehicleId } = req.body;
+      const { startTime, endTime, userId, vehicleId, chargerID } = req.body;
 
       if (req.headers.authorization) {
           const idToken = req.headers.authorization.split('Bearer ')[1];
@@ -105,6 +105,7 @@ export const addBooking = onRequest({ cors: true }, async (req, res) => {
             userId,
             checkedIn: false,
             vehicleId,
+            chargerID
         };
 
         const result = await db.collection('bookings').add(booking);
