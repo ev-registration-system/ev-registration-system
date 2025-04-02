@@ -2,6 +2,7 @@ import { onMessagePublished } from "firebase-functions/v2/pubsub";
 import { logger } from "firebase-functions";
 import * as admin from "firebase-admin";
 import { PubSub } from "@google-cloud/pubsub";
+import {onRequest} from "firebase-functions/v2/https";
 
 const db = admin.firestore();
 
@@ -70,5 +71,35 @@ export const evDetected = onMessagePublished( { topic: "projects/ev-registration
 
   } catch (error) {
     logger.error("Error processing Pub/Sub message from MQTT:", error);
+  }
+});
+
+export const checkInController = onRequest({ cors: true }, async (req, res) => {
+  try {
+    if (!req.headers.authorization) {
+      res.status(401).json({ error: "Authentication required." });
+      return;
+    }
+
+    const idToken = req.headers.authorization.split('Bearer ')[1];
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+
+    if (!decodedToken) {
+      res.status(403).json({ error: "Unauthorized access." });
+      return;
+    }
+
+    console.log("User authenticated:", decodedToken.uid);
+
+    try {
+      const pubsubTopic = pubSubClient.topic("projects/ev-registration-system/topics/check-in");
+      const messageId = await pubsubTopic.publishMessage({ data: Buffer.from("User has checked in") });
+      console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/subscriptions/checked-in"} (ID: ${messageId})`);
+    } catch (error) {
+      console.error('Error publishing to Pub/Sub:', error);
+    }
+  } catch (error) {
+      console.error("Error fetching emissions data:", error);
+      res.status(500).json({ error: "Internal Server Error" });
   }
 });

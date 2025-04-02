@@ -1,5 +1,6 @@
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../../firebase';
+import { checkInController } from '../../utils/checkInController';
 
 const ref = collection(db, 'bookings')
 const GRACE_PERIOD = 5 * 60 * 1000; // 5 minutes measured in ms
@@ -78,6 +79,13 @@ export async function handleCheckInCheckOut(isCheckedIn: boolean,
             console.log('no reservation found');
         }
         else {
+            try {
+                await checkInController(); //This calls cloud function that publishes to check-in topic (To alert data controller)
+                console.log("Successfully called checkInController Cloud Function!");
+            } catch (err) {
+                console.error("Error calling checkInController:", err);
+                return;
+            }
             await updateBookingCheckedInStatus(id, isValid);
             setIsCheckedIn(true);
             setIsDisabled(true);

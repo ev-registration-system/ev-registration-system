@@ -19,11 +19,11 @@ import * as vehicle from "./vehicleHandler";
 import * as data from "./dataHandler";
 import * as functions from "firebase-functions";
 import { Timestamp } from "firebase-admin/firestore";
-import { evDetected } from "./pubSubHandler";
+import { evDetected, checkInController} from "./pubSubHandler";
 
 const db = admin.firestore();
 
-export { evDetected };
+export { evDetected, checkInController };
 
 export const addBooking = onRequest({ cors: true }, async (req, res) => {
   try {
@@ -280,7 +280,7 @@ export const onNewSensorEntry = functions.firestore.onDocumentCreated(
     }
  })
  
-export const getEmissionsData = onRequest(async (req, res) => {
+export const getEmissionsData = onRequest({ cors: true }, async (req, res) => {
   try {
       if (!req.headers.authorization) {
           res.status(401).json({ error: "Authentication required." });
