@@ -1,6 +1,7 @@
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
 import { db } from '../../../firebase';
 import { checkInController } from '../../utils/checkInController';
+import { userCheckout } from '../../utils/userCheckout';
 
 const ref = collection(db, 'bookings')
 const GRACE_PERIOD = 5 * 60 * 1000; // 5 minutes measured in ms
@@ -65,7 +66,14 @@ export async function handleCheckInCheckOut(isCheckedIn: boolean,
                                             setIsDisabled: (value: boolean) => void) {
     if (isCheckedIn) {
         console.log('Checking out')
-        const booking = await checkForValidReservation(true); 
+        const booking = await checkForValidReservation(true);
+        try {
+            await userCheckout(); 
+            console.log("Successfully called checkInController Cloud Function!");
+        } catch (err) {
+            console.error("Error calling checkInController:", err);
+            return;
+        }
         await updateBookingCheckedInStatus(booking.id, false);
         setIsCheckedIn(false);
         setIsDisabled(true);

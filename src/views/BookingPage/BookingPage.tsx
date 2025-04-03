@@ -41,8 +41,11 @@ const BookingPage = () => {
           setBookings({ userBookings, otherBookings });
           setLoading(false);
     
-          const validReservationExists = userBookings.some((booking) => booking.validVehicle);
-          setIsDisabled(!validReservationExists);
+          async function runCheck() {
+			const hasValidReservation = (await checkForValidReservation()).state;
+			setIsDisabled(!hasValidReservation);
+		  }
+		  runCheck();
         });
     
         return () => unsubscribe();

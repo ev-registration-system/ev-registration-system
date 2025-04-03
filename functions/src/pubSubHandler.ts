@@ -17,13 +17,10 @@ export const evDetected = onMessagePublished( { topic: "projects/ev-registration
       return;
     }
 
-    const decodedString = Buffer.from(msg, "base64").toString();
-    const payload = JSON.parse(decodedString);
-    const parsedPayload = JSON.parse(payload.message);
-    logger.info(parsedPayload);
-
     const now = admin.firestore.Timestamp.now();
     const fiveMinsFromNow = new Date(now.toDate().getTime() + 5 * 60 * 1000);
+
+    logger.info("five min from now "+fiveMinsFromNow);
 
     const upcomingBooking = await db.collection("bookings")
       .where("startTime", ">", now)
@@ -37,7 +34,7 @@ export const evDetected = onMessagePublished( { topic: "projects/ev-registration
       try {
         const pubsubTopic = pubSubClient.topic("projects/ev-registration-system/topics/illegal");
         const messageId = await pubsubTopic.publishMessage({ data: Buffer.from("No upcoming booking") });
-        console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/subscriptions/illegal"} (ID: ${messageId})`);
+        console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/topics/illegal"} (ID: ${messageId})`);
       } catch (error) {
         console.error('Error publishing to Pub/Sub:', error);
       }
@@ -47,6 +44,9 @@ export const evDetected = onMessagePublished( { topic: "projects/ev-registration
     const nextBookingData = nextBookingDoc.data();
 
     const nextBookingStart = nextBookingData.startTime.toDate();
+
+    logger.info("next booking start "+nextBookingStart);
+    logger.info(nextBookingStart <= fiveMinsFromNow);
     
     //Checks if next booking starts within 5 minutes
     if (nextBookingStart <= fiveMinsFromNow) {
@@ -58,7 +58,7 @@ export const evDetected = onMessagePublished( { topic: "projects/ev-registration
       try {
         const pubsubTopic = pubSubClient.topic("projects/ev-registration-system/topics/illegal");
         const messageId = await pubsubTopic.publishMessage({ data: Buffer.from("Next booking is more than 5 minutes away") });
-        console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/subscriptions/illegal"} (ID: ${messageId})`);
+        console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/topics/illegal"} (ID: ${messageId})`);
       } catch (error) {
         console.error('Error publishing to Pub/Sub:', error);
       }
@@ -89,17 +89,51 @@ export const checkInController = onRequest({ cors: true }, async (req, res) => {
     try {
       const pubsubTopic = pubSubClient.topic("projects/ev-registration-system/topics/check-in");
       const messageId = await pubsubTopic.publishMessage({ data: Buffer.from("User has checked in") });
-      console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/subscriptions/checked-in"} (ID: ${messageId})`);
+      console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/topics/checked-in"} (ID: ${messageId})`);
+      res.status(201).send({ message: "Successfully checked in." });
     } catch (error) {
       console.error('Error publishing to Pub/Sub:', error);
+      res.status(500).json({ error: "Error publishing to Pub/Sub" });
     }
   } catch (error) {
-      console.error("Error fetching emissions data:", error);
+      console.error("Error checking in", error);
       res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-export const checkOutController = onMessagePublished({ topic: "projects/ev-registration-system/topics/checkout", region: "us-central1", }, async (event) => {
+export const userCheckout = onRequest({ cors: true }, async (req, res) => {
+  try {
+    if (!req.headers.authorization) {
+      res.status(401).json({ error: "Authentication required." });
+      return;
+    }
+
+    const idToken = req.headers.authorization.split('Bearer ')[1];
+    const decodedToken = await admin.auth().verifyIdToken(idToken);
+
+    if (!decodedToken) {
+      res.status(403).json({ error: "Unauthorized access." });
+      return;
+    }
+
+    console.log("User authenticated:", decodedToken.uid);
+
+    try {
+      const pubsubTopic = pubSubClient.topic("projects/ev-registration-system/topics/checkout");
+      const messageId = await pubsubTopic.publishMessage({ data: Buffer.from("User has checked out") });
+      console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/topics/checkedout"} (ID: ${messageId})`);
+      res.status(201).send({ message: "Successfully checked out." });
+    } catch (error) {
+      console.error('Error publishing to Pub/Sub:', error);
+      res.status(500).json({ error: "Error publishing to Pub/Sub" });
+    }
+  } catch (error) {
+      console.error("Error checking out:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+export const checkOutController = onMessagePublished({ topic: "projects/ev-registration-system/topics/leave", region: "us-central1", }, async (event) => {
   logger.info("Received checkout Pub/Sub event:", JSON.stringify(event, null, 2));
 
   try {
@@ -108,11 +142,6 @@ export const checkOutController = onMessagePublished({ topic: "projects/ev-regis
       logger.warn("No data in this Pub/Sub message.");
       return;
     }
-
-    const decodedString = Buffer.from(msg, "base64").toString();
-    const payload = JSON.parse(decodedString);
-    const parsedPayload = JSON.parse(payload.message);
-    logger.info(parsedPayload);
 
     const now = admin.firestore.Timestamp.now();
     const snapshot = await db
@@ -131,6 +160,43 @@ export const checkOutController = onMessagePublished({ topic: "projects/ev-regis
     const [doc] = snapshot.docs;
     await doc.ref.update({ checkedIn: false });
     logger.info(`Booking ${doc.id} updated: checkedIn = false`);
+    try {
+      const pubsubTopic = pubSubClient.topic("projects/ev-registration-system/topics/checkout");
+      const messageId = await pubsubTopic.publishMessage({ data: Buffer.from("User has checked out.") });
+      console.log(`Published to Pub/Sub topic ${"projects/ev-registration-system/topics/checkout"} (ID: ${messageId})`);
+    } catch (error) {
+      console.error('Error publishing to Pub/Sub:', error);
+    }
+
+  } catch (error) {
+    logger.error("Error processing checkout Pub/Sub message:", error);
+  }
+});
+
+export const recieveSummary = onMessagePublished({ topic: "projects/ev-registration-system/topics/summary", region: "us-central1", }, async (event) => {
+  logger.info("Received checkout Pub/Sub event:", JSON.stringify(event, null, 2));
+
+  try {
+    const msg = event.data.message.data; 
+    if (!msg) {
+      logger.warn("No data in this Pub/Sub message.");
+      return;
+    }
+
+    const decodedString = Buffer.from(msg, "base64").toString();
+    const payload = JSON.parse(decodedString);
+    const parsedPayload = JSON.parse(payload.message);
+    logger.info(parsedPayload);
+    
+    const summary = {
+      chargerId: parsedPayload.charger_id,
+      startTime: parsedPayload.start_time,
+      endTime: parsedPayload.end_time,
+      hoursCharged: parsedPayload.hours_charged,
+      sessionEnergy: parsedPayload.session_energy,
+    };
+
+    await db.collection('session_summaries').add(summary);
 
   } catch (error) {
     logger.error("Error processing checkout Pub/Sub message:", error);
